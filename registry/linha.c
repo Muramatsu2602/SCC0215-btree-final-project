@@ -9,6 +9,10 @@
  * 
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "linha.h"
+
 struct _cabecalhoLinha
 {
 	char status;

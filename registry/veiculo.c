@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <veiculo.h>
+#include "veiculo.h"
 
 struct _cabecalhoVeiculo
 {
