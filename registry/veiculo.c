@@ -8,35 +8,37 @@
  * @copyright Copyright (c) 2021
  * 
  */
-
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "veiculo.h"
+#include "../utils/fileManager.h"
 
-struct _cabecalhoVeiculo
+boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
 {
-	char status;
-	long byteProxReg;
-	int nroRegistros;
-	int nroRegRemovidos;
-	char descrevePrefixo[18];
-	char descreveData[32];
-	char descreveLugares[42];
-	char descreveLinha[17];
-	char descreveModelo[20];
-	char descreveCategoria[26];
-};
+    const char delim[2] = ",";
+    char *token = NULL;
+    char *linha = NULL;
 
-struct _veiculo
+    if (!fp || !veiculo)
+        return FALSE;
+
+    // lendo linha
+    linha = readLine(fp);
+    // verificando se a linha lida no CSV esta excluida
+    if (linha[0] == '*')
+    {
+        free(linha);
+        return TRUE;
+    }
+    // Tokenizando linha e preenchendo veiculo
+    
+}
+
+// boolean escreverBinarioCabecalhoVeiculo()
+
+boolean escreverBinarioVeiculo(const char *filename)
 {
-	char removido;
-	int tamanhoRegistro;
-	char prefixo[5];
-	char data[10];
-	int	quantidadeLugares;
-	int codLinha;
-	int tamanhoModelo;
-	char* modelo;
-	int tamanhoCategoria;
-	char* categoria;
-};
+    if (!filename)
+        return FALSE;
+}

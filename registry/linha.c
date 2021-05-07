@@ -8,30 +8,21 @@
  * @copyright Copyright (c) 2021
  * 
  */
-
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "linha.h"
+#include "../utils/fileManager.h"
 
-struct _cabecalhoLinha
+LINHA *lerLinhaCSVLinha(FILE *fp)
 {
-	char status;
-	long byteProxReg;
-	int nroRegistros;
-	int nroRegRemovidos;
-	char descreveCodigo[15];
-	char descreveCartao[13];
-	char descreveNome[13];
-	char descreveLinha[24];
-};
 
-struct _linha
+}
+
+// boolean escreverBinarioCabecalhoLinha
+
+boolean escreverBinarioLinha(const char *filename)
 {
-	char removido;
-	int tamanhoRegistro;
-	int codLinha;
-	char aceitaCartao;
-	int tamanhoNome;
-	int tamanhoCor;
-	char* corLinha;
-};
+    if (!filename)
+        return FALSE;
+}

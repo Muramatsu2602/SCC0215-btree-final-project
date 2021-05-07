@@ -12,6 +12,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "fileManager.h"
+#include "../registry/linha.h"
+#include "../registry/veiculo.h"
+
 /**
  * @brief Le uma linha ate o \0
  * 
@@ -68,11 +72,11 @@ FILE *abrirArquivo(const char *filename, const char *mode)
  */
 int removerArquivo(const char *filename)
 {
-    if(!filename)
+    if (!filename)
         return EXIT_FAILURE;
-        
+
     int res = 0;
-    
+
     if ((res = remove(filename)) == 0)
         return EXIT_SUCCESS;
     else

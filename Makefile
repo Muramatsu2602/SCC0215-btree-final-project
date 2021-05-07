@@ -8,11 +8,8 @@
  * @copyright Copyright (c) 2021
  * 
  */
-
 UTILS= utils/register.c
 REGISTRY= registry/linha.c registry/veiculo.c
-BINARY_FILE =
-CSV= linha.csv veiculo.csv
 MAIN= main.c
 BINARY= main
 
@@ -30,11 +27,17 @@ valval: all
 	@echo "Looking for leaks!"
 	@valgrind $(VFLAGS) ./$(BINARY)
 
+deb_hex: all
+	@echo "Hexdumping it all!"
+	@./$(BINARY) < 1.in &> 1.out
+	@ hexdump -vC 1.out > 1.hexdump
+	@ code 1.hexdump
+
 clean:
 	@echo "Cleaning the mess!"
 	@rm $(BINARY)
 	@rm *.zip
 
 zip:
-	@echo "Creating a zip folder with all important files!"
-	@zip -r t1-11796444_giovanni-1196451_pedro.zip utils/* registry/* csv/* binary/* $(MAIN) Makefile
+	@echo "Creating a zip folder with all the important files!"
+	@zip -r trabalho1-11796444_giovanni-1196451_pedro.zip utils/* registry/* csv/* binary/* $(MAIN) Makefile README.md

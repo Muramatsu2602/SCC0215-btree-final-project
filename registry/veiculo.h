@@ -16,7 +16,37 @@
     #define boolean int
     #define FILE_MODE "rb"
 
+    struct _veiculo
+    {	
+        char removido;
+        int tamanhoRegistro;
+        char prefixo[5];
+        char data[10];
+        int	quantidadeLugares;
+        int codLinha;
+        int tamanhoModelo;
+        char* modelo;
+        int tamanhoCategoria;
+        char* categoria;
+    };
+
+    struct _cabecalhoVeiculo
+    {
+        char status;
+        long byteProxReg;
+        int nroRegistros;
+        int nroRegRemovidos;
+        char descrevePrefixo[18];
+        char descreveData[32];
+        char descreveLugares[42];
+        char descreveLinha[17];
+        char descreveModelo[20];
+        char descreveCategoria[26];
+    };
+
     typedef struct _cabecalhoVeiculo CABECALHOV;
+    
     typedef struct _veiculo VEICULO;
+    
 
 #endif
