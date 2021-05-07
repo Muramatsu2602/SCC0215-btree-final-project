@@ -81,15 +81,41 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     return TRUE;
 }
 
+boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
+{
+    const char delim[2] = ",";
+    char *token = NULL;
+    char *linha = NULL;
+
+    if (!fp || !cabVeiculos)
+        return FALSE;
+
+    // lendo cabeçalho
+    linha = readLine(fp);
+
+    // 
+
+    // ByteProxReg
+    cabVeiculos->byteProxReg = '0'; // 0: inconsistente, 1: consistente
+
+    // Calculando Tamanho do cabeçalho
+    cabVeiculos->byteProxReg = sizeof(cabVeiculos->status) + sizeof(cabVeiculos->byteProxReg) + sizeof(cabVeiculos->nroRegistros) + sizeof(cabVeiculos->nroRegRemovidos) + strlen(cabVeiculos->descrevePrefixo) + strlen(cabVeiculos->descreveData) + strlen(cabVeiculos->descreveLugares) + strlen(cabVeiculos->descreveLinha) + strlen(cabVeiculos->descreveModelo) + strlen(cabVeiculos->descreveCategoria);
+    cabVeiculos->nroRegistros = 0;
+    cabVeiculos->nroRegRemovidos = 0;
+}
+
 boolean escreverBinarioCabecalhoVeiculo(FILE *fp)
 {
     if (!fp)
         return FALSE;
+
+    return TRUE;
 }
 
 boolean escreverBinarioVeiculo(FILE *fp)
 {
-
     if (!fp)
         return FALSE;
+
+    return TRUE;
 }
