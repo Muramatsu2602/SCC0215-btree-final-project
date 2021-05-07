@@ -34,6 +34,7 @@
         int codLinha;
         char aceitaCartao;
         int tamanhoNome;
+        char* nomeLinha;
         int tamanhoCor;
         char* corLinha;
     };
