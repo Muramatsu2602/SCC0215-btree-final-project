@@ -12,11 +12,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-// #include "utils/fileManager.h"
-
+#include "utils/fileManager.h" 
+#include "registry/linha.h"
+#include "registry/veiculo.h"
 
 int main(void)
 {
     
-    return 0;
+    return EXIT_SUCCESS;
 }
