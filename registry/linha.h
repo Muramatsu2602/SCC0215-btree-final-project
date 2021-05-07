@@ -15,6 +15,10 @@
     #define FALSE 0
     #define boolean int
     #define FILE_MODE "rb"
+
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <string.h>
     struct _cabecalhoLinha
     {
         char status;
@@ -41,5 +45,7 @@
 
     typedef struct _cabecalhoLinha CABECALHOL;
     typedef struct _linha LINHA;
+
+    boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha);
 
 #endif

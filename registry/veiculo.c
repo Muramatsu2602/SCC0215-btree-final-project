@@ -8,10 +8,6 @@
  * @copyright Copyright (c) 2021
  * 
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "veiculo.h"
 #include "../utils/fileManager.h"
 
@@ -26,23 +22,23 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
 {
     const char delim[2] = ",";
     char *token = NULL;
-    char *linha = NULL;
+    char *input = NULL;
 
     if (!fp || !veiculo)
         return FALSE;
 
     // lendo linha
-    linha = readLine(fp);
+    input = readLine(fp);
     // verificando se a linha lida no CSV esta excluida
-    if (linha[0] == '*')
+    if (input[0] == '*')
     {
-        free(linha);
+        free(input);
         return TRUE;
     }
     // LENDO VEICULO e tokenizando
 
     // Prefixo do veiculo
-    token = strtok(linha, delim);
+    token = strtok(input, delim);
     strcpy(veiculo->prefixo, token);
 
     // Data de entrada do veiculo na frota
@@ -78,6 +74,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     // int tamanhoRegistro;
     veiculo->tamanhoRegistro = sizeof(veiculo->removido) + sizeof(veiculo->tamanhoRegistro) + sizeof(veiculo->prefixo) + sizeof(veiculo->data) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + strlen(veiculo->modelo) + sizeof(veiculo->tamanhoCategoria) + strlen(veiculo->categoria);
 
+    free(input);
     return TRUE;
 }
 
@@ -92,16 +89,16 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
 {
     const char delim[2] = ",";
     char *token = NULL;
-    char *linha = NULL;
+    char *input = NULL;
 
     if (!fp || !cabVeiculos)
         return FALSE;
 
     // lendo cabeçalho
-    linha = readLine(fp);
+    input = readLine(fp);
 
     // Status
-    token = strtok(linha, delim);
+    token = strtok(input, delim);
 
     // Descreve prefixo
     token = strtok(NULL, delim);
@@ -137,6 +134,9 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     cabVeiculos->byteProxReg = sizeof(cabVeiculos->status) + sizeof(cabVeiculos->byteProxReg) + sizeof(cabVeiculos->nroRegistros) + sizeof(cabVeiculos->nroRegRemovidos) + strlen(cabVeiculos->descrevePrefixo) + strlen(cabVeiculos->descreveData) + strlen(cabVeiculos->descreveLugares) + strlen(cabVeiculos->descreveLinha) + strlen(cabVeiculos->descreveModelo) + strlen(cabVeiculos->descreveCategoria);
     cabVeiculos->nroRegistros = 0;
     cabVeiculos->nroRegRemovidos = 0;
+
+    free(input);
+    return TRUE;
 }
 
 boolean escreverBinarioCabecalhoVeiculo(FILE *fp)
