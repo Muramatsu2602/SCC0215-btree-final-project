@@ -61,6 +61,25 @@ FILE *abrirArquivo(const char *filename, const char *mode)
 }
 
 /**
+ * @brief deleta o arquivo permanentemente
+ * 
+ * @param filename 
+ * @return int 
+ */
+int removerArquivo(const char *filename)
+{
+    if(!filename)
+        return EXIT_FAILURE;
+        
+    int res = 0;
+    
+    if ((res = remove(filename)) == 0)
+        return EXIT_SUCCESS;
+    else
+        return EXIT_FAILURE;
+}
+
+/**
  * @brief Compara arquivos binarios. Usado para correcao 
  * 
  * @param nomeArquivoBinario 
