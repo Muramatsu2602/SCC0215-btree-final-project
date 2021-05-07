@@ -22,7 +22,7 @@
     #define FILE_MODE2 "r"
     #define FILE_MODE3 "wb"
 
-    #define BUFFER 200 
+    #define BUFFER 50
 
     // Manipulando Arquivos
     char *readLine(FILE *stream);
