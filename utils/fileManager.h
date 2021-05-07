@@ -13,15 +13,23 @@
 
     #include <stdio.h>
     #include <ctype.h>
-    #include <math.h>
 
     #define TRUE 1
     #define FALSE 0
     #define boolean int
+
     #define FILE_MODE1 "rb"
     #define FILE_MODE2 "r"
+    #define FILE_MODE3 "wb"
 
+    #define BUFFER 50
+
+    // Manipulando Arquivos
     char *readLine(FILE *stream);
+    FILE *abrirArquivo(const char *filename, const char *mode);
+    int removerArquivo(const char *filename);
+
+    // Debugging
     void binarioNaTela(char *nomeArquivoBinario);
-    
+
 #endif
