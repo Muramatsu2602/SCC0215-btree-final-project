@@ -10,10 +10,18 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "veiculo.h"
 #include "../utils/fileManager.h"
 
+/**
+ * @brief Ler uma linha do veiculo.csv e preenche o VEICULO *veiculo
+ * 
+ * @param fp 
+ * @param veiculo 
+ * @return boolean 
+ */
 boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
 {
     const char delim[2] = ",";
@@ -31,14 +39,57 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
         free(linha);
         return TRUE;
     }
-    // Tokenizando linha e preenchendo veiculo
-    
+    // LENDO VEICULO e tokenizando
+
+    // Prefixo do veiculo
+    token = strtok(linha, delim);
+    strcpy(veiculo->prefixo, token);
+
+    // Data de entrada do veiculo na frota
+    token = strtok(NULL, delim);
+    strcpy(veiculo->data, token);
+
+    // Quantidade de lugares sentados disponiveis
+    token = strtok(NULL, delim);
+    veiculo->quantidadeLugares = (int)atoi(token);
+
+    // Linha associada ao veiculo
+    token = strtok(NULL, delim);
+    veiculo->codLinha = (int)atoi(token);
+
+    // Modelo do veiculo e seu tamanho
+    token = strtok(NULL, delim);
+    veiculo->tamanhoModelo = (int)strlen(token) + 1;
+
+    // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
+    veiculo->modelo = (char *)realloc(veiculo->modelo, veiculo->tamanhoModelo * sizeof(char));
+    strcpy(veiculo->modelo, token);
+
+    //  Categoria do veiculo e seu tamanho
+    token = strtok(NULL, delim);
+    veiculo->tamanhoCategoria = (int)strlen(token) + 1;
+
+    // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
+    veiculo->categoria = (char *)realloc(veiculo->categoria, veiculo->tamanhoCategoria * sizeof(char));
+    strcpy(veiculo->categoria, token);
+
+    // char removido;
+    veiculo->removido = '0';
+    // int tamanhoRegistro;
+    veiculo->tamanhoRegistro = sizeof(veiculo->removido) + sizeof(veiculo->tamanhoRegistro) + sizeof(veiculo->prefixo) + sizeof(veiculo->data) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + strlen(veiculo->modelo) + sizeof(veiculo->tamanhoCategoria) + strlen(veiculo->categoria);
+
+    return TRUE;
 }
 
-// boolean escreverBinarioCabecalhoVeiculo()
-
-boolean escreverBinarioVeiculo(const char *filename)
+boolean escreverBinarioCabecalhoVeiculo(FILE *fp)
 {
-    if (!filename)
+    if (!fp)
+        return FALSE;
+}
+
+boolean escreverBinarioVeiculo(FILE *fp)
+{
+
+    if (!fp)
         return FALSE;
 }

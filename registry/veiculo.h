@@ -16,6 +16,10 @@
     #define boolean int
     #define FILE_MODE "rb"
 
+    #include <stdlib.h>
+    #include <stdio.h>
+
+
     struct _veiculo
     {	
         char removido;
@@ -45,8 +49,8 @@
     };
 
     typedef struct _cabecalhoVeiculo CABECALHOV;
-    
     typedef struct _veiculo VEICULO;
-    
+
+    boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo);
 
 #endif
