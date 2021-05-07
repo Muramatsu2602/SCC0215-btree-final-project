@@ -81,6 +81,13 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     return TRUE;
 }
 
+/**
+ * @brief Le a primeira linha de CSV e preenche os campos descritivos
+ * 
+ * @param fp 
+ * @param cabVeiculos 
+ * @return boolean 
+ */
 boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
 {
     const char delim[2] = ",";
@@ -93,7 +100,35 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     // lendo cabeçalho
     linha = readLine(fp);
 
-    // 
+    // Status
+    token = strtok(linha, delim);
+
+    // Descreve prefixo
+    token = strtok(NULL, delim);
+    strcpy(cabVeiculos->descrevePrefixo, token);
+
+    // Descreve Data
+    token = strtok(NULL, delim);
+    strcpy(cabVeiculos->descreveData, token);
+
+    // Descreve Lugares
+    token = strtok(NULL, delim);
+    strcpy(cabVeiculos->descreveLugares, token);
+
+    // Descreve Linha
+    token = strtok(NULL, delim);
+    strcpy(cabVeiculos->descreveLinha, token);
+
+    // Descreve Modelo
+    token = strtok(NULL, delim);
+    strcpy(cabVeiculos->descreveModelo, token);
+
+    // Descreve Categoria
+    token = strtok(NULL, delim);
+    strcpy(cabVeiculos->descreveCategoria, token);
+
+    // Status
+    cabVeiculos->status = '0';
 
     // ByteProxReg
     cabVeiculos->byteProxReg = '0'; // 0: inconsistente, 1: consistente
