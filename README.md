@@ -18,8 +18,6 @@ Este trabalho tem como objetivo armazenar dados em um arquivo binário de acordo
 ```
 
 ## Presentation Video 
-Click on the image to access our presentation on YouTube 
-[![Video Presentation](https://media.geeksforgeeks.org/wp-content/uploads/FileOrganization44.png)](https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO)
 
 ## Team
 * 1179444 - Giovanni Shibaki Camargo
