@@ -97,11 +97,8 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     // lendo cabeçalho
     input = readLine(fp);
 
-    // Status
-    token = strtok(input, delim);
-
     // Descreve prefixo
-    token = strtok(NULL, delim);
+    token = strtok(input, delim);
     strcpy(cabVeiculos->descrevePrefixo, token);
 
     // Descreve Data
