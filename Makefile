@@ -23,7 +23,7 @@ run:
 	./$(BINARY)
 
 test1:
-	./$(BINARY) < test/1.in
+	./$(BINARY) < test/0.in
 
 valval: all
 	@echo "Looking for leaks!"
@@ -31,9 +31,9 @@ valval: all
 
 deb_hex: all
 	@echo "Hexdumping it all!"
-	@./$(BINARY) < 1.in &> 1.out
-	@ hexdump -vC 1.out > 1.hexdump
-	@ code 1.hexdump
+	@./$(BINARY) < test/0.in &> test/0.out
+	@ hexdump -vC bin/veiculo.bin > 0.hexdump
+	@ code 0.hexdump
 
 clean:
 	@echo "Cleaning the mess!"

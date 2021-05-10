@@ -25,10 +25,10 @@
         long byteProxReg;
         int nroRegistros;
         int nroRegRemovidos;
-        char descreveCodigo[15];
-        char descreveCartao[13];
-        char descreveNome[13];
-        char descreveLinha[24];
+        char descreveCodigo[16];
+        char descreveCartao[14];
+        char descreveNome[14];
+        char descreveLinha[25];
     };
 
     struct _linha

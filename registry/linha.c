@@ -128,16 +128,16 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
     fwrite(&cabLinhas->nroRegRemovidos, sizeof(int), 1, bin);
 
     // descreveCodigo
-    fwrite(&cabLinhas->descreveCodigo, sizeof(char)*15, 1, bin);
+    fwrite(&cabLinhas->descreveCodigo, sizeof(char), 15, bin);
 
     // descreveCartao
-    fwrite(&cabLinhas->descreveCartao, sizeof(char)*13, 1, bin);
+    fwrite(&cabLinhas->descreveCartao, sizeof(char), 13, bin);
 
     // descreveNome
-    fwrite(&cabLinhas->descreveNome, sizeof(char)*13, 1, bin);
+    fwrite(&cabLinhas->descreveNome, sizeof(char), 13, bin);
 
     // descreveLinha
-    fwrite(&cabLinhas->descreveLinha, sizeof(char)*24, 1, bin);
+    fwrite(&cabLinhas->descreveLinha, sizeof(char), 24, bin);
     
     return TRUE;
 }
