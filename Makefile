@@ -1,14 +1,13 @@
-/**
- * @file Makefile
- * @author 11796444 - Giovanni Shibaki Camargo 
- * @author 11796451 - Pedro Kenzo Muramatsu Carmo
- * @version 0.1
- * @date 2021-05-07
- * 
- * @copyright Copyright (c) 2021
- * 
- */
-UTILS= utils/register.c
+
+# @file Makefile
+# @author 11796444 - Giovanni Shibaki Camargo 
+# @author 11796451 - Pedro Kenzo Muramatsu Carmo
+# @version 0.1
+# @date 2021-05-07
+# 
+# @copyright Copyright (c) 2021
+
+UTILS= utils/fileManager.c
 REGISTRY= registry/linha.c registry/veiculo.c
 MAIN= main.c
 BINARY= main
