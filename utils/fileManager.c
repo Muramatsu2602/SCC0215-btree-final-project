@@ -61,7 +61,7 @@ FILE *abrirArquivo(const char *filename, const char *mode)
     if ((fp = fopen(filename, mode)) != NULL)
         return fp;
 
-    printf("Erro na abertura do arquivo de nome %s!\n",filename);
+    printf("Erro na abertura do arquivo de nome %s!\n", filename);
     return NULL;
 }
 
@@ -103,7 +103,6 @@ boolean preenchendoLixo(int tamOcupado, int tamMaximo, char *str)
     return TRUE;
 }
 
-
 /**
  * @brief Compara arquivos binarios. Usado para correcao 
  * 
@@ -138,4 +137,27 @@ void binarioNaTela(char *nomeArquivoBinario)
     printf("%lf\n", (cs / (double)100));
     free(mb);
     fclose(fs);
+}
+
+/**
+ * @brief altera campo status do arquivo para 1 e da fclose(), indicando que este está consistente
+ * 
+ * @param fp 
+ * @return boolean 
+ */
+boolean fecharArquivo(FILE **fp)
+{
+    if (!fp)
+        return FALSE;
+
+    const boolean status = TRUE;
+
+    fseek(*fp, 1, SEEK_SET);
+
+    if (!fwrite(&status, sizeof(boolean), 1, *fp))
+        return FALSE;
+
+    fclose(*fp);
+
+    return TRUE;
 }
