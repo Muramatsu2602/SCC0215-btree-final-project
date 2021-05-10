@@ -61,6 +61,7 @@ FILE *abrirArquivo(const char *filename, const char *mode)
     if ((fp = fopen(filename, mode)) != NULL)
         return fp;
 
+    printf("Erro na abertura do arquivo de nome %s!\n",filename);
     return NULL;
 }
 

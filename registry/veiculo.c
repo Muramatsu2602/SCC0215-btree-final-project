@@ -30,6 +30,13 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     // lendo linha
     input = readLine(fp);
 
+    // Verificar se chegou na última linha do arquivo CSV
+    if(feof(fp))
+    {
+        free(input);
+        return FALSE;
+    }
+
     printf("Linha do veículo lido:\n%s\n",input);
 
     // verificando se a linha lida no CSV esta excluida
@@ -77,7 +84,6 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     veiculo->tamanhoModelo = (int)strlen(token) + 1;
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
-    veiculo->modelo = NULL;
     veiculo->modelo = (char *)realloc(veiculo->modelo, veiculo->tamanhoModelo * sizeof(char));
     strcpy(veiculo->modelo, token);
 
@@ -86,7 +92,6 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     veiculo->tamanhoCategoria = (int)strlen(token) + 1;
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
-    veiculo->categoria = NULL;
     veiculo->categoria = (char *)realloc(veiculo->categoria, veiculo->tamanhoCategoria * sizeof(char));
     strcpy(veiculo->categoria, token);
 
@@ -170,34 +175,34 @@ boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
     printf("HELLO 1 %ld\n\n", ftell(bin));
 
     // status
-    fwrite(&cabVeiculos->status, sizeof(cabVeiculos->status), 1, bin);
+    fwrite(&cabVeiculos->status, sizeof(char), 1, bin);
 
     // byteProxreg
-    fwrite(&cabVeiculos->byteProxReg, sizeof(cabVeiculos->byteProxReg), 1, bin);
+    fwrite(&cabVeiculos->byteProxReg, sizeof(long), 1, bin);
 
     // nroRegistros
-    fwrite(&cabVeiculos->nroRegistros, sizeof(cabVeiculos->nroRegistros), 1, bin);
+    fwrite(&cabVeiculos->nroRegistros, sizeof(int), 1, bin);
 
     // nroRegRemovidos
-    fwrite(&cabVeiculos->nroRegRemovidos, sizeof(cabVeiculos->nroRegRemovidos), 1, bin);
+    fwrite(&cabVeiculos->nroRegRemovidos, sizeof(int), 1, bin);
 
     // descrevePrefixo
-    fwrite(cabVeiculos->descrevePrefixo, 1, sizeof(char) * 18, bin);
+    fwrite(cabVeiculos->descrevePrefixo, sizeof(char), 18, bin);
 
     // descreveData
-    fwrite(cabVeiculos->descreveData, 1, sizeof(char) * 32, bin);
+    fwrite(cabVeiculos->descreveData, sizeof(char), 35, bin);
 
     // descreveLugares
-    fwrite(cabVeiculos->descreveLugares, 1, sizeof(char) * 42, bin);
+    fwrite(cabVeiculos->descreveLugares, sizeof(char), 42, bin);
 
     // descreveLinha
-    fwrite(cabVeiculos->descreveLinha, 1, sizeof(char) * 17, bin);
+    fwrite(cabVeiculos->descreveLinha, sizeof(char), 26, bin);
 
     // descreveModelo
-    fwrite(cabVeiculos->descreveModelo, 1, sizeof(char) * 20, bin);
+    fwrite(cabVeiculos->descreveModelo, sizeof(char), 17, bin);
 
     // descreveCategoria
-    fwrite(cabVeiculos->descreveCategoria, 1, sizeof(char) * 26, bin);
+    fwrite(cabVeiculos->descreveCategoria, sizeof(char), 20, bin);
 
     printf("HELLO 2 %ld\n\n", ftell(bin));
 

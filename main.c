@@ -29,17 +29,6 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
 
     // Escrever o cabeçalho no arquivo binário
-    printf("status: %c\n", cabVeiculos.status);
-    printf("byteProxReg: %ld\n", cabVeiculos.byteProxReg);
-    printf("nroRegistros: %d\n", cabVeiculos.nroRegistros);
-    printf("nroRegRemovidos: %d\n", cabVeiculos.nroRegRemovidos);
-    printf("descrevePrefixo: %s\n", cabVeiculos.descrevePrefixo);
-    printf("descreveData: %s\n", cabVeiculos.descreveData);
-    printf("descreveLugares: %s\n", cabVeiculos.descreveLugares);
-    printf("descreveLinha: %s\n", cabVeiculos.descreveLinha);
-    printf("descreveModelo: %s\n", cabVeiculos.descreveModelo);
-    printf("descreveCategoria: %s\n", cabVeiculos.descreveCategoria);
-
     escreverCabecalhoBINVeiculo(bin, &cabVeiculos);
 
     // Criar a struct para armazenamento temporário dos dados do veiculo
@@ -56,35 +45,18 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     // Ler linha a linha do arquivo csv e inserir no arquivo binário
     // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
     //lerLinhaCSVVeiculo(csv, &veiculos);
-<<<<<<< HEAD
-    while(!feof(csv))
+
+    veiculos.modelo = NULL;
+    veiculos.categoria = NULL;
+
+    while(lerLinhaCSVVeiculo(csv, &veiculos))
     {
-        if(lerLinhaCSVVeiculo(csv, &veiculos))
-        {
-            //escreverBINVeiculo(bin, &veiculos);
-        }
-        else
-        {
-            // Erro ao ler Linha do CSV
-        }
+        escreverBINVeiculo(bin, &veiculos);
     }
-=======
-    // while(!feof(csv))
-    // {
-    //     if(lerLinhaCSVVeiculo(csv, &veiculos))
-    //     {
-    //         // escreverBINVeiculo(bin, &veiculos);
-    //     }
-    //     else
-    //     {
-    //         // Erro ao ler Linha do CSV
-    //     }
-    // }
->>>>>>> 30751a5ab3ea8fb9a6ccc75c16803bd061a22562
 
     // limpando a mem heap
-    // free(veiculos.modelo);
-    // free(veiculos.categoria);
+    free(veiculos.modelo);
+    free(veiculos.categoria);
 
     // fechando arquivos
     fclose(csv);
