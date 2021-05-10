@@ -37,7 +37,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
         return FALSE;
     }
 
-    printf("Linha do veículo lido:\n%s\n",input);
+    //printf("Linha do veículo lido:\n%s\n",input);
 
     // verificando se a linha lida no CSV esta excluida
     int aux = 0;
@@ -172,8 +172,6 @@ boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
     if (!bin || !cabVeiculos)
         return FALSE;
 
-    printf("HELLO 1 %ld\n\n", ftell(bin));
-
     // status
     fwrite(&cabVeiculos->status, sizeof(char), 1, bin);
 
@@ -203,8 +201,6 @@ boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
 
     // descreveCategoria
     fwrite(cabVeiculos->descreveCategoria, sizeof(char), 20, bin);
-
-    printf("HELLO 2 %ld\n\n", ftell(bin));
 
     return TRUE;
 }

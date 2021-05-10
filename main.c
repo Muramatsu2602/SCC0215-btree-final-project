@@ -20,38 +20,50 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
 {
     // Abrir arquivo CSV para leitura
     FILE *csv = abrirArquivo(nomeCSV, FILE_MODE2);
+    if(csv == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Escrever o cabeçalho do arquivo binário de veiculos
     CABECALHOV cabVeiculos;
-    lerCabecalhoCSVVeiculo(csv, &cabVeiculos);
+    if(!lerCabecalhoCSVVeiculo(csv, &cabVeiculos))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Abrir o arquivo binário para escrita
     FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
-
+    if(bin == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+    
     // Escrever o cabeçalho no arquivo binário
-    escreverCabecalhoBINVeiculo(bin, &cabVeiculos);
+    if(!escreverCabecalhoBINVeiculo(bin, &cabVeiculos))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Criar a struct para armazenamento temporário dos dados do veiculo
     VEICULO veiculos;
 
-    /*printf("Dados do cabeçalho:\n\n");
-    printf("%s\n",cabVeiculos.descrevePrefixo);
-    printf("%s\n",cabVeiculos.descreveData);
-    printf("%s\n",cabVeiculos.descreveLugares);
-    printf("%s\n",cabVeiculos.descreveLinha);
-    printf("%s\n",cabVeiculos.descreveModelo);
-    printf("%s\n",cabVeiculos.descreveCategoria);*/
-
     // Ler linha a linha do arquivo csv e inserir no arquivo binário
     // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
-    //lerLinhaCSVVeiculo(csv, &veiculos);
-
     veiculos.modelo = NULL;
     veiculos.categoria = NULL;
 
     while(lerLinhaCSVVeiculo(csv, &veiculos))
     {
-        escreverBINVeiculo(bin, &veiculos);
+        if(!escreverBINVeiculo(bin, &veiculos))
+        {
+            printf("Falha no processamento do arquivo.\n");
+            return;
+        }
     }
 
     // limpando a mem heap
@@ -61,40 +73,67 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     // fechando arquivos
     fclose(csv);
     fclose(bin);
+    return;
 }
 
 void funcionalidade2(char *nomeCSV, char *nomeBIN)
 {
     // Abrir arquivo CSV para leitura
     FILE *csv = abrirArquivo(nomeCSV, FILE_MODE2);
+    if(csv == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Escrever o cabeçalho do arquivo binário de linhas
     CABECALHOL cabLinhas;
-    lerCabecalhoCSVLinha(csv, &cabLinhas);
+    if(!lerCabecalhoCSVLinha(csv, &cabLinhas))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Abrir o arquivo binário para escrita
     FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
-
+    if(bin == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+    
     // Escrever o cabeçalho no arquivo binário
-    escreveCabecalhoBINLinhas(bin, &cabLinhas);
+    if(!escreveCabecalhoBINLinhas(bin, &cabLinhas))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
-    // Criar a struct para armazenamento temporário dos dados do veiculo
+    // Criar a struct para armazenamento temporário dos dados da linhas onibus
     LINHA linhas;
 
     // Ler linha a linha do arquivo csv e inserir no arquivo binário
-    // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
-    lerLinhaCSVLinha(csv, &linhas);
-    /*while(!feof(csv))
+    // Lembrando que a struct LINHA conterá temporariamente os dados da linha do arquivo CSV lida
+    linhas.nomeLinha = NULL;
+    linhas.corLinha = NULL;
+
+    while(lerLinhaCSVLinha(csv, &linhas))
     {
-        if(lerLinhaCSVVeiculo(csv, &veiculos))
+        if(!escreverBINLinha(bin, &linhas))
         {
-
+            printf("Falha no processamento do arquivo.\n");
+            return;
         }
-        else
-        {
+    }
 
-        }
-    }*/
+    // limpando a mem heap
+    free(linhas.nomeLinha);
+    free(linhas.corLinha);
+
+    // fechando arquivos
+    fclose(csv);
+    fclose(bin);
+    return;
 }
 
 void funcionalidade3(char *nomeBIN)
@@ -138,6 +177,7 @@ int main(int agrc, char *argv[])
         // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
         scanf("%s %s", arg1, arg2);
         funcionalidade1(arg1, arg2);
+        binarioNaTela(arg1);
         break;
     case 2: // Lê o arquivo .csv para linhas e cria o arquivo binário de linhas
         // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
