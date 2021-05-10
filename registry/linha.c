@@ -63,11 +63,67 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha)
     return TRUE;
 }
 
-// boolean escreverBinarioCabecalhoLinha
-
-boolean escreverBinarioLinha(const char *filename)
+/**
+ * @brief Le a primeira liha do CSV e preenche os campos descritivos
+ * 
+ * @param fp 
+ * @param cabVeiculos 
+ * @return boolean 
+ */
+boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
 {
-    if (!filename)
+    const char delim[2] = ",";
+    char *token = NULL;
+    char *input = NULL;
+
+    if(!fp || !cabLinhas)
+        return FALSE;
+
+    // lendo cabeçalho
+    input = readLine(fp);
+
+    // Descreve código
+    token = strtok(input, delim);
+    strcpy(cabLinhas->descreveCodigo, token);
+
+    // Descrece cartão
+    token = strtok(NULL, delim);
+    strcpy(cabLinhas->descreveCartao token);
+
+    // Descreve Nome
+    token = strtok(NULL, delim);
+    strcpy(cabLinhas->descreveNome token);
+
+    // Descreve Linha
+    token = strtok(NULL, delim);
+    strcpy(cabLinhas->descreveNome token);
+
+    // Status
+    cabLinhas->status = '0';
+
+    // Calculando o tamanho do cabeçalho
+    cabLinhas->byteProxReg = sizeof(cabLinhas->status) + sizeof(cabLinhas->byteProxReg) + sizeof(cabLinhas->nroRegistros) + sizeof(cabLinhas->nroRegRemovidos) + strlen(cabLinhas->descreveCodigo) + strlen(cabLinhas->descreveCartao) + strlen(cabLinhas->descreveNome) + strlen(cabLinhas->descreveLinha);
+    cabLinhas->nroRegistros = 0;
+    cabLinhas->nroRegRemovidos = 1;
+
+    free(input);
+    return TRUE;
+}
+
+boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
+{
+    if (!bin)
+        return FALSE;
+
+    
+
+
+    return TRUE;
+}
+
+boolean escreverBINLinha(FILE *bin, LINHA *linhas)
+{
+    if (!bin)
         return FALSE;
 
     return TRUE;

@@ -60,6 +60,36 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
 
 void funcionalidade2(char *nomeCSV, char *nomeBIN)
 {
+    // Abrir arquivo CSV para leitura
+    FILE *csv = abrirArquivo(nomeCSV, FILE_MODE2);
+
+    // Escrever o cabeçalho do arquivo binário de linhas
+    CABECALHOL cabLinhas;
+    lerCabecalhoCSVLinha(csv, &cabLinhas);
+
+    // Abrir o arquivo binário para escrita
+    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
+    
+    // Escrever o cabeçalho no arquivo binário
+    escreverCabecalhoBINLinhas(bin, &cabLinhas);
+
+    // Criar a struct para armazenamento temporário dos dados do veiculo
+    LINHA linhas;
+
+    // Ler linha a linha do arquivo csv e inserir no arquivo binário
+    // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
+    lerLinhaCSVLinha(csv, &linhas);
+    /*while(!feof(csv))
+    {
+        if(lerLinhaCSVVeiculo(csv, &veiculos))
+        {
+
+        }
+        else
+        {
+
+        }
+    }*/
 }
 
 void funcionalidade3(char *nomeBIN)
@@ -98,6 +128,32 @@ int main(int agrc, char *argv[])
 
     switch (funcionalidade)
     {
+<<<<<<< HEAD
+        case 1: // Lê o arquivo .csv para veiculos e cria o arquivo binário de veiculos
+            // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
+            // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
+            scanf("%s %s",arg1, arg2);
+            funcionalidade1(arg1, arg2);
+            break;
+        case 2: // Lê o arquivo .csv para linhas e cria o arquivo binário de linhas
+            // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
+            // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
+            scanf("%s %s",arg1, arg2);
+            funcionalidade2(arg1, arg2);
+            break;
+        case 3: // Abre o arquivo .bin de veiculos e exibe todos os dados nele contidos
+                // Cada dado deve ser exibido em uma linha diferente e cada <veiculo> será separado por uma linha em branco
+                // Para valores nulos exibir: "campo com valor nulo"
+            // Recebe o nome do arquivo .bin de veiculos
+
+            funcionalidade3(arg1);
+            break;
+        case 4: // Abre o arquivo .bin de linhas e exibe todos os dados nele contidos
+                // Cada dado deve ser exibido em uma linha diferente e cada <linha> será separado por uma linha em branco
+                // Para valores nulos exibir: "campo com valor nulo"
+            // Recebe o nome do arquivo .bin de linhas
+            /*
+=======
     case 1: // Lê o arquivo .csv para veiculos e cria o arquivo binário de veiculos
         // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
         // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
@@ -122,6 +178,7 @@ int main(int agrc, char *argv[])
         // Para valores nulos exibir: "campo com valor nulo"
         // Recebe o nome do arquivo .bin de linhas
         /*
+>>>>>>> c80059b7bf46a944ab76e778071c19a3804b0cf6
                 Importante!! Com relação ao campo aceitaCartao, mostrar por extenso o tipo:
                     S - PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR
                     N - PAGAMENTO EM CARTAO E DINHEIRO
