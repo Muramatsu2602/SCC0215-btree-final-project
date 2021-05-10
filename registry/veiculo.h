@@ -52,7 +52,8 @@
     typedef struct _veiculo VEICULO;
 
     boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo);
-    boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV cabVeiculos);
-    boolean escreverBINVeiculo(FILE *BIN, VEICULO veiculos);
+    boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos);
+    boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos);
+    boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos);
 
 #endif

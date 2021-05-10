@@ -37,7 +37,7 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha)
 
     // aceita cartao
     token = strtok(NULL, delim);
-    linha->aceitaCartao = (char)token;
+    linha->aceitaCartao = token[0];
 
     // Nome da linha
     token = strtok(NULL, delim);

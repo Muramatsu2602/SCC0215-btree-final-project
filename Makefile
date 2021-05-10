@@ -14,7 +14,7 @@ BINARY= main
 
 FLAGS = -Werror 
 FLAGS2 = -Werror -Wall -Wextra -Wpedantic -Wpointer-arith -O3 -march=native
-VFLAGS=--leak-check=full --show-leak-kinds=all --track-origins=yes
+VFLAGS= --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 all:
 	@gcc $(FLAGS) $(MAIN) $(UTILS) $(REGISTRY) -o $(BINARY) -lm -I utils/ registry/
