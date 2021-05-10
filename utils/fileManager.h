@@ -18,9 +18,9 @@
     #define FALSE 0
     #define boolean int
 
-    #define FILE_MODE1 "rb"
-    #define FILE_MODE2 "r"
-    #define FILE_MODE3 "wb"
+    #define FILE_MODE1 "rb+"
+    #define FILE_MODE2 "r+"
+    #define FILE_MODE3 "wb+"
 
     #define BUFFER 50
 
