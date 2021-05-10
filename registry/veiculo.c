@@ -30,6 +30,8 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     // lendo linha
     input = readLine(fp);
 
+    printf("Linha do veículo lido:\n%s\n",input);
+
     // verificando se a linha lida no CSV esta excluida
     int aux = 0;
     if (input[0] == '*')

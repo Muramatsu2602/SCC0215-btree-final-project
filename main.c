@@ -34,6 +34,14 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     // Criar a struct para armazenamento temporário dos dados do veiculo
     VEICULO veiculos;
 
+    /*printf("Dados do cabeçalho:\n\n");
+    printf("%s\n",cabVeiculos.descrevePrefixo);
+    printf("%s\n",cabVeiculos.descreveData);
+    printf("%s\n",cabVeiculos.descreveLugares);
+    printf("%s\n",cabVeiculos.descreveLinha);
+    printf("%s\n",cabVeiculos.descreveModelo);
+    printf("%s\n",cabVeiculos.descreveCategoria);*/
+
     // Ler linha a linha do arquivo csv e inserir no arquivo binário
     // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
     //lerLinhaCSVVeiculo(csv, &veiculos);
@@ -41,7 +49,7 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     {
         if(lerLinhaCSVVeiculo(csv, &veiculos))
         {
-            escreverBINVeiculo(bin, &veiculos);
+            //escreverBINVeiculo(bin, &veiculos);
         }
         else
         {

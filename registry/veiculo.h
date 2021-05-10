@@ -34,18 +34,20 @@
         char* categoria;
     };
 
+    // Todos as string possuem um byte a mais para ter o \0 ao final da string
+    // Porém ao ser gravado no arquivo binário, esse \0 é desconsiderado
     struct _cabecalhoVeiculo
     {
         char status;
         long byteProxReg;
         int nroRegistros;
         int nroRegRemovidos;
-        char descrevePrefixo[18];
-        char descreveData[32];
-        char descreveLugares[42];
-        char descreveLinha[17];
-        char descreveModelo[20];
-        char descreveCategoria[26];
+        char descrevePrefixo[19];
+        char descreveData[36];
+        char descreveLugares[43];
+        char descreveLinha[27];
+        char descreveModelo[18];
+        char descreveCategoria[21];
     };
 
     typedef struct _cabecalhoVeiculo CABECALHOV;
