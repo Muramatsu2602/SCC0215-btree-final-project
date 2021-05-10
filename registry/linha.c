@@ -115,9 +115,30 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
     if (!bin)
         return FALSE;
 
+    // Status
+    fwrite($cabLinhas->status, sizeof(char), 1, bin);
+
+    // ByteProxReg
+    fwrite($cabLinhas->byteProxReg, sizeof(long), 1, bin);
+
+    // nroRegistros
+    fwrite($cabLinhas->nroRegistros, sizeof(int), 1, bin);
+
+    // nroRegRemovidos
+    fwrite($cabLinhas->nroRegRemovidos, sizeof(int), 1, bin);
+
+    // descreveCodigo
+    fwrite($cabLinhas->descreveCodigo, sizeof(char)*15, 1, bin);
+
+    // descreveCartao
+    fwrite($cabLinhas->descreveCartao, sizeof(char)*13, 1, bin);
+
+    // descreveNome
+    fwrite($cabLinhas->descreveNome, sizeof(char)*13, 1, bin);
+
+    // descreveLinha
+    fwrite($cabLinhas->descreveLinha, sizeof(char)*24, 1, bin);
     
-
-
     return TRUE;
 }
 
@@ -125,6 +146,40 @@ boolean escreverBINLinha(FILE *bin, LINHA *linhas)
 {
     if (!bin)
         return FALSE;
+
+    // Removido
+
+    // tamanhoRegistro
+
+    // codLinha
+
+    // aceitaCartao
+
+    // tamanhoNome
+
+    // nomeLinha
+
+    // tamanhoCor
+
+    // corLinha
+
+    // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
+
+    // byteProxReg
+    // sizeof(status) = 1 byte
+
+    lonh byteProxReg = 0;
+
+    // Mover o ponteiro para byteProxReg no cabeçalho
+    fseek(bin, 1, SEEK_SET);
+    fread(&byteProxReg, sizeof(long), 1, bin);
+
+    // Atualizando o offset do registro atual
+    byteProxReg += linhas->tamanhoRegistro;
+    fseek(bin, 1, SEEK_SET);
+    fwrite($byteProxReg, sizeof(long), 1, bin);
+
+    
 
     return TRUE;
 }
