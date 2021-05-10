@@ -161,22 +161,22 @@ boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
     fwrite(&cabVeiculos->nroRegRemovidos, sizeof(cabVeiculos->nroRegRemovidos), 1, bin);
 
     // descrevePrefixo
-    fwrite(cabVeiculos->descrevePrefixo, strlen(cabVeiculos->descrevePrefixo), 1, bin);
+    fwrite(cabVeiculos->descrevePrefixo, sizeof(char) * 18, 1, bin);
 
     // descreveData
-    fwrite(cabVeiculos->descreveData, strlen(cabVeiculos->descreveData), 1, bin);
+    fwrite(cabVeiculos->descreveData, sizeof(char) * 32, 1, bin);
 
     // descreveLugares
-    fwrite(cabVeiculos->descreveLugares, strlen(cabVeiculos->descreveLugares), 1, bin);
+    fwrite(cabVeiculos->descreveLugares, sizeof(char) * 42, 1, bin);
 
     // descreveLinha
-    fwrite(cabVeiculos->descreveLinha, strlen(cabVeiculos->descreveLinha), 1, bin);
+    fwrite(cabVeiculos->descreveLinha, sizeof(char) * 17, 1, bin);
 
     // descreveModelo
-    fwrite(cabVeiculos->descreveModelo, strlen(cabVeiculos->descreveModelo), 1, bin);
+    fwrite(cabVeiculos->descreveModelo, sizeof(char) * 20, 1, bin);
 
     // descreveCategoria
-    fwrite(cabVeiculos->descreveCategoria, strlen(cabVeiculos->descreveCategoria), 1, bin);
+    fwrite(cabVeiculos->descreveCategoria, sizeof(char) * 26, 1, bin);
 
     return TRUE;
 }
@@ -223,25 +223,49 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
     // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
 
     // byteProxReg
-    // sizeof(status) = 1 byte
-
     long byteProxReg = 0;
 
     // pegando o valor de byteProxReg Atual
+    // sizeof(status) = 1 byte
     fseek(bin, 1, SEEK_SET);
     fread(&byteProxReg, sizeof(byteProxReg), 1, bin);
 
     // atualizando o offset do registro atual
-    byteProxReg+= veiculos->tamanhoRegistro; 
+    byteProxReg += veiculos->tamanhoRegistro;
     fseek(bin, 1, SEEK_SET);
     fwrite(&byteProxReg, sizeof(byteProxReg), 1, bin);
 
     // nroRegristros
-    // sizeof(status) + sizeof(byteProxReg) = 9 bytes
+    int nroRegistros = 0;
 
+    // pegando o valor de nroRegistros Atual
+    // sizeof(status) + sizeof(byteProxReg) = 9 bytes
+    fseek(bin, 9, SEEK_SET);
+    fread(&nroRegistros, sizeof(nroRegistros), 1, bin);
+
+    // contabilizando o registro
+    nroRegistros++;
+    fseek(bin, 9, SEEK_SET);
+    fread(&nroRegistros, sizeof(nroRegistros), 1, bin);
+
+    // nroRegRemovidos
+    if (!veiculos->removido)
+        return TRUE;
+
+    int nroRegRemovidos = 0;
+
+    // pegando o valor de nroRegRemovidos atual
+    // sizeof(status) + sizeof(byteProxReg) + sizeof(nroRegistros) = 13 bytes
+    fseek(bin, 13, SEEK_SET);
+    fread(&nroRegRemovidos, sizeof(nroRegRemovidos), 1, bin);
+
+    // contabilizando registro se removido
+    nroRegRemovidos++;
+    fseek(bin, 13, SEEK_SET);
+    fread(&nroRegRemovidos, sizeof(nroRegRemovidos), 1, bin);
 
     // retornar ao fim do arquivo, para escrever o proximo registro
-    // fseek(bin, )
+    fseek(bin, byteProxReg, SEEK_SET);
 
     return TRUE;
 }
