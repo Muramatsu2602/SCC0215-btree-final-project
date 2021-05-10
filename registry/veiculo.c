@@ -58,6 +58,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     veiculo->tamanhoModelo = (int)strlen(token) + 1;
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
+    veiculo->modelo = NULL;
     veiculo->modelo = (char *)realloc(veiculo->modelo, veiculo->tamanhoModelo * sizeof(char));
     strcpy(veiculo->modelo, token);
 
@@ -66,6 +67,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     veiculo->tamanhoCategoria = (int)strlen(token) + 1;
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
+    veiculo->categoria = NULL;
     veiculo->categoria = (char *)realloc(veiculo->categoria, veiculo->tamanhoCategoria * sizeof(char));
     strcpy(veiculo->categoria, token);
 
