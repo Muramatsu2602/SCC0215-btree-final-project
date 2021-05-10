@@ -84,6 +84,26 @@ int removerArquivo(const char *filename)
 }
 
 /**
+ * @brief preenche caracteres vazios (ou lixo) com @, no formato '/0@@@@@
+ * 
+ * @param tamOcupado 
+ * @param tamMaximo 
+ * @param str 
+ * @return boolean 
+ */
+boolean preenchendoLixo(int tamOcupado, int tamMaximo, char *str)
+{
+    if (!str)
+        return FALSE;
+
+    for (int i = tamOcupado; i < tamMaximo; i++)
+        str[i] = (char)'@';
+
+    return TRUE;
+}
+
+
+/**
  * @brief Compara arquivos binarios. Usado para correcao 
  * 
  * @param nomeArquivoBinario 

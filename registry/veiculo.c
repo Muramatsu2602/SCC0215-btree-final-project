@@ -44,27 +44,34 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
 
     // Prefixo do veiculo
     token = strtok(&input[aux], delim);
-    printf("PREFIXO: %s\t",token);
     strcpy(veiculo->prefixo, token);
 
     // Data de entrada do veiculo na frota
     token = strtok(NULL, delim);
-    printf("DATA_ENTRADA: %s\t",token);
-    strcpy(veiculo->data, token);
+    if (strcmp(token, "NULO") == 0)
+    {
+        veiculo->data[0] = '\0';
+        preenchendoLixo(strlen(veiculo->data), 10, veiculo->data);
+    }
+    else
+        strcpy(veiculo->data, token);
 
     // Quantidade de lugares sentados disponiveis
     token = strtok(NULL, delim);
-    printf("QUANTIDADE_LUGARES: %s\t",token);
-    veiculo->quantidadeLugares = (int)atoi(token);
+    if (strcmp(token, "NULO") == 0)
+        veiculo->quantidadeLugares = -1;
+    else
+        veiculo->quantidadeLugares = (int)atoi(token);
 
     // Linha associada ao veiculo
     token = strtok(NULL, delim);
-    printf("LINHA: %s\t",token);
-    veiculo->codLinha = (int)atoi(token);
+    if (strcmp(token, "NULO") == 0)
+        veiculo->codLinha = -1;
+    else
+        veiculo->codLinha = (int)atoi(token);
 
     // Modelo do veiculo e seu tamanho
     token = strtok(NULL, delim);
-    printf("MODELO: %s\t",token);
     veiculo->tamanhoModelo = (int)strlen(token) + 1;
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
@@ -74,8 +81,6 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
 
     //  Categoria do veiculo e seu tamanho
     token = strtok(NULL, delim);
-    printf("CATEGORIA: %s\t",token);
-    printf("\n");
     veiculo->tamanhoCategoria = (int)strlen(token) + 1;
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
@@ -114,6 +119,7 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     // Descreve prefixo
     token = strtok(input, delim);
     strcpy(cabVeiculos->descrevePrefixo, token);
+    preenchendoLixo(strlen(cabVeiculos->descrevePrefixo), 18, cabVeiculos->descrevePrefixo);
 
     // Descreve Data
     token = strtok(NULL, delim);
