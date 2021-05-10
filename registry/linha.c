@@ -88,15 +88,15 @@ boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
 
     // Descrece cartão
     token = strtok(NULL, delim);
-    strcpy(cabLinhas->descreveCartao token);
+    strcpy(cabLinhas->descreveCartao, token);
 
     // Descreve Nome
     token = strtok(NULL, delim);
-    strcpy(cabLinhas->descreveNome token);
+    strcpy(cabLinhas->descreveNome, token);
 
     // Descreve Linha
     token = strtok(NULL, delim);
-    strcpy(cabLinhas->descreveNome token);
+    strcpy(cabLinhas->descreveNome, token);
 
     // Status
     cabLinhas->status = '0';
@@ -116,28 +116,28 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
         return FALSE;
 
     // Status
-    fwrite($cabLinhas->status, sizeof(char), 1, bin);
+    fwrite(&cabLinhas->status, sizeof(char), 1, bin);
 
     // ByteProxReg
-    fwrite($cabLinhas->byteProxReg, sizeof(long), 1, bin);
+    fwrite(&cabLinhas->byteProxReg, sizeof(long), 1, bin);
 
     // nroRegistros
-    fwrite($cabLinhas->nroRegistros, sizeof(int), 1, bin);
+    fwrite(&cabLinhas->nroRegistros, sizeof(int), 1, bin);
 
     // nroRegRemovidos
-    fwrite($cabLinhas->nroRegRemovidos, sizeof(int), 1, bin);
+    fwrite(&cabLinhas->nroRegRemovidos, sizeof(int), 1, bin);
 
     // descreveCodigo
-    fwrite($cabLinhas->descreveCodigo, sizeof(char)*15, 1, bin);
+    fwrite(&cabLinhas->descreveCodigo, sizeof(char)*15, 1, bin);
 
     // descreveCartao
-    fwrite($cabLinhas->descreveCartao, sizeof(char)*13, 1, bin);
+    fwrite(&cabLinhas->descreveCartao, sizeof(char)*13, 1, bin);
 
     // descreveNome
-    fwrite($cabLinhas->descreveNome, sizeof(char)*13, 1, bin);
+    fwrite(&cabLinhas->descreveNome, sizeof(char)*13, 1, bin);
 
     // descreveLinha
-    fwrite($cabLinhas->descreveLinha, sizeof(char)*24, 1, bin);
+    fwrite(&cabLinhas->descreveLinha, sizeof(char)*24, 1, bin);
     
     return TRUE;
 }
@@ -168,7 +168,7 @@ boolean escreverBINLinha(FILE *bin, LINHA *linhas)
     // byteProxReg
     // sizeof(status) = 1 byte
 
-    lonh byteProxReg = 0;
+    long byteProxReg = 0;
 
     // Mover o ponteiro para byteProxReg no cabeçalho
     fseek(bin, 1, SEEK_SET);
@@ -177,9 +177,39 @@ boolean escreverBINLinha(FILE *bin, LINHA *linhas)
     // Atualizando o offset do registro atual
     byteProxReg += linhas->tamanhoRegistro;
     fseek(bin, 1, SEEK_SET);
-    fwrite($byteProxReg, sizeof(long), 1, bin);
+    fwrite(&byteProxReg, sizeof(long), 1, bin);
 
-    
+    // nroRegistros
+    int nroRegistros = 0;
+
+    // pegando o valor de nroRegistros Atual
+    // sizeof(status) + sizeof(byteProxReg) = 9 bytes
+    fseek(bin, 9, SEEK_SET);
+    fread(&nroRegistros, sizeof(nroRegistros), 1, bin);
+
+    // contabilizando o registro
+    nroRegistros++;
+    fseek(bin, 9, SEEK_SET);
+    fread(&nroRegistros, sizeof(nroRegistros), 1, bin);
+
+    // nroRegRemovidos
+    if (!linhas->removido)
+        return TRUE;
+
+    int nroRegRemovidos = 0;
+
+    // pegando o valor de nroRegRemovidos atual
+    // sizeof(status) + sizeof(byteProxReg) + sizeof(nroRegistros) = 13 bytes
+    fseek(bin, 13, SEEK_SET);
+    fread(&nroRegRemovidos, sizeof(nroRegRemovidos), 1, bin);
+
+    // contabilizando registro se removido
+    nroRegRemovidos++;
+    fseek(bin, 13, SEEK_SET);
+    fread(&nroRegRemovidos, sizeof(nroRegRemovidos), 1, bin);
+
+    // retornar ao fim do arquivo, para escrever o proximo registro
+    fseek(bin, byteProxReg, SEEK_SET);
 
     return TRUE;
 }

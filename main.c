@@ -36,18 +36,18 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
 
     // Ler linha a linha do arquivo csv e inserir no arquivo binário
     // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
-    lerLinhaCSVVeiculo(csv, &veiculos);
-    /*while(!feof(csv))
+    //lerLinhaCSVVeiculo(csv, &veiculos);
+    while(!feof(csv))
     {
         if(lerLinhaCSVVeiculo(csv, &veiculos))
         {
-
+            escreverBINVeiculo(bin, &veiculos);
         }
         else
         {
-
+            // Erro ao ler Linha do CSV
         }
-    }*/
+    }
 
     // limpando a mem heap
     free(veiculos.modelo);
@@ -71,7 +71,7 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
     FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
     
     // Escrever o cabeçalho no arquivo binário
-    escreverCabecalhoBINLinhas(bin, &cabLinhas);
+    escreveCabecalhoBINLinhas(bin, &cabLinhas);
 
     // Criar a struct para armazenamento temporário dos dados do veiculo
     LINHA linhas;
@@ -128,7 +128,6 @@ int main(int agrc, char *argv[])
 
     switch (funcionalidade)
     {
-<<<<<<< HEAD
         case 1: // Lê o arquivo .csv para veiculos e cria o arquivo binário de veiculos
             // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
             // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
@@ -153,68 +152,41 @@ int main(int agrc, char *argv[])
                 // Para valores nulos exibir: "campo com valor nulo"
             // Recebe o nome do arquivo .bin de linhas
             /*
-=======
-    case 1: // Lê o arquivo .csv para veiculos e cria o arquivo binário de veiculos
-        // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
-        // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
-        scanf("%s %s", arg1, arg2);
-        funcionalidade1(arg1, arg2);
-        break;
-    case 2: // Lê o arquivo .csv para linhas e cria o arquivo binário de linhas
-        // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
-        // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
-
-        funcionalidade2(arg1, arg2);
-        break;
-    case 3: // Abre o arquivo .bin de veiculos e exibe todos os dados nele contidos
-        // Cada dado deve ser exibido em uma linha diferente e cada <veiculo> será separado por uma linha em branco
-        // Para valores nulos exibir: "campo com valor nulo"
-        // Recebe o nome do arquivo .bin de veiculos
-
-        funcionalidade3(arg1);
-        break;
-    case 4: // Abre o arquivo .bin de linhas e exibe todos os dados nele contidos
-        // Cada dado deve ser exibido em uma linha diferente e cada <linha> será separado por uma linha em branco
-        // Para valores nulos exibir: "campo com valor nulo"
-        // Recebe o nome do arquivo .bin de linhas
-        /*
->>>>>>> c80059b7bf46a944ab76e778071c19a3804b0cf6
                 Importante!! Com relação ao campo aceitaCartao, mostrar por extenso o tipo:
                     S - PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR
                     N - PAGAMENTO EM CARTAO E DINHEIRO
                     F - PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA
             */
 
-        funcionalidade4(arg1);
-        break;
-    case 5: // Abrir o arquivo .bin de veiculos e exibir na tela os veículos que atendem aos critérios de busca enviados
-        // Recebe o nome do arquivo .bin de veiculos
-        // Recebe o nome do campo a ser buscado
-        // Recebe o valor do campo a ser buscado
+            funcionalidade4(arg1);
+            break;
+        case 5: // Abrir o arquivo .bin de veiculos e exibir na tela os veículos que atendem aos critérios de busca enviados
+            // Recebe o nome do arquivo .bin de veiculos
+            // Recebe o nome do campo a ser buscado
+            // Recebe o valor do campo a ser buscado
 
-        funcionalidade5(arg1, arg2, arg3);
-        break;
-    case 6: // Abrir o arquivo .bin de linhas e exibir na tela as linhas de onibus que atendem aos critérios de busca enviados
-        // Recebe o nome do arquivo .bin de linhas
-        // Recebe o nome do campo a ser buscado
-        // Recebe o valor do campo a ser buscado
+            funcionalidade5(arg1, arg2, arg3);
+            break;
+        case 6: // Abrir o arquivo .bin de linhas e exibir na tela as linhas de onibus que atendem aos critérios de busca enviados
+            // Recebe o nome do arquivo .bin de linhas
+            // Recebe o nome do campo a ser buscado
+            // Recebe o valor do campo a ser buscado
 
-        funcionalidade6(arg1, arg2, arg3);
-        break;
-    case 7: // Inserção de novos registros no arquivo de entrada .bin de veiculos
-        // Recebe o nome do arquivo .bin de veiculos
-        // Recebe o número de novos registros a serem inseridos
+            funcionalidade6(arg1, arg2, arg3);
+            break;
+        case 7: // Inserção de novos registros no arquivo de entrada .bin de veiculos
+            // Recebe o nome do arquivo .bin de veiculos
+            // Recebe o número de novos registros a serem inseridos
 
-        funcionalidade7(arg1, N);
-        break;
-    case 8: // Inserção de novos registros no arquivo de entrada .bin de linhas
-        // Recebe o nome do arquivo .bin de linhas
-        // Recebe o número de novos registros a serem inseridos
+            funcionalidade7(arg1, N);
+            break;
+        case 8: // Inserção de novos registros no arquivo de entrada .bin de linhas
+            // Recebe o nome do arquivo .bin de linhas
+            // Recebe o número de novos registros a serem inseridos
 
-        funcionalidade8(arg1, N);
-        break;
+            funcionalidade8(arg1, N);
+            break;
     }
-
     // Liberando memoria heap dos campos lidos
     free(arg1);
     free(arg2);

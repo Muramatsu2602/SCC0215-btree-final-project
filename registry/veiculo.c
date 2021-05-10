@@ -31,31 +31,40 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     input = readLine(fp);
 
     // verificando se a linha lida no CSV esta excluida
+    int aux = 0;
     if (input[0] == '*')
+    {
         veiculo->removido = '1';
+        aux++;
+    }
     else
         veiculo->removido = '0';
 
     // LENDO VEICULO e tokenizando
 
     // Prefixo do veiculo
-    token = strtok(&input[1], delim);
+    token = strtok(&input[aux], delim);
+    printf("PREFIXO: %s\t",token);
     strcpy(veiculo->prefixo, token);
 
     // Data de entrada do veiculo na frota
     token = strtok(NULL, delim);
+    printf("DATA_ENTRADA: %s\t",token);
     strcpy(veiculo->data, token);
 
     // Quantidade de lugares sentados disponiveis
     token = strtok(NULL, delim);
+    printf("QUANTIDADE_LUGARES: %s\t",token);
     veiculo->quantidadeLugares = (int)atoi(token);
 
     // Linha associada ao veiculo
     token = strtok(NULL, delim);
+    printf("LINHA: %s\t",token);
     veiculo->codLinha = (int)atoi(token);
 
     // Modelo do veiculo e seu tamanho
     token = strtok(NULL, delim);
+    printf("MODELO: %s\t",token);
     veiculo->tamanhoModelo = (int)strlen(token) + 1;
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
@@ -65,6 +74,8 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
 
     //  Categoria do veiculo e seu tamanho
     token = strtok(NULL, delim);
+    printf("CATEGORIA: %s\t",token);
+    printf("\n");
     veiculo->tamanhoCategoria = (int)strlen(token) + 1;
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
