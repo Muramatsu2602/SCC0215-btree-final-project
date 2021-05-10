@@ -53,7 +53,36 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
 
 void funcionalidade2(char *nomeCSV, char *nomeBIN)
 {
+    // Abrir arquivo CSV para leitura
+    FILE *csv = abrirArquivo(nomeCSV, FILE_MODE2);
+
+    // Escrever o cabeçalho do arquivo binário de linhas
+    CABECALHOL cabLinhas;
+    lerCabecalhoCSVLinha(csv, &cabLinhas);
+
+    // Abrir o arquivo binário para escrita
+    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
     
+    // Escrever o cabeçalho no arquivo binário
+    escreverCabecalhoBINLinhas(bin, &cabLinhas);
+
+    // Criar a struct para armazenamento temporário dos dados do veiculo
+    LINHA linhas;
+
+    // Ler linha a linha do arquivo csv e inserir no arquivo binário
+    // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
+    lerLinhaCSVLinha(csv, &linhas);
+    /*while(!feof(csv))
+    {
+        if(lerLinhaCSVVeiculo(csv, &veiculos))
+        {
+
+        }
+        else
+        {
+
+        }
+    }*/
 }
 
 void funcionalidade3(char *nomeBIN)
@@ -107,7 +136,7 @@ int main(int agrc, char* argv[])
         case 2: // Lê o arquivo .csv para linhas e cria o arquivo binário de linhas
             // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
             // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
-
+            scanf("%s %s",arg1, arg2);
             funcionalidade2(arg1, arg2);
             break;
         case 3: // Abre o arquivo .bin de veiculos e exibe todos os dados nele contidos
