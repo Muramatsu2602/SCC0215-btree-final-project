@@ -115,6 +115,7 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
     if (!bin)
         return FALSE;
 
+    
 
 
     return TRUE;

@@ -29,16 +29,17 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
 
     // lendo linha
     input = readLine(fp);
+
     // verificando se a linha lida no CSV esta excluida
     if (input[0] == '*')
-    {
-        free(input);
-        return TRUE;
-    }
+        veiculo->removido = '1';
+    else
+        veiculo->removido = '0';
+
     // LENDO VEICULO e tokenizando
 
     // Prefixo do veiculo
-    token = strtok(input, delim);
+    token = strtok(&input[1], delim);
     strcpy(veiculo->prefixo, token);
 
     // Data de entrada do veiculo na frota
@@ -124,10 +125,7 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     strcpy(cabVeiculos->descreveCategoria, token);
 
     // Status
-    cabVeiculos->status = '0';
-
-    // ByteProxReg
-    cabVeiculos->byteProxReg = '0'; // 0: inconsistente, 1: consistente
+    cabVeiculos->status = '0'; // 0: inconsistente, 1: consistente
 
     // Calculando Tamanho do cabeçalho
     cabVeiculos->byteProxReg = sizeof(cabVeiculos->status) + sizeof(cabVeiculos->byteProxReg) + sizeof(cabVeiculos->nroRegistros) + sizeof(cabVeiculos->nroRegRemovidos) + strlen(cabVeiculos->descrevePrefixo) + strlen(cabVeiculos->descreveData) + strlen(cabVeiculos->descreveLugares) + strlen(cabVeiculos->descreveLinha) + strlen(cabVeiculos->descreveModelo) + strlen(cabVeiculos->descreveCategoria);
@@ -138,20 +136,112 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     return TRUE;
 }
 
+/**
+ * @brief escreve no arquivo binario a primeira linha do csv, que descreve cada campo do registro do veiculo
+ * 
+ * @param bin 
+ * @param cabVeiculos 
+ * @return boolean 
+ */
 boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
 {
-    if (!bin)
+    if (!bin || !cabVeiculos)
         return FALSE;
 
+    // status
+    fwrite(&cabVeiculos->status, sizeof(cabVeiculos->status), 1, bin);
 
+    // byteProxreg
+    fwrite(&cabVeiculos->byteProxReg, sizeof(cabVeiculos->byteProxReg), 1, bin);
+
+    // nroRegistros
+    fwrite(&cabVeiculos->nroRegistros, sizeof(cabVeiculos->nroRegistros), 1, bin);
+
+    // nroRegRemovidos
+    fwrite(&cabVeiculos->nroRegRemovidos, sizeof(cabVeiculos->nroRegRemovidos), 1, bin);
+
+    // descrevePrefixo
+    fwrite(cabVeiculos->descrevePrefixo, strlen(cabVeiculos->descrevePrefixo), 1, bin);
+
+    // descreveData
+    fwrite(cabVeiculos->descreveData, strlen(cabVeiculos->descreveData), 1, bin);
+
+    // descreveLugares
+    fwrite(cabVeiculos->descreveLugares, strlen(cabVeiculos->descreveLugares), 1, bin);
+
+    // descreveLinha
+    fwrite(cabVeiculos->descreveLinha, strlen(cabVeiculos->descreveLinha), 1, bin);
+
+    // descreveModelo
+    fwrite(cabVeiculos->descreveModelo, strlen(cabVeiculos->descreveModelo), 1, bin);
+
+    // descreveCategoria
+    fwrite(cabVeiculos->descreveCategoria, strlen(cabVeiculos->descreveCategoria), 1, bin);
 
     return TRUE;
 }
 
+/**
+ * @brief atualiza o header (quanto a byteProxReg. nroRegistros, nroRegRemovidos) e insere os dados de um veiculo no .bin
+ * 
+ * @param bin 
+ * @param veiculos 
+ * @return boolean 
+ */
 boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
 {
-    if (!bin)
+    if (!bin || !veiculos)
         return FALSE;
+
+    // removido
+    fwrite(&veiculos->removido, sizeof(veiculos->removido), 1, bin);
+
+    // tamanhoRegistro
+    fwrite(&veiculos->tamanhoRegistro, sizeof(veiculos->tamanhoRegistro), 1, bin);
+
+    // prefixo
+    fwrite(&veiculos->prefixo, sizeof(veiculos->prefixo), 1, bin);
+
+    // data
+    fwrite(&veiculos->data, sizeof(veiculos->data), 1, bin);
+
+    // quantidadeLugares
+    fwrite(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
+
+    // codeLinha
+    fwrite(&veiculos->codLinha, sizeof(veiculos->codLinha), 1, bin);
+
+    // tamanhoModelo
+    fwrite(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
+
+    // modelo
+    fwrite(veiculos->modelo, strlen(veiculos->modelo), 1, bin);
+
+    // tamanhoCategoria
+    fwrite(veiculos->categoria, strlen(veiculos->categoria), 1, bin);
+
+    // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
+
+    // byteProxReg
+    // sizeof(status) = 1 byte
+
+    long byteProxReg = 0;
+
+    // pegando o valor de byteProxReg Atual
+    fseek(bin, 1, SEEK_SET);
+    fread(&byteProxReg, sizeof(byteProxReg), 1, bin);
+
+    // atualizando o offset do registro atual
+    byteProxReg+= veiculos->tamanhoRegistro; 
+    fseek(bin, 1, SEEK_SET);
+    fwrite(&byteProxReg, sizeof(byteProxReg), 1, bin);
+
+    // nroRegristros
+    // sizeof(status) + sizeof(byteProxReg) = 9 bytes
+
+
+    // retornar ao fim do arquivo, para escrever o proximo registro
+    // fseek(bin, )
 
     return TRUE;
 }
