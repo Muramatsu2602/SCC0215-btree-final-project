@@ -29,6 +29,17 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
 
     // Escrever o cabeçalho no arquivo binário
+    printf("status: %c\n", cabVeiculos.status);
+    printf("byteProxReg: %ld\n", cabVeiculos.byteProxReg);
+    printf("nroRegistros: %d\n", cabVeiculos.nroRegistros);
+    printf("nroRegRemovidos: %d\n", cabVeiculos.nroRegRemovidos);
+    printf("descrevePrefixo: %s\n", cabVeiculos.descrevePrefixo);
+    printf("descreveData: %s\n", cabVeiculos.descreveData);
+    printf("descreveLugares: %s\n", cabVeiculos.descreveLugares);
+    printf("descreveLinha: %s\n", cabVeiculos.descreveLinha);
+    printf("descreveModelo: %s\n", cabVeiculos.descreveModelo);
+    printf("descreveCategoria: %s\n", cabVeiculos.descreveCategoria);
+
     escreverCabecalhoBINVeiculo(bin, &cabVeiculos);
 
     // Criar a struct para armazenamento temporário dos dados do veiculo
@@ -45,6 +56,7 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     // Ler linha a linha do arquivo csv e inserir no arquivo binário
     // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
     //lerLinhaCSVVeiculo(csv, &veiculos);
+<<<<<<< HEAD
     while(!feof(csv))
     {
         if(lerLinhaCSVVeiculo(csv, &veiculos))
@@ -56,10 +68,23 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
             // Erro ao ler Linha do CSV
         }
     }
+=======
+    // while(!feof(csv))
+    // {
+    //     if(lerLinhaCSVVeiculo(csv, &veiculos))
+    //     {
+    //         // escreverBINVeiculo(bin, &veiculos);
+    //     }
+    //     else
+    //     {
+    //         // Erro ao ler Linha do CSV
+    //     }
+    // }
+>>>>>>> 30751a5ab3ea8fb9a6ccc75c16803bd061a22562
 
     // limpando a mem heap
-    free(veiculos.modelo);
-    free(veiculos.categoria);
+    // free(veiculos.modelo);
+    // free(veiculos.categoria);
 
     // fechando arquivos
     fclose(csv);
@@ -77,7 +102,7 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
 
     // Abrir o arquivo binário para escrita
     FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
-    
+
     // Escrever o cabeçalho no arquivo binário
     escreveCabecalhoBINLinhas(bin, &cabLinhas);
 
@@ -136,64 +161,64 @@ int main(int agrc, char *argv[])
 
     switch (funcionalidade)
     {
-        case 1: // Lê o arquivo .csv para veiculos e cria o arquivo binário de veiculos
-            // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
-            // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
-            scanf("%s %s",arg1, arg2);
-            funcionalidade1(arg1, arg2);
-            break;
-        case 2: // Lê o arquivo .csv para linhas e cria o arquivo binário de linhas
-            // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
-            // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
-            scanf("%s %s",arg1, arg2);
-            funcionalidade2(arg1, arg2);
-            break;
-        case 3: // Abre o arquivo .bin de veiculos e exibe todos os dados nele contidos
-                // Cada dado deve ser exibido em uma linha diferente e cada <veiculo> será separado por uma linha em branco
-                // Para valores nulos exibir: "campo com valor nulo"
-            // Recebe o nome do arquivo .bin de veiculos
+    case 1: // Lê o arquivo .csv para veiculos e cria o arquivo binário de veiculos
+        // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
+        // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
+        scanf("%s %s", arg1, arg2);
+        funcionalidade1(arg1, arg2);
+        break;
+    case 2: // Lê o arquivo .csv para linhas e cria o arquivo binário de linhas
+        // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
+        // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
+        scanf("%s %s", arg1, arg2);
+        funcionalidade2(arg1, arg2);
+        break;
+    case 3: // Abre o arquivo .bin de veiculos e exibe todos os dados nele contidos
+        // Cada dado deve ser exibido em uma linha diferente e cada <veiculo> será separado por uma linha em branco
+        // Para valores nulos exibir: "campo com valor nulo"
+        // Recebe o nome do arquivo .bin de veiculos
 
-            funcionalidade3(arg1);
-            break;
-        case 4: // Abre o arquivo .bin de linhas e exibe todos os dados nele contidos
-                // Cada dado deve ser exibido em uma linha diferente e cada <linha> será separado por uma linha em branco
-                // Para valores nulos exibir: "campo com valor nulo"
-            // Recebe o nome do arquivo .bin de linhas
-            /*
+        funcionalidade3(arg1);
+        break;
+    case 4: // Abre o arquivo .bin de linhas e exibe todos os dados nele contidos
+        // Cada dado deve ser exibido em uma linha diferente e cada <linha> será separado por uma linha em branco
+        // Para valores nulos exibir: "campo com valor nulo"
+        // Recebe o nome do arquivo .bin de linhas
+        /*
                 Importante!! Com relação ao campo aceitaCartao, mostrar por extenso o tipo:
                     S - PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR
                     N - PAGAMENTO EM CARTAO E DINHEIRO
                     F - PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA
             */
 
-            funcionalidade4(arg1);
-            break;
-        case 5: // Abrir o arquivo .bin de veiculos e exibir na tela os veículos que atendem aos critérios de busca enviados
-            // Recebe o nome do arquivo .bin de veiculos
-            // Recebe o nome do campo a ser buscado
-            // Recebe o valor do campo a ser buscado
+        funcionalidade4(arg1);
+        break;
+    case 5: // Abrir o arquivo .bin de veiculos e exibir na tela os veículos que atendem aos critérios de busca enviados
+        // Recebe o nome do arquivo .bin de veiculos
+        // Recebe o nome do campo a ser buscado
+        // Recebe o valor do campo a ser buscado
 
-            funcionalidade5(arg1, arg2, arg3);
-            break;
-        case 6: // Abrir o arquivo .bin de linhas e exibir na tela as linhas de onibus que atendem aos critérios de busca enviados
-            // Recebe o nome do arquivo .bin de linhas
-            // Recebe o nome do campo a ser buscado
-            // Recebe o valor do campo a ser buscado
+        funcionalidade5(arg1, arg2, arg3);
+        break;
+    case 6: // Abrir o arquivo .bin de linhas e exibir na tela as linhas de onibus que atendem aos critérios de busca enviados
+        // Recebe o nome do arquivo .bin de linhas
+        // Recebe o nome do campo a ser buscado
+        // Recebe o valor do campo a ser buscado
 
-            funcionalidade6(arg1, arg2, arg3);
-            break;
-        case 7: // Inserção de novos registros no arquivo de entrada .bin de veiculos
-            // Recebe o nome do arquivo .bin de veiculos
-            // Recebe o número de novos registros a serem inseridos
+        funcionalidade6(arg1, arg2, arg3);
+        break;
+    case 7: // Inserção de novos registros no arquivo de entrada .bin de veiculos
+        // Recebe o nome do arquivo .bin de veiculos
+        // Recebe o número de novos registros a serem inseridos
 
-            funcionalidade7(arg1, N);
-            break;
-        case 8: // Inserção de novos registros no arquivo de entrada .bin de linhas
-            // Recebe o nome do arquivo .bin de linhas
-            // Recebe o número de novos registros a serem inseridos
+        funcionalidade7(arg1, N);
+        break;
+    case 8: // Inserção de novos registros no arquivo de entrada .bin de linhas
+        // Recebe o nome do arquivo .bin de linhas
+        // Recebe o número de novos registros a serem inseridos
 
-            funcionalidade8(arg1, N);
-            break;
+        funcionalidade8(arg1, N);
+        break;
     }
     // Liberando memoria heap dos campos lidos
     free(arg1);
