@@ -21,9 +21,7 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     // Abrir arquivo CSV para leitura
     FILE *csv = abrirArquivo(nomeCSV, FILE_MODE2);
 
-
     // Escrever o cabeçalho do arquivo binário de veiculos
-    lerCabecalhoCSVVeiculo(csv, cabVeiculos);
     CABECALHOV cabVeiculos;
     lerCabecalhoCSVVeiculo(csv, cabVeiculos);
 
@@ -31,12 +29,14 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
     
     // Escrever o cabeçalho no arquivo binário
-    escreverCabecalhoBINVeiculo();
+    escreverCabecalhoBINVeiculo(bin, cabVeiculos);
 
     // Criar a struct para armazenamento temporário dos dados do veiculo
     VEICULO veiculos;
 
-    while(!feof(fp))
+    // Ler linha a linha do arquivo csv e inserir no arquivo binário
+    // Lembrando que a struct VEICULO conterá temporariamente os dados da linha do arquivo CSV lida
+    while(!feof(csv))
     {
         if(lerLinhaCSVVeiculo(csv, veiculos))
         {

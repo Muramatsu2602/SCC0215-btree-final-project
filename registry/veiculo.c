@@ -139,15 +139,17 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     return TRUE;
 }
 
-boolean escreverBinarioCabecalhoVeiculo(FILE *fp)
+boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV cabVeiculos)
 {
     if (!fp)
         return FALSE;
 
+
+
     return TRUE;
 }
 
-boolean escreverBinarioVeiculo(FILE *fp)
+boolean escreverBINVeiculo(FILE *BIN, VEICULO veiculos)
 {
     if (!fp)
         return FALSE;

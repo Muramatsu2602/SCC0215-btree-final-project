@@ -52,7 +52,7 @@
     typedef struct _veiculo VEICULO;
 
     boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo);
-    boolean escreverBinarioCabecalhoVeiculo(FILE *fp);
-    boolean escreverBinarioVeiculo(FILE *fp);
+    boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV cabVeiculos);
+    boolean escreverBINVeiculo(FILE *BIN, VEICULO veiculos);
 
 #endif
