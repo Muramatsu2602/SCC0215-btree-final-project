@@ -9,7 +9,6 @@
  * 
  */
 #include "linha.h"
-#include "../utils/fileManager.h"
 
 boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha)
 {
@@ -119,7 +118,7 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
     fwrite(&cabLinhas->status, sizeof(char), 1, bin);
 
     // ByteProxReg
-    fwrite(&cabLinhas->byteProxReg, sizeof(long), 1, bin);
+    fwrite(&cabLinhas->byteProxReg, sizeof(int64), 1, bin);
 
     // nroRegistros
     fwrite(&cabLinhas->nroRegistros, sizeof(int), 1, bin);
@@ -168,16 +167,16 @@ boolean escreverBINLinha(FILE *bin, LINHA *linhas)
     // byteProxReg
     // sizeof(status) = 1 byte
 
-    long byteProxReg = 0;
+    int64 byteProxReg = 0;
 
     // Mover o ponteiro para byteProxReg no cabeçalho
     fseek(bin, 1, SEEK_SET);
-    fread(&byteProxReg, sizeof(long), 1, bin);
+    fread(&byteProxReg, sizeof(int64), 1, bin);
 
     // Atualizando o offset do registro atual
     byteProxReg += linhas->tamanhoRegistro;
     fseek(bin, 1, SEEK_SET);
-    fwrite(&byteProxReg, sizeof(long), 1, bin);
+    fwrite(&byteProxReg, sizeof(int64), 1, bin);
 
     // nroRegistros
     int nroRegistros = 0;

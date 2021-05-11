@@ -19,10 +19,12 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
+
+    #include "../utils/fileManager.h"
     struct _cabecalhoLinha
     {
         char status;
-        long byteProxReg;
+        int64 byteProxReg;
         int nroRegistros;
         int nroRegRemovidos;
         char descreveCodigo[16];

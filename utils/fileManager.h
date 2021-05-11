@@ -14,9 +14,11 @@
     #include <stdio.h>
     #include <ctype.h>
 
+    #define boolean int
     #define TRUE 1
     #define FALSE 0
-    #define boolean int
+    
+    typedef unsigned long long int int64;
 
     #define FILE_MODE1 "rb+"
     #define FILE_MODE2 "r+"
@@ -31,7 +33,8 @@
     boolean preenchendoLixo(int tamOcupado, int tamMaximo, char *str);
     boolean fecharArquivo(FILE **fp);
 
-    // Debugging
+    // funções fornecidas
     void binarioNaTela(char *nomeArquivoBinario);
+    void scan_quote_string(char *str);
 
 #endif

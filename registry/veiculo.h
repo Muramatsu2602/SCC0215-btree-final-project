@@ -20,6 +20,8 @@
     #include <stdio.h>
     #include <string.h>
 
+    #include "../utils/fileManager.h"
+
     struct _veiculo
     {	
         char removido;
@@ -39,7 +41,7 @@
     struct _cabecalhoVeiculo
     {
         char status;
-        long byteProxReg;
+        int64 byteProxReg;
         int nroRegistros;
         int nroRegRemovidos;
         char descrevePrefixo[19];

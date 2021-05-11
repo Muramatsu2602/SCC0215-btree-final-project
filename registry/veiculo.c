@@ -9,7 +9,6 @@
  * 
  */
 #include "veiculo.h"
-#include "../utils/fileManager.h"
 
 /**
  * @brief Ler uma linha do veiculo.csv e preenche o VEICULO *veiculo
@@ -176,7 +175,7 @@ boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
     fwrite(&cabVeiculos->status, sizeof(char), 1, bin);
 
     // byteProxreg
-    fwrite(&cabVeiculos->byteProxReg, sizeof(long), 1, bin);
+    fwrite(&cabVeiculos->byteProxReg, sizeof(int64), 1, bin);
 
     // nroRegistros
     fwrite(&cabVeiculos->nroRegistros, sizeof(int), 1, bin);
@@ -247,13 +246,13 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
     // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
 
     // byteProxReg
-    long byteProxReg = 0;
+    int64 byteProxReg = 0;
 
     // pegando o valor de byteProxReg Atual
     // sizeof(status) = 1 byte
     fseek(bin, 1, SEEK_SET);
-    fread(&byteProxReg, sizeof(long), 1, bin);
-    printf("Leu: %ld\n",byteProxReg);
+    fread(&byteProxReg, sizeof(int64), 1, bin);
+    printf("Leu: %lld\n",byteProxReg);
 
     // atualizando o offset do registro atual
     byteProxReg += veiculos->tamanhoRegistro;
