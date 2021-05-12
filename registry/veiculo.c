@@ -252,7 +252,7 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
     // sizeof(status) = 1 byte
     fseek(bin, 1, SEEK_SET);
     fread(&byteProxReg, sizeof(int64), 1, bin);
-    printf("Leu: %lld\n",byteProxReg);
+    // printf("Leu: %lld\n",byteProxReg);
 
     // atualizando o offset do registro atual
     byteProxReg += veiculos->tamanhoRegistro;
