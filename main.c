@@ -90,7 +90,7 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
         return;
     }
 
-    // Escrever o cabeçalho do arquivo binário de linhas
+    // Escrever o cabeçalho do arquivo binário de linhas de onibus
     CABECALHOL cabLinhas;
     if (!lerCabecalhoCSVLinha(csv, &cabLinhas))
     {
@@ -112,18 +112,18 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
         printf("Falha no processamento do arquivo.\n");
         return;
     }
-
-    // Criar a struct para armazenamento temporário dos dados da linhas onibus
-    LINHA linhas;
+    
+    // Criar a struct para armazenamento temporário dos dados da linha de onibus
+    LINHA linha;
 
     // Ler linha a linha do arquivo csv e inserir no arquivo binário
     // Lembrando que a struct LINHA conterá temporariamente os dados da linha do arquivo CSV lida
-    linhas.nomeLinha = NULL;
-    linhas.corLinha = NULL;
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
 
-    while (lerLinhaCSVLinha(csv, &linhas))
+    while (lerLinhaCSVLinha(csv, &linha, &cabLinhas))
     {
-        if (!escreverBINLinha(bin, &linhas))
+        if (!escreverBINLinha(bin, &linha))
         {
             printf("Falha no processamento do arquivo.\n");
             return;
@@ -131,12 +131,16 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
     }
 
     // limpando a mem heap
-    free(linhas.nomeLinha);
-    free(linhas.corLinha);
+    free(linha.nomeLinha);
+    free(linha.corLinha);
+
+    // Atualizar cabeçalho do arquivo binário
+    atualizaCabecalhoLinha(bin, &cabLinhas);
 
     // fechando arquivos
+    fecharArquivoBin(&bin);
     fclose(csv);
-    fclose(bin);
+
     return;
 }
 
@@ -188,7 +192,7 @@ int main(int agrc, char *argv[])
         // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
         scanf("%s %s", arg1, arg2);
         funcionalidade2(arg1, arg2);
-        // binarioNaTela(arg1);
+        binarioNaTela(arg2);
         break;
     case 3: // Abre o arquivo .bin de veiculos e exibe todos os dados nele contidos
         // Cada dado deve ser exibido em uma linha diferente e cada <veiculo> será separado por uma linha em branco

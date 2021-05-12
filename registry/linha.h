@@ -43,9 +43,10 @@
     typedef struct _cabecalhoLinha CABECALHOL;
     typedef struct _linha LINHA;
 
-    boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha);
+    boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho);
     boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas);
     boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas);
     boolean escreverBINLinha(FILE *bin, LINHA *linhas);
+    void atualizaCabecalhoLinha(FILE *bin, CABECALHOL *cabecalho);
 
 #endif

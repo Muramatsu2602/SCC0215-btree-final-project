@@ -23,7 +23,7 @@ run:
 	./$(BINARY)
 
 test1:
-	./$(BINARY) < test/1.in
+	./$(BINARY) < test/3.in
 
 valval: all
 	@echo "Looking for leaks!"

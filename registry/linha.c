@@ -10,7 +10,7 @@
  */
 #include "linha.h"
 
-boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha)
+boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
 {
     const char delim[2] = ",";
     char *token = NULL;
@@ -21,18 +21,33 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha)
 
     // Ler a linha do CSV
     input = readLine(fp);
-    // Verificando se a linha lida no CSV está excluida
-    if (input[0] == '*')
+
+    // Verificar se chegou na última linha do arquivo CSV
+    if(feof(fp))
     {
         free(input);
-        return TRUE;
+        return FALSE;
     }
 
     // Codigo da linha,Aceita cartao,Nome da linha,Cor que descreve a linha
 
-    // código da linha
-    token = strtok(input, delim);
-    linha->codLinha = atoi(token);
+    // Verificando se a linha lido no CSV está excluída
+    int aux = 0;
+    if (input[0] == '*')
+    {
+        linha->removido = '0';
+        cabecalho->nroRegRemovidos += 1;
+        aux++;
+    }
+    else
+    {
+        linha->removido = '1';
+        cabecalho->nroRegistros += 1;
+    }
+
+    // Codigo da linha
+    token = strtok(&input[aux], delim);
+    linha->codLinha = (int)atoi(token);
 
     // aceita cartao
     token = strtok(NULL, delim);
@@ -40,24 +55,45 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha)
 
     // Nome da linha
     token = strtok(NULL, delim);
-    linha->tamanhoNome = (int)strlen(token) + 1;
-
-    linha->nomeLinha = (char *)realloc(linha->nomeLinha, linha->tamanhoNome * sizeof(char));
-    strcpy(linha->nomeLinha, token);
+    linha->tamanhoNome = (int)strlen(token);
+    if(strcmp(token, "NULO") == 0)
+    {
+        free(linha->nomeLinha);
+        linha->nomeLinha = NULL;
+        linha->tamanhoNome = 0;
+    }
+    else
+    {
+        linha->nomeLinha = (char *) realloc (linha->nomeLinha, ((linha->tamanhoNome)+1) * sizeof(char));
+        strcpy(linha->nomeLinha, token);
+    }
 
     // Cor da linha
     token = strtok(NULL, delim);
-    linha->tamanhoCor = (int)strlen(token) + 1;
+    linha->tamanhoCor = (int)strlen(token);
+    if(strcmp(token, "NULO") == 0)
+    {
+        free(linha->corLinha);
+        linha->corLinha = NULL;
+        linha->tamanhoCor = 0;
+    }
+    else
+    {
+        linha->corLinha = (char *) realloc (linha->corLinha, ((linha->tamanhoCor)+1) * sizeof(char));
+        strcpy(linha->corLinha, token);
+    }
 
-    linha->corLinha = (char *)realloc(linha->corLinha, linha->tamanhoCor * sizeof(char));
-    strcpy(linha->corLinha, token);
+    // int tamanhoRegistro
+    linha->tamanhoRegistro = sizeof(linha->codLinha) + sizeof(linha->aceitaCartao) + sizeof(linha->tamanhoNome) + sizeof(linha->tamanhoCor);
 
-    // Calcular o tamanho do registro através do tamanho das variáveis da struct
-    linha->tamanhoRegistro = sizeof(linha->removido) + sizeof(linha->tamanhoRegistro) + sizeof(linha->codLinha) + sizeof(linha->aceitaCartao) + sizeof(linha->tamanhoNome) + strlen(linha->nomeLinha) + sizeof(linha->tamanhoCor) + strlen(linha->corLinha);
-
-    // Colocar removido como 0
-    linha->removido = '0';
-
+    if(linha->nomeLinha != NULL)
+    {
+        linha->tamanhoRegistro += strlen(linha->nomeLinha);
+    }
+    if(linha->corLinha != NULL)
+    {
+        linha->tamanhoRegistro += strlen(linha->corLinha);
+    }
     free(input);
     return TRUE;
 }
@@ -95,7 +131,7 @@ boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
 
     // Descreve Linha
     token = strtok(NULL, delim);
-    strcpy(cabLinhas->descreveNome, token);
+    strcpy(cabLinhas->descreveLinha, token);
 
     // Status
     cabLinhas->status = '0';
@@ -103,7 +139,7 @@ boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
     // Calculando o tamanho do cabeçalho
     cabLinhas->byteProxReg = sizeof(cabLinhas->status) + sizeof(cabLinhas->byteProxReg) + sizeof(cabLinhas->nroRegistros) + sizeof(cabLinhas->nroRegRemovidos) + strlen(cabLinhas->descreveCodigo) + strlen(cabLinhas->descreveCartao) + strlen(cabLinhas->descreveNome) + strlen(cabLinhas->descreveLinha);
     cabLinhas->nroRegistros = 0;
-    cabLinhas->nroRegRemovidos = 1;
+    cabLinhas->nroRegRemovidos = 0;
 
     free(input);
     return TRUE;
@@ -111,9 +147,8 @@ boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
 
 boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
 {
-    if (!bin)
+    if (!bin || !cabLinhas)
         return FALSE;
-
     // Status
     fwrite(&cabLinhas->status, sizeof(char), 1, bin);
 
@@ -125,16 +160,16 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
 
     // nroRegRemovidos
     fwrite(&cabLinhas->nroRegRemovidos, sizeof(int), 1, bin);
-
+    
     // descreveCodigo
     fwrite(&cabLinhas->descreveCodigo, sizeof(char), 15, bin);
-
+    
     // descreveCartao
     fwrite(&cabLinhas->descreveCartao, sizeof(char), 13, bin);
-
+    
     // descreveNome
     fwrite(&cabLinhas->descreveNome, sizeof(char), 13, bin);
-
+    
     // descreveLinha
     fwrite(&cabLinhas->descreveLinha, sizeof(char), 24, bin);
     
@@ -143,27 +178,38 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
 
 boolean escreverBINLinha(FILE *bin, LINHA *linhas)
 {
-    if (!bin)
+    if (!bin || !linhas)
         return FALSE;
 
     // Removido
+    fwrite(&linhas->removido, sizeof(linhas->removido), 1, bin);
 
     // tamanhoRegistro
+    fwrite(&linhas->tamanhoRegistro, sizeof(linhas->tamanhoRegistro), 1, bin);
 
     // codLinha
+    fwrite(&linhas->codLinha, sizeof(linhas->codLinha), 1, bin);
 
     // aceitaCartao
+    fwrite(&linhas->aceitaCartao, sizeof(linhas->aceitaCartao), 1, bin);
 
     // tamanhoNome
+    fwrite(&linhas->tamanhoNome, sizeof(linhas->tamanhoNome), 1, bin);
 
     // nomeLinha
+    if(linhas->nomeLinha != NULL)
+        fwrite(linhas->nomeLinha, 1, linhas->tamanhoNome, bin);
 
     // tamanhoCor
+    fwrite(&linhas->tamanhoCor, sizeof(linhas->tamanhoCor), 1, bin);
 
     // corLinha
+    if(linhas->corLinha != NULL)
+        fwrite(linhas->corLinha, 1, linhas->tamanhoCor, bin);
 
     // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
 
+    /*
     // byteProxReg
     // sizeof(status) = 1 byte
 
@@ -209,6 +255,23 @@ boolean escreverBINLinha(FILE *bin, LINHA *linhas)
 
     // retornar ao fim do arquivo, para escrever o proximo registro
     fseek(bin, byteProxReg, SEEK_SET);
+    */
 
     return TRUE;
+}
+
+void atualizaCabecalhoLinha(FILE *bin, CABECALHOL *cabecalho)
+{
+    // Atualizar byteProxReg
+    int64 byteProxReg = (int64)ftell(bin);
+    fseek(bin, 1, SEEK_SET);
+    fwrite(&byteProxReg, sizeof(byteProxReg), 1, bin);
+
+    // Atualizar nroRegistros
+    fseek(bin, 9, SEEK_SET);
+    fwrite(&cabecalho->nroRegistros, sizeof(cabecalho->nroRegistros), 1, bin);
+
+    // Atualizar nroRegRemovidos
+    fseek(bin, 13, SEEK_SET);
+    fwrite(&cabecalho->nroRegRemovidos, sizeof(cabecalho->nroRegRemovidos), 1, bin);
 }
