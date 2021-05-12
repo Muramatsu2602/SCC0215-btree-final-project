@@ -63,7 +63,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
     if (strcmp(token, "NULO") == 0)
     {
         veiculo->data[0] = '\0';
-        preenchendoLixo(strlen(veiculo->data), 10, veiculo->data);
+        preenchendoLixo(strlen(veiculo->data)+1, 10, veiculo->data);
     }
     else
         strcpy(veiculo->data, token);
@@ -117,16 +117,15 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
     }
 
     // int tamanhoRegistro;
-    veiculo->tamanhoRegistro = sizeof(veiculo->removido) + sizeof(veiculo->tamanhoRegistro) + sizeof(veiculo->prefixo) + sizeof(veiculo->data) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
+    veiculo->tamanhoRegistro = sizeof(veiculo->prefixo) + sizeof(veiculo->data) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
 
     if(veiculo->modelo != NULL)
     {
-        veiculo->tamanhoRegistro += strlen(veiculo->modelo)-1;
+        veiculo->tamanhoRegistro += strlen(veiculo->modelo);
     }
     if(veiculo->categoria != NULL)
-        veiculo->tamanhoRegistro += strlen(veiculo->categoria)-1;
+        veiculo->tamanhoRegistro += strlen(veiculo->categoria);
 
-    
     free(input);
     return TRUE;
 }
