@@ -126,6 +126,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
     if(veiculo->categoria != NULL)
         veiculo->tamanhoRegistro += strlen(veiculo->categoria)-1;
 
+    
     free(input);
     return TRUE;
 }
