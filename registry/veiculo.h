@@ -50,9 +50,10 @@
     typedef struct _cabecalhoVeiculo CABECALHOV;
     typedef struct _veiculo VEICULO;
 
-    boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo);
+    boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho);
     boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos);
     boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos);
     boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos);
+    void atualizaCabecalhoVeiculo(FILE *bin, CABECALHOV *cabecalho);
 
 #endif

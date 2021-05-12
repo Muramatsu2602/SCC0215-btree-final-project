@@ -57,7 +57,7 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     veiculos.modelo = NULL;
     veiculos.categoria = NULL;
 
-    while (lerLinhaCSVVeiculo(csv, &veiculos))
+    while (lerLinhaCSVVeiculo(csv, &veiculos, &cabVeiculos))
     {
         if (!escreverBINVeiculo(bin, &veiculos))
         {
@@ -69,6 +69,9 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     // limpando a mem heap
     free(veiculos.modelo);
     free(veiculos.categoria);
+
+    // Atualizar cabeçalho do arquivo binário
+    atualizaCabecalhoVeiculo(bin, &cabVeiculos);
 
     // fechando arquivos
     fecharArquivoBin(&bin);
@@ -178,7 +181,7 @@ int main(int agrc, char *argv[])
         // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
         scanf("%s %s", arg1, arg2);
         funcionalidade1(arg1, arg2);
-        binarioNaTela(arg1);
+        binarioNaTela(arg2);
         break;
     case 2: // Lê o arquivo .csv para linhas e cria o arquivo binário de linhas
         // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado

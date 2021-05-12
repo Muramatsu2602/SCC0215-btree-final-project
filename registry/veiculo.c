@@ -17,7 +17,7 @@
  * @param veiculo 
  * @return boolean 
  */
-boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
+boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
 {
     const char delim[2] = ",";
     char *token = NULL;
@@ -42,11 +42,15 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     int aux = 0;
     if (input[0] == '*')
     {
-        veiculo->removido = '1';
+        veiculo->removido = '0';
+        cabecalho->nroRegRemovidos += 1;
         aux++;
     }
     else
-        veiculo->removido = '0';
+    {
+        veiculo->removido = '1';
+        cabecalho->nroRegistros += 1;
+    }
 
     // LENDO VEICULO e tokenizando
 
@@ -80,24 +84,47 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
 
     // Modelo do veiculo e seu tamanho
     token = strtok(NULL, delim);
-    veiculo->tamanhoModelo = (int)strlen(token) + 1;
+    veiculo->tamanhoModelo = (int)strlen(token);
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
-    veiculo->modelo = (char *)realloc(veiculo->modelo, veiculo->tamanhoModelo * sizeof(char));
-    strcpy(veiculo->modelo, token);
+    if (strcmp(token, "NULO") == 0)
+    {
+        free(veiculo->modelo);
+        veiculo->modelo = NULL;
+        veiculo->tamanhoModelo = 0;
+    }
+    else
+    {
+        veiculo->modelo = (char *)realloc(veiculo->modelo, ((veiculo->tamanhoModelo)+1) * sizeof(char));
+        strcpy(veiculo->modelo, token);
+    }
 
     //  Categoria do veiculo e seu tamanho
     token = strtok(NULL, delim);
-    veiculo->tamanhoCategoria = (int)strlen(token) + 1;
+    veiculo->tamanhoCategoria = (int)strlen(token);
 
     // como o struct VEICULO vai ser reaproveitado, utilizamos realloc para caso de variacoes no tamanho do campo
-    veiculo->categoria = (char *)realloc(veiculo->categoria, veiculo->tamanhoCategoria * sizeof(char));
-    strcpy(veiculo->categoria, token);
+    if (strcmp(token, "NULO") == 0)
+    {
+        free(veiculo->categoria);
+        veiculo->categoria = NULL;
+        veiculo->tamanhoCategoria = 0;
+    }
+    else
+    {
+        veiculo->categoria = (char *)realloc(veiculo->categoria, ((veiculo->tamanhoCategoria)+1) * sizeof(char));
+        strcpy(veiculo->categoria, token);
+    }
 
-    // char removido;
-    veiculo->removido = '0';
     // int tamanhoRegistro;
-    veiculo->tamanhoRegistro = sizeof(veiculo->removido) + sizeof(veiculo->tamanhoRegistro) + sizeof(veiculo->prefixo) + sizeof(veiculo->data) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + strlen(veiculo->modelo) + sizeof(veiculo->tamanhoCategoria) + strlen(veiculo->categoria);
+    veiculo->tamanhoRegistro = sizeof(veiculo->removido) + sizeof(veiculo->tamanhoRegistro) + sizeof(veiculo->prefixo) + sizeof(veiculo->data) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
+
+    if(veiculo->modelo != NULL)
+    {
+        veiculo->tamanhoRegistro += strlen(veiculo->modelo)-1;
+    }
+    if(veiculo->categoria != NULL)
+        veiculo->tamanhoRegistro += strlen(veiculo->categoria)-1;
 
     free(input);
     return TRUE;
@@ -222,10 +249,10 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
     fwrite(&veiculos->tamanhoRegistro, sizeof(veiculos->tamanhoRegistro), 1, bin);
 
     // prefixo
-    fwrite(&veiculos->prefixo, 1, strlen(veiculos->prefixo), bin);
+    fwrite(&veiculos->prefixo, 1, 5, bin);
 
     // data
-    fwrite(&veiculos->data, 1, strlen(veiculos->data), bin);
+    fwrite(&veiculos->data, 1, 10, bin);
 
     // quantidadeLugares
     fwrite(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
@@ -234,16 +261,22 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
     fwrite(&veiculos->codLinha, sizeof(veiculos->codLinha), 1, bin);
 
     // tamanhoModelo
-    fwrite(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
+    fwrite(&veiculos->tamanhoModelo, sizeof(veiculos->tamanhoModelo), 1, bin);
 
     // modelo
-    fwrite(veiculos->modelo, 1, strlen(veiculos->modelo), bin);
+    if(veiculos->modelo != NULL)
+        fwrite(veiculos->modelo, 1, veiculos->tamanhoModelo, bin);
 
     // tamanhoCategoria
-    fwrite(veiculos->categoria, 1, strlen(veiculos->categoria), bin);
+    fwrite(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
+
+    // Categoria
+    if(veiculos->modelo != NULL)
+        fwrite(veiculos->categoria, 1, veiculos->tamanhoCategoria, bin);
 
     // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
 
+    /*
     // byteProxReg
     int64 byteProxReg = 0;
 
@@ -288,6 +321,23 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
 
     // retornar ao fim do arquivo, para escrever o proximo registro
     fseek(bin, byteProxReg, SEEK_SET);
+    */
 
     return TRUE;
+}
+
+void atualizaCabecalhoVeiculo(FILE *bin, CABECALHOV *cabecalho)
+{
+    // Atualizar byteProxReg
+    int64 byteProxReg = (int64)ftell(bin);
+    fseek(bin, 1, SEEK_SET);
+    fwrite(&byteProxReg, sizeof(byteProxReg), 1, bin);
+
+    // Atualizar nroRegistros
+    fseek(bin, 9, SEEK_SET);
+    fwrite(&cabecalho->nroRegistros, sizeof(cabecalho->nroRegistros), 1, bin);
+
+    // Atualizar nroRegRemovidos
+    fseek(bin, 13, SEEK_SET);
+    fwrite(&cabecalho->nroRegRemovidos, sizeof(cabecalho->nroRegRemovidos), 1, bin);
 }
