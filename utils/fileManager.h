@@ -1,7 +1,7 @@
 /**
  * @file fileManager.h
  * @author 11796444 - Giovanni Shibaki Camargo 
- * @author 11796451 - Pedro Kenzo Muramatsu Carmo
+ * @author 11796451 - Pedro Kenzo Muramatsu Caro
  * @version 0.1
  * @date 2021-05-07
  * 
@@ -13,6 +13,8 @@
 
     #include <stdio.h>
     #include <ctype.h>
+    
+    #define BUFFER 50
 
     #define boolean int
     #define TRUE 1
@@ -23,8 +25,6 @@
     #define FILE_MODE1 "rb+"
     #define FILE_MODE2 "r+"
     #define FILE_MODE3 "wb+"
-
-    #define BUFFER 50
 
     // Manipulando Arquivos
     char *readLine(FILE *stream);
