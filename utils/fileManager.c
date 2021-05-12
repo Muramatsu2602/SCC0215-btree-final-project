@@ -61,7 +61,7 @@ FILE *abrirArquivo(const char *filename, const char *mode)
     if ((fp = fopen(filename, mode)) != NULL)
         return fp;
 
-    printf("Erro na abertura do arquivo de nome %s!\n", filename);
+    // printf("Erro na abertura do arquivo de nome %s!\n", filename);
     return NULL;
 }
 
@@ -120,7 +120,7 @@ void binarioNaTela(char *nomeArquivoBinario)
     FILE *fs;
     if (nomeArquivoBinario == NULL || !(fs = fopen(nomeArquivoBinario, "rb")))
     {
-        fprintf(stderr, "ERRO AO ESCREVER O BINARIO NA TELA (função binarioNaTela): não foi possível abrir o arquivo que me passou para leitura. Ele existe e você tá passando o nome certo? Você lembrou de fechar ele com fclose depois de usar?\n");
+        // fprintf(stderr, "ERRO AO ESCREVER O BINARIO NA TELA (função binarioNaTela): não foi possível abrir o arquivo que me passou para leitura. Ele existe e você tá passando o nome certo? Você lembrou de fechar ele com fclose depois de usar?\n");
         return;
     }
     fseek(fs, 0, SEEK_END);
