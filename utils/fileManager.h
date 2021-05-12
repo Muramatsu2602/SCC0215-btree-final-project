@@ -31,7 +31,7 @@
     FILE *abrirArquivo(const char *filename, const char *mode);
     int removerArquivo(const char *filename);
     boolean preenchendoLixo(int tamOcupado, int tamMaximo, char *str);
-    boolean fecharArquivo(FILE **fp);
+    boolean fecharArquivoBin(FILE **fp);
 
     // funções fornecidas
     void binarioNaTela(char *nomeArquivoBinario);

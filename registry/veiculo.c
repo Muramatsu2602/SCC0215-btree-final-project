@@ -30,7 +30,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo)
     input = readLine(fp);
 
     // Verificar se chegou na última linha do arquivo CSV
-    if(feof(fp))
+    if (feof(fp))
     {
         free(input);
         return FALSE;
@@ -116,7 +116,7 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     char *token = NULL;
     char *input = NULL;
 
-        if (!fp || !cabVeiculos)
+    if (!fp || !cabVeiculos)
         return FALSE;
 
     // lendo cabeçalho
@@ -125,7 +125,7 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     // Descreve prefixo
     token = strtok(input, delim);
     strcpy(cabVeiculos->descrevePrefixo, token);
-    preenchendoLixo(strlen(cabVeiculos->descrevePrefixo), 18, cabVeiculos->descrevePrefixo);
+    // preenchendoLixo(strlen(cabVeiculos->descrevePrefixo), 18, cabVeiculos->descrevePrefixo);
 
     // Descreve Data
     token = strtok(NULL, delim);
@@ -170,7 +170,6 @@ boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
 {
     if (!bin || !cabVeiculos)
         return FALSE;
-        
     // status
     fwrite(&cabVeiculos->status, sizeof(char), 1, bin);
 

@@ -145,16 +145,16 @@ void binarioNaTela(char *nomeArquivoBinario)
  * @param fp 
  * @return boolean 
  */
-boolean fecharArquivo(FILE **fp)
+boolean fecharArquivoBin(FILE **fp)
 {
-    if (!fp)
+    if (!*fp)
         return FALSE;
 
-    const boolean status = TRUE;
+    const char status = '1';
 
-    fseek(*fp, 1, SEEK_SET);
+    fseek(*fp, 0, SEEK_SET);
 
-    if (!fwrite(&status, sizeof(boolean), 1, *fp))
+    if (!fwrite(&status, sizeof(char), 1, *fp))
         return FALSE;
 
     fclose(*fp);

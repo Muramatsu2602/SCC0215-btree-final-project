@@ -71,8 +71,9 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     free(veiculos.categoria);
 
     // fechando arquivos
+    fecharArquivoBin(&bin);
     fclose(csv);
-    fclose(bin);
+
     return;
 }
 

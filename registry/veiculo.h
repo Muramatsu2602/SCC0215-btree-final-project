@@ -11,11 +11,6 @@
 #ifndef VEICULO_H
 #define VEICULO_H
 
-    #define TRUE 1
-    #define FALSE 0
-    #define boolean int
-    #define FILE_MODE "rb"
-
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
