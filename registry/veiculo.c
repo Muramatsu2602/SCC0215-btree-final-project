@@ -271,7 +271,7 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
     fwrite(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
 
     // Categoria
-    if(veiculos->modelo != NULL)
+    if(veiculos->categoria != NULL)
         fwrite(veiculos->categoria, 1, veiculos->tamanhoCategoria, bin);
 
     // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
