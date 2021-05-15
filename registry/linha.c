@@ -31,7 +31,7 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
     input = readLine(fp);
 
     // Verificar se chegou na última linha do arquivo CSV
-    if(feof(fp))
+    if (feof(fp))
     {
         free(input);
         return FALSE;
@@ -64,7 +64,7 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
     // Nome da linha
     token = strtok(NULL, delim);
     linha->tamanhoNome = (int)strlen(token);
-    if(strcmp(token, "NULO") == 0)
+    if (strcmp(token, "NULO") == 0)
     {
         free(linha->nomeLinha);
         linha->nomeLinha = NULL;
@@ -72,14 +72,14 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
     }
     else
     {
-        linha->nomeLinha = (char *) realloc (linha->nomeLinha, ((linha->tamanhoNome)+1) * sizeof(char));
+        linha->nomeLinha = (char *)realloc(linha->nomeLinha, ((linha->tamanhoNome) + 1) * sizeof(char));
         strcpy(linha->nomeLinha, token);
     }
 
     // Cor da linha
     token = strtok(NULL, delim);
     linha->tamanhoCor = (int)strlen(token);
-    if(strcmp(token, "NULO") == 0)
+    if (strcmp(token, "NULO") == 0)
     {
         free(linha->corLinha);
         linha->corLinha = NULL;
@@ -87,18 +87,18 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
     }
     else
     {
-        linha->corLinha = (char *) realloc (linha->corLinha, ((linha->tamanhoCor)+1) * sizeof(char));
+        linha->corLinha = (char *)realloc(linha->corLinha, ((linha->tamanhoCor) + 1) * sizeof(char));
         strcpy(linha->corLinha, token);
     }
 
     // int tamanhoRegistro
     linha->tamanhoRegistro = sizeof(linha->codLinha) + sizeof(linha->aceitaCartao) + sizeof(linha->tamanhoNome) + sizeof(linha->tamanhoCor);
 
-    if(linha->nomeLinha != NULL)
+    if (linha->nomeLinha != NULL)
     {
         linha->tamanhoRegistro += strlen(linha->nomeLinha);
     }
-    if(linha->corLinha != NULL)
+    if (linha->corLinha != NULL)
     {
         linha->tamanhoRegistro += strlen(linha->corLinha);
     }
@@ -110,7 +110,7 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
  * @brief Le a primeira liha do CSV e preenche os campos descritivos
  * 
  * @param fp 
- * @param cabVeiculos 
+ * @param cabLinhas 
  * @return boolean 
  */
 boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
@@ -119,7 +119,7 @@ boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
     char *token = NULL;
     char *input = NULL;
 
-    if(!fp || !cabLinhas)
+    if (!fp || !cabLinhas)
         return FALSE;
 
     // lendo cabeçalho
@@ -175,19 +175,19 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
 
     // nroRegRemovidos
     fwrite(&cabLinhas->nroRegRemovidos, sizeof(int), 1, bin);
-    
+
     // descreveCodigo
     fwrite(&cabLinhas->descreveCodigo, sizeof(char), 15, bin);
-    
+
     // descreveCartao
     fwrite(&cabLinhas->descreveCartao, sizeof(char), 13, bin);
-    
+
     // descreveNome
     fwrite(&cabLinhas->descreveNome, sizeof(char), 13, bin);
-    
+
     // descreveLinha
     fwrite(&cabLinhas->descreveLinha, sizeof(char), 24, bin);
-    
+
     return TRUE;
 }
 
@@ -219,16 +219,15 @@ boolean escreverBINLinha(FILE *bin, LINHA *linhas)
     fwrite(&linhas->tamanhoNome, sizeof(linhas->tamanhoNome), 1, bin);
 
     // nomeLinha
-    if(linhas->nomeLinha != NULL)
+    if (linhas->nomeLinha != NULL)
         fwrite(linhas->nomeLinha, 1, linhas->tamanhoNome, bin);
 
     // tamanhoCor
     fwrite(&linhas->tamanhoCor, sizeof(linhas->tamanhoCor), 1, bin);
 
     // corLinha
-    if(linhas->corLinha != NULL)
+    if (linhas->corLinha != NULL)
         fwrite(linhas->corLinha, 1, linhas->tamanhoCor, bin);
-
 
     return TRUE;
 }
@@ -253,4 +252,161 @@ void atualizaCabecalhoLinha(FILE *bin, CABECALHOL *cabecalho)
     // Atualizar nroRegRemovidos
     fseek(bin, 13, SEEK_SET);
     fwrite(&cabecalho->nroRegRemovidos, sizeof(cabecalho->nroRegRemovidos), 1, bin);
+}
+
+/**
+ * @brief le o cabecalho da do .bin da linha e preenche a struct CABECALHOL
+ * 
+ * @param bin 
+ * @param cabLinhas 
+ * @return boolean 
+ */
+boolean lerCabecalhoBINLinha(FILE *bin, CABECALHOL *cabLinhas)
+{
+    if (!bin || !cabLinhas)
+        return FALSE;
+
+    // Posicionar o ponteiro no inicio do arquivo binário
+    fseek(bin, 0, SEEK_SET);
+
+    // Fazer a leitura dos campos e colocar na struct
+
+    // Status
+    fread(&cabLinhas->status, sizeof(cabLinhas->status), 1, bin);
+
+    // byteProxReg
+    fread(&cabLinhas->byteProxReg, sizeof(cabLinhas->byteProxReg), 1, bin);
+
+    // nroRegistros
+    fread(&cabLinhas->nroRegistros, sizeof(cabLinhas->nroRegistros), 1, bin);
+
+    // nroRegRemovidos
+    fread(&cabLinhas->nroRegRemovidos, sizeof(cabLinhas->nroRegRemovidos), 1, bin);
+
+    // descreveCodigo
+    fread(cabLinhas->descreveCodigo, sizeof(cabLinhas->descreveCodigo), 15, bin);
+
+    // descreveCartao
+    fread(cabLinhas->descreveCartao, sizeof(cabLinhas->descreveCartao), 13, bin);
+
+    // descreveNome
+    fread(cabLinhas->descreveNome, sizeof(cabLinhas->descreveNome), 13, bin);
+
+    // descreveLinha
+    fread(cabLinhas->descreveLinha, sizeof(cabLinhas->descreveLinha), 24, bin);
+
+    // Agora, o ponteiro do arquivo estará apontado para o primeiro registro do arquivo após o cabeçalho
+
+    return TRUE;
+}
+
+/**
+ * @brief Le linha do .bin e preenche uma struct do tipo LINHA
+ * 
+ * @param bin 
+ * @param linhas 
+ * @return boolean 
+ */
+boolean lerBINLinha(FILE *bin, LINHA *linhas)
+{
+
+    if (!bin || !linhas)
+        return FALSE;
+
+    // Removido
+    fread(&linhas->removido, sizeof(linhas->removido), 1, bin);
+
+    // tamanhoRegistro
+    fread(&linhas->tamanhoRegistro, sizeof(linhas->tamanhoRegistro), 1, bin);
+
+    // codLinha
+    fread(&linhas->codLinha, sizeof(linhas->codLinha), 1, bin);
+
+    // aceitaCartao
+    fread(&linhas->aceitaCartao, sizeof(linhas->aceitaCartao), 1, bin);
+
+    // tamanhoNome
+    fread(&linhas->tamanhoNome, sizeof(linhas->tamanhoNome), 1, bin);
+
+    // nomeLinha
+    // Checar se o campo nomeLinha é nulo
+    if (linhas->tamanhoNome != 0)
+    {
+        linhas->nomeLinha = (char *)realloc(linhas->nomeLinha, ((linhas->tamanhoNome) + 1) * sizeof(char));
+        fread(&linhas->nomeLinha, sizeof(char), linhas->tamanhoNome, bin);
+    }
+
+    // tamanhoCor
+    fread(&linhas->tamanhoCor, sizeof(linhas->tamanhoCor), 1, bin);
+
+    // corLinha
+    // Checar se o campo corLinha é nulo
+    if (linhas->tamanhoCor != 0)
+    {
+        linhas->corLinha = (char *)realloc(linhas->corLinha, ((linhas->tamanhoCor) + 1) * sizeof(char));
+        fread(&linhas->corLinha, sizeof(char), linhas->tamanhoCor, bin);
+    }
+
+    return TRUE;
+}
+
+/**
+ * @brief imprime na tela o as linhas de linha.bin
+ * 
+ * @param cabLinhas 
+ * @param linha 
+ * @return boolean 
+ */
+boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha)
+{
+    if (!cabLinhas || !linha)
+        return FALSE;
+
+    // codLinha
+    printf("%s: ", cabLinhas->descreveCodigo);
+    printf("%d\n", linha->codLinha);
+
+    // nomeLinha
+    printf("%s: ", cabLinhas->descreveNome);
+    if (linha->nomeLinha == NULL)
+    {
+        printf("campo com valor nulo\n");
+    }
+    else
+    {
+        printf("%s\n", linha->nomeLinha);
+    }
+
+    // corLinha
+    printf("%s: ", cabLinhas->descreveLinha);
+    if (linha->corLinha == NULL)
+    {
+        printf("campo com valor nulo\n");
+    }
+    else
+    {
+        printf("%s\n", linha->corLinha);
+    }
+
+    // aceitaCartao
+    printf("%s: ", cabLinhas->descreveCartao);
+
+    switch (linha->aceitaCartao)
+    {
+    case 'S':
+        printf("PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR\n");
+        break;
+    case 'N':
+        printf("PAGAMENTO EM CARTAO E DINHEIRO\n");
+        break;
+    case 'F':
+        printf("PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA\n");
+        break;
+    default:
+        break;
+    }
+
+    printf("\n");
+
+    return TRUE;
 }
