@@ -449,12 +449,79 @@ boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
         return FALSE;
 
     // Prefixo
+    printf("%s: ",cabVeiculos->descrevePrefixo);
+    printf("%s\n",veiculo->prefixo);
 
     // Modelo
+    printf("%s: ",cabVeiculos->descreveModelo);
+    if(veiculo->modelo == NULL)
+    {
+        printf("campo com valor nulo\n");
+    }
+    else
+    {
+        printf("%s\n",veiculo->modelo);
+    }
 
     // Categoria
+    printf("%s: ",cabVeiculos->descreveCategoria);
+    if(veiculo->categoria == NULL)
+    {
+        printf("campo com valor nulo\n");
+    }
+    else
+    {
+        printf("%s\n",veiculo->categoria);
+    }
 
     // Data
+    printf("%s: ",cabVeiculos->descreveData);
+    if(veiculo->data[0] == '\0')
+    {
+        printf("campo com valor nulo\n");
+    }
+    else
+    {
+        // 2004-11-17
+        exibirData(veiculo->data);
+    }
 
     // Quantidade Lugares
+    
+
+}
+
+/**
+ * @brief Recebe a data desformatada e exibe na tela 
+ * 
+ * @param data
+ */
+void exibirData(char *data)
+{
+    const char delim[2] = ",";
+    char *token = NULL;
+
+    int ano;
+    int mes;
+    int dia;
+
+    // Ano
+    token = strtok(data, delim);
+    ano = atoi(token);
+
+    // Mês
+    token = strtok(NULL, delim);
+    mes = atoi(token);
+
+    // Dia
+    token = strtok(NULL, delim);
+    dia = atoi(token);
+
+    printf("%d de ",dia);
+    
+    switch(mes)
+    {
+        case ""
+    }
+
 }
