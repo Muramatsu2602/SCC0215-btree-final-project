@@ -115,7 +115,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
     }
 
     // int tamanhoRegistro;
-    veiculo->tamanhoRegistro = sizeof(veiculo->prefixo) + sizeof(veiculo->data) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
+    veiculo->tamanhoRegistro = (sizeof(veiculo->prefixo)-1) + (sizeof(veiculo->data)-1) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
 
     if(veiculo->modelo != NULL)
     {
