@@ -35,9 +35,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
         free(input);
         return FALSE;
     }
-
-    //printf("Linha do veículo lido:\n%s\n",input);
-
+    
     // verificando se a linha lida no CSV esta excluida
     int aux = 0;
     if (input[0] == '*')
@@ -309,20 +307,6 @@ void atualizaCabecalhoVeiculo(FILE *bin, CABECALHOV *cabecalho)
  */
 boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
 {
-    /*struct _cabecalhoVeiculo
-    {
-        char status;
-        int64 byteProxReg;
-        int nroRegistros;
-        int nroRegRemovidos;
-        char descrevePrefixo[19];
-        char descreveData[36];
-        char descreveLugares[43];
-        char descreveLinha[27];
-        char descreveModelo[18];
-        char descreveCategoria[21];
-    };*/
-
     if (!bin || !cabVeiculos)
         return FALSE;
 
@@ -381,53 +365,31 @@ boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
  */
 boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
 {
-    /*struct _veiculo
-    {	
-        char removido;
-        int tamanhoRegistro;
-        char prefixo[5];
-        char data[10];
-        int	quantidadeLugares;
-        int codLinha;
-        int tamanhoModelo;
-        char* modelo;
-        int tamanhoCategoria;
-        char* categoria;
-    };*/
     if (!bin || !veiculos)
         return FALSE;
 
-    //printf("Ponteiro: %ld\n",ftell(bin));
-
     // Removido
     fread(&veiculos->removido, sizeof(veiculos->removido), 1, bin);
-    //printf("Removido: %c\n",veiculos->removido);
-
+    
     // tamanhoRegistro
     fread(&veiculos->tamanhoRegistro, sizeof(veiculos->tamanhoRegistro), 1, bin);
-    //printf("Tamanho Registro: %d\n",veiculos->tamanhoRegistro);
 
     // prefixo
     fread(veiculos->prefixo, sizeof(char), 5, bin);
     veiculos->prefixo[5] = '\0';
-    //printf("Prefixo: %s\n",veiculos->prefixo);
 
     // data
     fread(veiculos->data, sizeof(char), 10, bin);
     veiculos->data[10] = '\0';
-    //printf("Data: %s\n",veiculos->data);
 
     // quantidadeLugares
     fread(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
-    //printf("Quantidade Lugares: %d\n",veiculos->quantidadeLugares);
 
     // codLinha
     fread(&veiculos->codLinha, sizeof(veiculos->codLinha), 1, bin);
-    //printf("Cod linha: %d\n",veiculos->codLinha);
 
     // tamanhoModelo
     fread(&veiculos->tamanhoModelo, sizeof(veiculos->tamanhoModelo), 1, bin);
-    //printf("Tamanho Modelo: %d\n",veiculos->tamanhoModelo);
 
     // modelo
     // Checar se o campo Modelo é nulo
@@ -440,7 +402,6 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
 
     // tamanhoCategoria
     fread(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
-    //printf("Tamanho Categoria: %d\n",veiculos->tamanhoCategoria);
 
     // categoria
     if (veiculos->tamanhoCategoria != 0)

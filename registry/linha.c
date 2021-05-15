@@ -285,15 +285,19 @@ boolean lerCabecalhoBINLinha(FILE *bin, CABECALHOL *cabLinhas)
 
     // descreveCodigo
     fread(cabLinhas->descreveCodigo, sizeof(cabLinhas->descreveCodigo), 15, bin);
+    cabLinhas->descreveCodigo[15] = '\0';
 
     // descreveCartao
     fread(cabLinhas->descreveCartao, sizeof(cabLinhas->descreveCartao), 13, bin);
+    cabLinhas->descreveNome[13] = '\0';
 
     // descreveNome
     fread(cabLinhas->descreveNome, sizeof(cabLinhas->descreveNome), 13, bin);
+    cabLinhas->descreveNome[13] = '\0';
 
     // descreveLinha
     fread(cabLinhas->descreveLinha, sizeof(cabLinhas->descreveLinha), 24, bin);
+    cabLinhas->descreveLinha[24] = '\0';
 
     // Agora, o ponteiro do arquivo estará apontado para o primeiro registro do arquivo após o cabeçalho
 
@@ -334,6 +338,7 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas)
     {
         linhas->nomeLinha = (char *)realloc(linhas->nomeLinha, ((linhas->tamanhoNome) + 1) * sizeof(char));
         fread(&linhas->nomeLinha, sizeof(char), linhas->tamanhoNome, bin);
+        linhas->nomeLinha[linhas->tamanhoNome] = '\0';
     }
 
     // tamanhoCor
@@ -345,6 +350,7 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas)
     {
         linhas->corLinha = (char *)realloc(linhas->corLinha, ((linhas->tamanhoCor) + 1) * sizeof(char));
         fread(&linhas->corLinha, sizeof(char), linhas->tamanhoCor, bin);
+        linhas->corLinha[linhas->tamanhoCor] = '\0';
     }
 
     return TRUE;
