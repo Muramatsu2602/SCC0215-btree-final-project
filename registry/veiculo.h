@@ -57,5 +57,6 @@
     void atualizaCabecalhoVeiculo(FILE *bin, CABECALHOV *cabecalho);
     boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos);
     boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos);
+    boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo);
 
 #endif
