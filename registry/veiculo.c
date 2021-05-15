@@ -231,7 +231,7 @@ boolean escreverCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
 }
 
 /**
- * @brief atualiza o header (quanto a byteProxReg. nroRegistros, nroRegRemovidos) e insere os dados de um veiculo no .bin
+ * @brief insere os dados de um veiculo no .bin
  * 
  * @param bin 
  * @param veiculos 
@@ -274,58 +274,16 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
     if(veiculos->categoria != NULL)
         fwrite(veiculos->categoria, 1, veiculos->tamanhoCategoria, bin);
 
-    // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
-
-    /*
-    // byteProxReg
-    int64 byteProxReg = 0;
-
-    // pegando o valor de byteProxReg Atual
-    // sizeof(status) = 1 byte
-    fseek(bin, 1, SEEK_SET);
-    fread(&byteProxReg, sizeof(int64), 1, bin);
-    // printf("Leu: %lld\n",byteProxReg);
-
-    // atualizando o offset do registro atual
-    byteProxReg += veiculos->tamanhoRegistro;
-    fseek(bin, 1, SEEK_SET);
-    fwrite(&byteProxReg, sizeof(byteProxReg), 1, bin);
-
-    // nroRegristros
-    int nroRegistros = 0;
-
-    // pegando o valor de nroRegistros Atual
-    // sizeof(status) + sizeof(byteProxReg) = 9 bytes
-    fseek(bin, 9, SEEK_SET);
-    fread(&nroRegistros, sizeof(int), 1, bin);
-    // contabilizando o registro
-    nroRegistros++;
-    fseek(bin, 9, SEEK_SET);
-    fwrite(&nroRegistros, sizeof(nroRegistros), 1, bin);
-
-    // nroRegRemovidos
-    if (!veiculos->removido)
-        return TRUE;
-
-    int nroRegRemovidos = 0;
-
-    // pegando o valor de nroRegRemovidos atual
-    // sizeof(status) + sizeof(byteProxReg) + sizeof(nroRegistros) = 13 bytes
-    fseek(bin, 13, SEEK_SET);
-    fread(&nroRegRemovidos, sizeof(int), 1, bin);
-
-    // contabilizando registro se removido
-    nroRegRemovidos++;
-    fseek(bin, 13, SEEK_SET);
-    fwrite(&nroRegRemovidos, sizeof(nroRegRemovidos), 1, bin);
-
-    // retornar ao fim do arquivo, para escrever o proximo registro
-    fseek(bin, byteProxReg, SEEK_SET);
-    */
 
     return TRUE;
 }
 
+/**
+ * @brief atualiza no .bin de veiculos os dados que dizem respeito ao conteudo do arquivo.
+ * Sao eles: byteProxReg, nroRegistros e nroRegistrosRemovidos
+ * @param bin 
+ * @param cabecalho 
+ */
 void atualizaCabecalhoVeiculo(FILE *bin, CABECALHOV *cabecalho)
 {
     // Atualizar byteProxReg
@@ -342,6 +300,13 @@ void atualizaCabecalhoVeiculo(FILE *bin, CABECALHOV *cabecalho)
     fwrite(&cabecalho->nroRegRemovidos, sizeof(cabecalho->nroRegRemovidos), 1, bin);
 }
 
+/**
+ * @brief le o cabecalho do veiculo do .bin e preenche a struct CABECALHOV
+ * 
+ * @param bin 
+ * @param cabVeiculos 
+ * @return boolean 
+ */
 boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
 {
     /*struct _cabecalhoVeiculo
@@ -367,7 +332,7 @@ boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
     // Fazer a leitura dos campos e colocar na struct
 
     // Status
-    fread(cabVeiculos->status, sizeof(cabVeiculos->status), 1, bin);
+    fread(&cabVeiculos->status, sizeof(cabVeiculos->status), 1, bin);
 
     // byteProxReg
     fread(&cabVeiculos->byteProxReg, sizeof(cabVeiculos->byteProxReg), 1, bin);
@@ -401,6 +366,13 @@ boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
     return TRUE;
 }
 
+/**
+ * @brief Le linha do .bin e preenche uma struct do tipo VEICULO
+ * 
+ * @param bin 
+ * @param veiculos 
+ * @return boolean 
+ */
 boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
 {
     /*struct _veiculo
