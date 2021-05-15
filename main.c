@@ -274,12 +274,16 @@ void funcionalidade5(char *nomeBIN, char *campo, char *valor)
         // Ler o registro
         if(lerBINVeiculo(bin, &veiculo, TRUE, campo, valor))
         {
-            exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-            // liberando memoria dos campos dinamicos
-            free(veiculo.modelo);
-            free(veiculo.categoria);
-            veiculo.modelo = NULL;
-            veiculo.categoria = NULL;
+            // Exibir apenas os veiculos que não estão marcadas logicamente como excluidos
+            if(veiculo.removido == '1')
+            {
+                exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
+                // liberando memoria dos campos dinamicos
+                free(veiculo.modelo);
+                free(veiculo.categoria);
+                veiculo.modelo = NULL;
+                veiculo.categoria = NULL;
+            }
         }
 
         /*// Só exibir os veiculos que não estão marcados logicamente como excluidos e cujo valor do campo escolhido seja igual
@@ -351,12 +355,16 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
         // Ler o registro
         if(lerBINLinha(bin, &linha, TRUE, campo, valor))
         {
-            exibirRegistrosLinha(&cabLinhas, &linha);
-            // liberando memoria os campos dinamicos
-            free(linha.nomeLinha);
-            free(linha.corLinha);
-            linha.nomeLinha = NULL;
-            linha.corLinha = NULL;
+            // Exibir apenas as linhas que não estão marcadas logicamente como excluidas
+            if(linha.removido == '1')
+            {
+                exibirRegistrosLinha(&cabLinhas, &linha);
+                // liberando memoria os campos dinamicos
+                free(linha.nomeLinha);
+                free(linha.corLinha);
+                linha.nomeLinha = NULL;
+                linha.corLinha = NULL;
+            }
         }
 
         /*// Só exibir os veiculos que não estão marcados logicamente como excluidos e cujo valor do campo escolhido seja igual

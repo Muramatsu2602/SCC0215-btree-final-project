@@ -373,14 +373,13 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
 
     // Removido
     fread(&veiculos->removido, sizeof(veiculos->removido), 1, bin);
-    //pos += sizeof(veiculos->removido);
     
     // tamanhoRegistro
     fread(&veiculos->tamanhoRegistro, sizeof(veiculos->tamanhoRegistro), 1, bin);
-    pos += sizeof(veiculos->tamanhoRegistro);
 
     // prefixo
     fread(veiculos->prefixo, sizeof(char), 5, bin);
+    pos += 5;
     veiculos->prefixo[5] = '\0';
     if(flag == TRUE && strcmp(campo,"prefixo") == 0)
     {
@@ -390,11 +389,11 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
             fseek(bin, (veiculos->tamanhoRegistro - pos), SEEK_CUR);
             return FALSE;
         }
-    }
-    pos += 5; 
+    } 
 
     // data
     fread(veiculos->data, sizeof(char), 10, bin);
+    pos += 10;
     veiculos->data[10] = '\0';
     if(flag == TRUE && strcmp(campo,"data") == 0)
     {
@@ -404,11 +403,11 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
             fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
             return FALSE;
         }
-    }
-    pos += 10; 
+    } 
 
     // quantidadeLugares
     fread(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
+    pos += sizeof(veiculos->quantidadeLugares);
     if(flag == TRUE && strcmp(campo,"quantidadeLugares") == 0)
     {
         if(veiculos->quantidadeLugares != atoi(valor))
@@ -418,7 +417,6 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
             return FALSE;
         }
     }
-    pos += sizeof(veiculos->quantidadeLugares);
 
     // codLinha
     fread(&veiculos->codLinha, sizeof(veiculos->codLinha), 1, bin);
@@ -434,6 +432,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     {
         veiculos->modelo = (char *)realloc(veiculos->modelo, ((veiculos->tamanhoModelo)+1) * sizeof(char));
         fread(&veiculos->modelo[0], sizeof(char), veiculos->tamanhoModelo, bin);
+        pos += veiculos->tamanhoModelo;
         veiculos->modelo[veiculos->tamanhoModelo] = '\0';
         if(flag == TRUE && strcmp(campo,"modelo") == 0)
         {
@@ -447,7 +446,6 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
             }
         }   
     }
-    pos += veiculos->tamanhoModelo;
 
     // tamanhoCategoria
     fread(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
@@ -458,6 +456,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     {
         veiculos->categoria = (char *)realloc(veiculos->categoria, ((veiculos->tamanhoCategoria)+1) * sizeof(char));
         fread(&veiculos->categoria[0], sizeof(char), veiculos->tamanhoCategoria, bin);
+        pos += veiculos->tamanhoCategoria;
         veiculos->categoria[veiculos->tamanhoCategoria] = '\0';
         if(flag == TRUE && strcmp(campo,"categoria") == 0)
         {
