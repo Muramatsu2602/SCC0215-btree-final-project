@@ -254,3 +254,93 @@ void atualizaCabecalhoLinha(FILE *bin, CABECALHOL *cabecalho)
     fseek(bin, 13, SEEK_SET);
     fwrite(&cabecalho->nroRegRemovidos, sizeof(cabecalho->nroRegRemovidos), 1, bin);
 }
+
+/**
+ * @brief le o cabecalho da do .bin da linha e preenche a struct CABECALHOL
+ * 
+ * @param bin 
+ * @param cabLinhas 
+ * @return boolean 
+ */
+boolean lerCabecalhoBINLinha(FILE*bin, CABECALHOL *cabLinhas){
+    /*
+        struct _cabecalhoLinha
+        {
+            char status;
+            int64 byteProxReg;
+            int nroRegistros;
+            int nroRegRemovidos;
+            char descreveCodigo[16];
+            char descreveCartao[14];
+            char descreveNome[14];
+            char descreveLinha[25];
+        };
+    */
+   if (!bin || !cabLinhas)
+        return FALSE;
+
+    
+    // Posicionar o ponteiro no inicio do arquivo binário
+    fseek(bin, 0, SEEK_SET);
+
+    // Fazer a leitura dos campos e colocar na struct
+
+    // Status
+    fread(&cabLinhas->status, sizeof(cabLinhas->status), 1, bin);
+
+    // byteProxReg
+    fread(&cabLinhas->byteProxReg, sizeof(cabLinhas->byteProxReg), 1, bin);
+
+    // nroRegistros
+    fread(&cabLinhas->nroRegistros, sizeof(cabLinhas->nroRegistros), 1, bin);
+
+    // nroRegRemovidos
+    fread(&cabLinhas->nroRegRemovidos, sizeof(cabLinhas->nroRegRemovidos), 1, bin);
+
+    // descreveCodigo
+    fread(cabLinhas->descreveCodigo, sizeof(cabLinhas->descreveCodigo), 15, bin);
+
+    // descreveCartao
+    fread(cabLinhas->descreveCartao, sizeof(cabLinhas->descreveCartao), 13, bin);
+
+    // descreveNome
+    fread(cabLinhas->descreveNome, sizeof(cabLinhas->descreveNome), 13, bin);
+
+    // descreveLinha
+    fread(cabLinhas->descreveLinha, sizeof(cabLinhas->descreveLinha), 24, bin);
+
+    // Agora, o ponteiro do arquivo estará apontado para o primeiro registro do arquivo após o cabeçalho
+
+    return TRUE;
+}
+
+
+/**
+ * @brief Le linha do .bin e preenche uma struct do tipo LINHA
+ * 
+ * @param bin 
+ * @param linhas 
+ * @return boolean 
+ */
+boolean lerBINLinha(FILE*bin, LINHA *linhas){
+
+    /*
+        struct _linha
+        {
+            char removido;
+            int tamanhoRegistro;
+            int codLinha;
+            char aceitaCartao;
+            int tamanhoNome;
+            char* nomeLinha;
+            int tamanhoCor;
+            char* corLinha;
+        }; 
+     */
+    if(!bin || !linhas)
+        return FALSE;
+    
+    
+
+
+}
