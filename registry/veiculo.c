@@ -499,6 +499,8 @@ void exibirData(char *data)
     token = strtok(NULL, delim);
     dia = atoi(token);
 
+    if(dia < 10)
+        printf("0");
     printf("%d de ",dia);
     
     switch(mes)
@@ -531,7 +533,7 @@ void exibirData(char *data)
             printf("setembro de ");
             break;
         case 10:
-            printf("outrubro de ");
+            printf("outubro de ");
             break;
         case 11:
             printf("novembro de ");
