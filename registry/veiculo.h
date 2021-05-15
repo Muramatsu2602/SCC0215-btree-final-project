@@ -21,8 +21,8 @@
     {	
         char removido;
         int tamanhoRegistro;
-        char prefixo[5];
-        char data[10];
+        char prefixo[6];
+        char data[11];
         int	quantidadeLugares;
         int codLinha;
         int tamanhoModelo;
@@ -58,5 +58,5 @@
     boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos);
     boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos);
     boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo);
-
+    void exibirData(char *data);
 #endif

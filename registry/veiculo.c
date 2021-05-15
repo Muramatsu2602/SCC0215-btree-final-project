@@ -345,21 +345,27 @@ boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
 
     // descrevePrefixo
     fread(cabVeiculos->descrevePrefixo, sizeof(char), 18, bin);
+    cabVeiculos->descrevePrefixo[18] = '\0';
 
     // descreveData
     fread(cabVeiculos->descreveData, sizeof(char), 35, bin);
+    cabVeiculos->descreveData[35] = '\0';
 
     // descreveLugares
     fread(cabVeiculos->descreveLugares, sizeof(char), 42, bin);
+    cabVeiculos->descreveLugares[42] = '\0';
 
     // descreveLinha
     fread(cabVeiculos->descreveLinha, sizeof(char), 26, bin);
+    cabVeiculos->descreveLinha[26] = '\0';
 
     // descreveModelo
     fread(cabVeiculos->descreveModelo, sizeof(char), 17, bin);
+    cabVeiculos->descreveModelo[17] = '\0';
 
     // descreveCategoria
     fread(cabVeiculos->descreveCategoria, sizeof(char), 20, bin);
+    cabVeiculos->descreveCategoria[20] = '\0';
 
     // Agora, o ponteiro do arquivo estará apontado para o primeiro registro do arquivo após o cabeçalho
 
@@ -391,53 +397,57 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
     if (!bin || !veiculos)
         return FALSE;
 
+    //printf("Ponteiro: %ld\n",ftell(bin));
+
     // Removido
     fread(&veiculos->removido, sizeof(veiculos->removido), 1, bin);
+    //printf("Removido: %c\n",veiculos->removido);
 
     // tamanhoRegistro
     fread(&veiculos->tamanhoRegistro, sizeof(veiculos->tamanhoRegistro), 1, bin);
+    //printf("Tamanho Registro: %d\n",veiculos->tamanhoRegistro);
 
     // prefixo
-    fread(veiculos->prefixo, sizeof(veiculos->prefixo), 5, bin);
+    fread(veiculos->prefixo, sizeof(char), 5, bin);
+    veiculos->prefixo[5] = '\0';
+    //printf("Prefixo: %s\n",veiculos->prefixo);
 
     // data
-    fread(veiculos->data, sizeof(veiculos->data), 10, bin);
+    fread(veiculos->data, sizeof(char), 10, bin);
+    veiculos->data[10] = '\0';
+    //printf("Data: %s\n",veiculos->data);
 
     // quantidadeLugares
     fread(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
+    //printf("Quantidade Lugares: %d\n",veiculos->quantidadeLugares);
 
     // codLinha
     fread(&veiculos->codLinha, sizeof(veiculos->codLinha), 1, bin);
+    //printf("Cod linha: %d\n",veiculos->codLinha);
 
     // tamanhoModelo
     fread(&veiculos->tamanhoModelo, sizeof(veiculos->tamanhoModelo), 1, bin);
+    //printf("Tamanho Modelo: %d\n",veiculos->tamanhoModelo);
 
     // modelo
     // Checar se o campo Modelo é nulo
-    if (veiculos->tamanhoModelo == 0)
-    {
-        free(veiculos->modelo);
-        veiculos->modelo = NULL;
-    }
-    else
+    if (veiculos->tamanhoModelo != 0)
     {
         veiculos->modelo = (char *)realloc(veiculos->modelo, ((veiculos->tamanhoModelo)+1) * sizeof(char));
-        fread(&veiculos->modelo, sizeof(char), veiculos->tamanhoModelo, bin);
+        fread(&veiculos->modelo[0], sizeof(char), veiculos->tamanhoModelo, bin);
+        veiculos->modelo[veiculos->tamanhoModelo] = '\0';
     }
 
     // tamanhoCategoria
     fread(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
+    //printf("Tamanho Categoria: %d\n",veiculos->tamanhoCategoria);
 
     // categoria
-    if (veiculos->tamanhoCategoria == 0)
-    {
-        free(veiculos->categoria);
-        veiculos->categoria = NULL;
-    }
-    else
+    if (veiculos->tamanhoCategoria != 0)
     {
         veiculos->categoria = (char *)realloc(veiculos->categoria, ((veiculos->tamanhoCategoria)+1) * sizeof(char));
-        fread(&veiculos->categoria, sizeof(char), veiculos->tamanhoCategoria, bin);
+        fread(&veiculos->categoria[0], sizeof(char), veiculos->tamanhoCategoria, bin);
+        veiculos->categoria[veiculos->tamanhoCategoria] = '\0';
     }
 
     return TRUE;
@@ -482,13 +492,24 @@ boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
     }
     else
     {
-        // 2004-11-17
+        // Formato: 2004-11-17
         exibirData(veiculo->data);
     }
 
     // Quantidade Lugares
-    
+    printf("%s: ",cabVeiculos->descreveLugares);
+    if(veiculo->quantidadeLugares == -1)
+    {
+        printf("campo com valor nulo\n");
+    }
+    else
+    {
+        printf("%d\n",veiculo->quantidadeLugares);
+    }
 
+    // Pular uma linha entre registros
+    printf("\n");
+    return TRUE;
 }
 
 /**
@@ -498,7 +519,7 @@ boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
  */
 void exibirData(char *data)
 {
-    const char delim[2] = ",";
+    const char delim[2] = "-";
     char *token = NULL;
 
     int ano;
@@ -521,7 +542,43 @@ void exibirData(char *data)
     
     switch(mes)
     {
-        case ""
+        case 1:
+            printf("janeiro de ");
+            break;
+        case 2:
+            printf("fevereiro de ");
+            break;
+        case 3:
+            printf("março de ");
+            break;
+        case 4:
+            printf("abril de ");
+            break;
+        case 5:
+            printf("maio de ");
+            break;
+        case 6:
+            printf("junho de ");
+            break;
+        case 7:
+            printf("julho de ");
+            break;
+        case 8:
+            printf("agosto de ");
+            break;
+        case 9:
+            printf("setembro de ");
+            break;
+        case 10:
+            printf("outrubro de ");
+            break;
+        case 11:
+            printf("novembro de ");
+            break;
+        case 12:
+            printf("dezembro de ");
+            break;
     }
 
+    printf("%d\n",ano);
 }
