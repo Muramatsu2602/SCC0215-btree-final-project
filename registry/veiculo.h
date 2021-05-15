@@ -56,7 +56,7 @@
     boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos);
     void atualizaCabecalhoVeiculo(FILE *bin, CABECALHOV *cabecalho);
     boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos);
-    boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos);
+    boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, char *valor);
     boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo);
     void exibirData(char *data);
 #endif

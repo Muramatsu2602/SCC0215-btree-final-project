@@ -363,33 +363,70 @@ boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
  * @param veiculos 
  * @return boolean 
  */
-boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
+boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, char *valor)
 {
     if (!bin || !veiculos)
         return FALSE;
 
+    // Posição atual do ponteiro do arquivo
+    int pos = 0;
+
     // Removido
     fread(&veiculos->removido, sizeof(veiculos->removido), 1, bin);
+    //pos += sizeof(veiculos->removido);
     
     // tamanhoRegistro
     fread(&veiculos->tamanhoRegistro, sizeof(veiculos->tamanhoRegistro), 1, bin);
+    pos += sizeof(veiculos->tamanhoRegistro);
 
     // prefixo
     fread(veiculos->prefixo, sizeof(char), 5, bin);
     veiculos->prefixo[5] = '\0';
+    if(flag == TRUE && strcmp(campo,"prefixo") == 0)
+    {
+        if(strcmp(veiculos->prefixo, valor) != 0)
+        {
+            // Mover o ponteiro do arquivo para o próximo registro
+            fseek(bin, (veiculos->tamanhoRegistro - pos), SEEK_CUR);
+            return FALSE;
+        }
+    }
+    pos += 5; 
 
     // data
     fread(veiculos->data, sizeof(char), 10, bin);
     veiculos->data[10] = '\0';
+    if(flag == TRUE && strcmp(campo,"data") == 0)
+    {
+        if(strcmp(veiculos->data, valor) != 0)
+        {
+            // Mover o ponteiro do arquivo para o próximo registro
+            fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
+            return FALSE;
+        }
+    }
+    pos += 10; 
 
     // quantidadeLugares
     fread(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
+    if(flag == TRUE && strcmp(campo,"quantidadeLugares") == 0)
+    {
+        if(veiculos->quantidadeLugares != atoi(valor))
+        {
+            // Mover o ponteiro do arquivo para o próximo registro
+            fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
+            return FALSE;
+        }
+    }
+    pos += sizeof(veiculos->quantidadeLugares);
 
     // codLinha
     fread(&veiculos->codLinha, sizeof(veiculos->codLinha), 1, bin);
+    pos += sizeof(veiculos->codLinha);
 
     // tamanhoModelo
     fread(&veiculos->tamanhoModelo, sizeof(veiculos->tamanhoModelo), 1, bin);
+    pos += sizeof(veiculos->tamanhoModelo);
 
     // modelo
     // Checar se o campo Modelo é nulo
@@ -398,10 +435,23 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
         veiculos->modelo = (char *)realloc(veiculos->modelo, ((veiculos->tamanhoModelo)+1) * sizeof(char));
         fread(&veiculos->modelo[0], sizeof(char), veiculos->tamanhoModelo, bin);
         veiculos->modelo[veiculos->tamanhoModelo] = '\0';
+        if(flag == TRUE && strcmp(campo,"modelo") == 0)
+        {
+            if(strcmp(veiculos->modelo, valor) != 0)
+            {
+                // Mover o ponteiro do arquivo para o próximo registro
+                fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
+                free(veiculos->modelo);
+                veiculos->modelo = NULL;
+                return FALSE;
+            }
+        }   
     }
+    pos += veiculos->tamanhoModelo;
 
     // tamanhoCategoria
     fread(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
+    pos += sizeof(veiculos->tamanhoCategoria);
 
     // categoria
     if (veiculos->tamanhoCategoria != 0)
@@ -409,6 +459,19 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
         veiculos->categoria = (char *)realloc(veiculos->categoria, ((veiculos->tamanhoCategoria)+1) * sizeof(char));
         fread(&veiculos->categoria[0], sizeof(char), veiculos->tamanhoCategoria, bin);
         veiculos->categoria[veiculos->tamanhoCategoria] = '\0';
+        if(flag == TRUE && strcmp(campo,"categoria") == 0)
+        {
+            if(strcmp(veiculos->modelo, valor) != 0)
+            {
+                // Mover o ponteiro do arquivo para o próximo registro
+                fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
+                free(veiculos->modelo);
+                veiculos->modelo = NULL;
+                free(veiculos->categoria);
+                veiculos->categoria = NULL;
+                return FALSE;
+            }
+        }   
     }
 
     return TRUE;

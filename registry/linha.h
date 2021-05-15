@@ -49,7 +49,7 @@
     boolean escreverBINLinha(FILE *bin, LINHA *linhas);
     void atualizaCabecalhoLinha(FILE *bin, CABECALHOL *cabecalho);
     boolean lerCabecalhoBINLinha(FILE *bin, CABECALHOL *cabLinhas);
-    boolean lerBINLinha(FILE *bin, LINHA *linhas);
+    boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *valor);
     boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha);
 
 #endif

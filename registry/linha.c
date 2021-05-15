@@ -311,7 +311,7 @@ boolean lerCabecalhoBINLinha(FILE *bin, CABECALHOL *cabLinhas)
  * @param linhas 
  * @return boolean 
  */
-boolean lerBINLinha(FILE *bin, LINHA *linhas)
+boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *valor)
 {
 
     if (!bin || !linhas)
