@@ -341,3 +341,108 @@ void atualizaCabecalhoVeiculo(FILE *bin, CABECALHOV *cabecalho)
     fseek(bin, 13, SEEK_SET);
     fwrite(&cabecalho->nroRegRemovidos, sizeof(cabecalho->nroRegRemovidos), 1, bin);
 }
+
+boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
+{
+    /*struct _cabecalhoVeiculo
+    {
+        char status;
+        int64 byteProxReg;
+        int nroRegistros;
+        int nroRegRemovidos;
+        char descrevePrefixo[19];
+        char descreveData[36];
+        char descreveLugares[43];
+        char descreveLinha[27];
+        char descreveModelo[18];
+        char descreveCategoria[21];
+    };*/
+
+    if (!bin || !cabVeiculos)
+        return FALSE;
+
+    // Posicionar o ponteiro no inicio do arquivo binário
+    fseek(bin, 0, SEEK_SET);
+
+    // Fazer a leitura dos campos e colocar na struct
+
+    // Status
+    fread(cabVeiculos->status, sizeof(cabVeiculos->status), 1, bin);
+
+    // byteProxReg
+    fread(&cabVeiculos->byteProxReg, sizeof(cabVeiculos->byteProxReg), 1, bin);
+
+    // nroRegistros
+    fread(&cabVeiculos->nroRegistros, sizeof(cabVeiculos->nroRegistros), 1, bin);
+
+    // nroRegRemovidos
+    fread(&cabVeiculos->nroRegRemovidos, sizeof(cabVeiculos->nroRegRemovidos), 1, bin);
+
+    // descrevePrefixo
+    fread(cabVeiculos->descrevePrefixo, sizeof(char), 18, bin);
+
+    // descreveData
+    fread(cabVeiculos->descreveData, sizeof(char), 35, bin);
+
+    // descreveLugares
+    fread(cabVeiculos->descreveLugares, sizeof(char), 42, bin);
+
+    // descreveLinha
+    fread(cabVeiculos->descreveLinha, sizeof(char), 26, bin);
+
+    // descreveModelo
+    fread(cabVeiculos->descreveModelo, sizeof(char), 17, bin);
+
+    // descreveCategoria
+    fread(cabVeiculos->descreveCategoria, sizeof(char), 20, bin);
+
+    // Agora, o ponteiro do arquivo estará apontado para o primeiro registro do arquivo após o cabeçalho
+
+    return TRUE;
+}
+
+boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
+{
+    /*struct _veiculo
+    {	
+        char removido;
+        int tamanhoRegistro;
+        char prefixo[5];
+        char data[10];
+        int	quantidadeLugares;
+        int codLinha;
+        int tamanhoModelo;
+        char* modelo;
+        int tamanhoCategoria;
+        char* categoria;
+    };*/
+    if (!bin || !veiculos)
+        return FALSE;
+
+    // Removido
+
+    // tamanhoRegistro
+
+    // prefixo
+
+    // data
+
+    // quantidadeLugares
+
+    // codLinha
+
+    // tamanhoModelo
+
+    // modelo
+
+    // tamanhoCategoria
+
+    // categoria
+
+    return TRUE;
+}
+
+void exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
+{
+
+}
