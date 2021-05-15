@@ -48,5 +48,8 @@
     boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas);
     boolean escreverBINLinha(FILE *bin, LINHA *linhas);
     void atualizaCabecalhoLinha(FILE *bin, CABECALHOL *cabecalho);
+    boolean lerCabecalhoBINLinha(FILE *bin, CABECALHOL *cabLinhas);
+    boolean lerBINLinha(FILE *bin, LINHA *linhas);
+    boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha);
 
 #endif

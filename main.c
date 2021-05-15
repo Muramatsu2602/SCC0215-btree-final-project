@@ -157,37 +157,7 @@ void funcionalidade3(char *nomeBIN)
     CABECALHOV cabVeiculos;
     // Ler o cabeçalho de veiculos do arquivo binário
     lerCabecalhoBINVeiculo(bin, &cabVeiculos);
-
-    /*
-    struct _cabecalhoVeiculo
-    {
-        char status;
-        int64 byteProxReg;
-        int nroRegistros;
-        int nroRegRemovidos;
-        char descrevePrefixo[19];
-        char descreveData[36];
-        char descreveLugares[43];
-        char descreveLinha[27];
-        char descreveModelo[18];
-        char descreveCategoria[21];
-    };
-    */
-
-    /*printf("Cabeçalho lido:\n");
-    printf("%c\n",cabVeiculos.status);
-    printf("%lld\n",cabVeiculos.byteProxReg);
-    printf("%d\n",cabVeiculos.nroRegistros);
-    printf("%d\n",cabVeiculos.nroRegRemovidos);
-    printf("%s\n",cabVeiculos.descrevePrefixo);
-    printf("%s\n",cabVeiculos.descreveData);
-    printf("%s\n",cabVeiculos.descreveLugares);
-    printf("%s\n",cabVeiculos.descreveLinha);
-    printf("%s\n",cabVeiculos.descreveModelo);
-    printf("%s\n",cabVeiculos.descreveCategoria);
-    printf("\n");*/
-
-
+    
     // Chegar se não há registros no arquivo
     if(feof(bin) || cabVeiculos.nroRegistros == 0)
     {
@@ -209,6 +179,8 @@ void funcionalidade3(char *nomeBIN)
         // Só exibir os veiculos que não estão marcados logicamente como excluidos
         if(veiculo.removido == '1')
             exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
+
+        // liberando memoria dos campos dinamicos
         free(veiculo.modelo);
         free(veiculo.categoria);
         veiculo.modelo = NULL;
@@ -223,6 +195,51 @@ void funcionalidade3(char *nomeBIN)
 
 void funcionalidade4(char *nomeBIN)
 {
+     // Abrir arquivo binário para leitura
+    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE1);
+    if (bin == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    CABECALHOL cabLinhas;
+    // Ler o cabeçalho de veiculos do arquivo binário
+    lerCabecalhoBINLinha(bin, &cabLinhas);
+
+    // Chegar se não há registros no arquivo
+    if(feof(bin) || cabLinhas.nroRegistros == 0)
+    {
+        printf("Registro inexistente.\n");
+    }    
+
+    // Agora ler os registros e exibir na tela
+    LINHA linha;
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
+
+    int totalRegistros = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
+
+    for(int i=0; i<totalRegistros; i++)
+    {
+        // Ler o registro
+        lerBINLinha(bin, &linha);
+
+        // Só exibir os veiculos que não estão marcados logicamente como excluidos
+        if(linha.removido == '1')
+            exibirRegistrosLinha(&cabLinhas, &linha);
+
+        // liberando memoria os campos dinamicos
+        free(linha.nomeLinha);
+        free(linha.corLinha);
+        linha.nomeLinha = NULL;
+        linha.corLinha = NULL;
+    }
+
+    // Fechando arquivo binário
+    fclose(bin);
+
+    return;
 }
 
 void funcionalidade5(char *nomeBIN, char *campo, char *valor)
@@ -284,7 +301,7 @@ int main(int agrc, char *argv[])
                     N - PAGAMENTO EM CARTAO E DINHEIRO
                     F - PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA
             */
-
+        scanf("%s", arg1);
         funcionalidade4(arg1);
         break;
     case 5: // Abrir o arquivo .bin de veiculos e exibir na tela os veículos que atendem aos critérios de busca enviados
