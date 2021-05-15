@@ -330,12 +330,7 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas)
 
     // nomeLinha
     // Checar se o campo nomeLinha é nulo
-    if (linhas->tamanhoNome == 0)
-    {
-        free(linhas->nomeLinha);
-        linhas->nomeLinha = NULL;
-    }
-    else
+    if (linhas->tamanhoNome != 0)
     {
         linhas->nomeLinha = (char *)realloc(linhas->nomeLinha, ((linhas->tamanhoNome) + 1) * sizeof(char));
         fread(&linhas->nomeLinha, sizeof(char), linhas->tamanhoNome, bin);
@@ -346,12 +341,7 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas)
 
     // corLinha
     // Checar se o campo corLinha é nulo
-    if (linhas->corLinha == 0)
-    {
-        free(linhas->corLinha);
-        linhas->corLinha = NULL;
-    }
-    else
+    if (linhas->tamanhoCor != 0)
     {
         linhas->corLinha = (char *)realloc(linhas->corLinha, ((linhas->tamanhoCor) + 1) * sizeof(char));
         fread(&linhas->corLinha, sizeof(char), linhas->tamanhoCor, bin);
@@ -403,17 +393,17 @@ boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha)
 
     switch (linha->aceitaCartao)
     {
-        case 'S':
-            printf("PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR\n");
-            break;
-        case 'N':
-            printf("PAGAMENTO EM CARTAO E DINHEIRO\n");
-            break;
-        case 'F':
-            printf("PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA\n");
-            break;
-        default:
-            break;
+    case 'S':
+        printf("PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR\n");
+        break;
+    case 'N':
+        printf("PAGAMENTO EM CARTAO E DINHEIRO\n");
+        break;
+    case 'F':
+        printf("PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA\n");
+        break;
+    default:
+        break;
     }
 
     printf("\n");
