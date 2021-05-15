@@ -146,6 +146,52 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
 
 void funcionalidade3(char *nomeBIN)
 {
+    // Abrir arquivo binário para leitura
+    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
+    if (bin == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    CABECALHOV cabVeiculos;
+    // Ler o cabeçalho de veiculos do arquivo binário
+    if(!lerCabecalhoBINVeiculo(bin, &cabVeiculos));
+    {
+        printf("Registro inexistente.\n");
+    }
+
+    // Chegar se não há registros no arquivo
+    if(feof(bin) || cabVeiculos.nroRegistros == 0)
+    {
+        printf("Registro inexistente.\n");
+    }    
+
+    // Agora ler os registros e exibir na tela
+    VEICULO veiculo;
+    veiculos.modelo = NULL;
+    veiculos.categoria = NULL;
+
+    int totalRegistros = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
+
+    for(int i=0; i<totalRegistros; i++)
+    {
+        // Ler o registro
+        lerBINVeiculo(bin, &veiculo);
+        
+        // Só exibir os veiculos que não estão marcados logicamente como excluidos
+        if(veiculo.removido == '1')
+            exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
+    }
+
+    // limpando a mem heap
+    free(linha.nomeLinha);
+    free(linha.corLinha);
+
+    // Fechando arquivo binário
+    fclose(bin);
+
+    return;
 }
 
 void funcionalidade4(char *nomeBIN)
