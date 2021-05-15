@@ -31,7 +31,7 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
     input = readLine(fp);
 
     // Verificar se chegou na última linha do arquivo CSV
-    if(feof(fp))
+    if (feof(fp))
     {
         free(input);
         return FALSE;
@@ -64,7 +64,7 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
     // Nome da linha
     token = strtok(NULL, delim);
     linha->tamanhoNome = (int)strlen(token);
-    if(strcmp(token, "NULO") == 0)
+    if (strcmp(token, "NULO") == 0)
     {
         free(linha->nomeLinha);
         linha->nomeLinha = NULL;
@@ -72,14 +72,14 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
     }
     else
     {
-        linha->nomeLinha = (char *) realloc (linha->nomeLinha, ((linha->tamanhoNome)+1) * sizeof(char));
+        linha->nomeLinha = (char *)realloc(linha->nomeLinha, ((linha->tamanhoNome) + 1) * sizeof(char));
         strcpy(linha->nomeLinha, token);
     }
 
     // Cor da linha
     token = strtok(NULL, delim);
     linha->tamanhoCor = (int)strlen(token);
-    if(strcmp(token, "NULO") == 0)
+    if (strcmp(token, "NULO") == 0)
     {
         free(linha->corLinha);
         linha->corLinha = NULL;
@@ -87,18 +87,18 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
     }
     else
     {
-        linha->corLinha = (char *) realloc (linha->corLinha, ((linha->tamanhoCor)+1) * sizeof(char));
+        linha->corLinha = (char *)realloc(linha->corLinha, ((linha->tamanhoCor) + 1) * sizeof(char));
         strcpy(linha->corLinha, token);
     }
 
     // int tamanhoRegistro
     linha->tamanhoRegistro = sizeof(linha->codLinha) + sizeof(linha->aceitaCartao) + sizeof(linha->tamanhoNome) + sizeof(linha->tamanhoCor);
 
-    if(linha->nomeLinha != NULL)
+    if (linha->nomeLinha != NULL)
     {
         linha->tamanhoRegistro += strlen(linha->nomeLinha);
     }
-    if(linha->corLinha != NULL)
+    if (linha->corLinha != NULL)
     {
         linha->tamanhoRegistro += strlen(linha->corLinha);
     }
@@ -110,7 +110,7 @@ boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
  * @brief Le a primeira liha do CSV e preenche os campos descritivos
  * 
  * @param fp 
- * @param cabVeiculos 
+ * @param cabLinhas 
  * @return boolean 
  */
 boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
@@ -119,7 +119,7 @@ boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
     char *token = NULL;
     char *input = NULL;
 
-    if(!fp || !cabLinhas)
+    if (!fp || !cabLinhas)
         return FALSE;
 
     // lendo cabeçalho
@@ -175,19 +175,19 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
 
     // nroRegRemovidos
     fwrite(&cabLinhas->nroRegRemovidos, sizeof(int), 1, bin);
-    
+
     // descreveCodigo
     fwrite(&cabLinhas->descreveCodigo, sizeof(char), 15, bin);
-    
+
     // descreveCartao
     fwrite(&cabLinhas->descreveCartao, sizeof(char), 13, bin);
-    
+
     // descreveNome
     fwrite(&cabLinhas->descreveNome, sizeof(char), 13, bin);
-    
+
     // descreveLinha
     fwrite(&cabLinhas->descreveLinha, sizeof(char), 24, bin);
-    
+
     return TRUE;
 }
 
@@ -219,16 +219,15 @@ boolean escreverBINLinha(FILE *bin, LINHA *linhas)
     fwrite(&linhas->tamanhoNome, sizeof(linhas->tamanhoNome), 1, bin);
 
     // nomeLinha
-    if(linhas->nomeLinha != NULL)
+    if (linhas->nomeLinha != NULL)
         fwrite(linhas->nomeLinha, 1, linhas->tamanhoNome, bin);
 
     // tamanhoCor
     fwrite(&linhas->tamanhoCor, sizeof(linhas->tamanhoCor), 1, bin);
 
     // corLinha
-    if(linhas->corLinha != NULL)
+    if (linhas->corLinha != NULL)
         fwrite(linhas->corLinha, 1, linhas->tamanhoCor, bin);
-
 
     return TRUE;
 }
@@ -262,24 +261,11 @@ void atualizaCabecalhoLinha(FILE *bin, CABECALHOL *cabecalho)
  * @param cabLinhas 
  * @return boolean 
  */
-boolean lerCabecalhoBINLinha(FILE*bin, CABECALHOL *cabLinhas){
-    /*
-        struct _cabecalhoLinha
-        {
-            char status;
-            int64 byteProxReg;
-            int nroRegistros;
-            int nroRegRemovidos;
-            char descreveCodigo[16];
-            char descreveCartao[14];
-            char descreveNome[14];
-            char descreveLinha[25];
-        };
-    */
-   if (!bin || !cabLinhas)
+boolean lerCabecalhoBINLinha(FILE *bin, CABECALHOL *cabLinhas)
+{
+    if (!bin || !cabLinhas)
         return FALSE;
 
-    
     // Posicionar o ponteiro no inicio do arquivo binário
     fseek(bin, 0, SEEK_SET);
 
@@ -314,7 +300,6 @@ boolean lerCabecalhoBINLinha(FILE*bin, CABECALHOL *cabLinhas){
     return TRUE;
 }
 
-
 /**
  * @brief Le linha do .bin e preenche uma struct do tipo LINHA
  * 
@@ -322,25 +307,55 @@ boolean lerCabecalhoBINLinha(FILE*bin, CABECALHOL *cabLinhas){
  * @param linhas 
  * @return boolean 
  */
-boolean lerBINLinha(FILE*bin, LINHA *linhas){
+boolean lerBINLinha(FILE *bin, LINHA *linhas)
+{
 
-    /*
-        struct _linha
-        {
-            char removido;
-            int tamanhoRegistro;
-            int codLinha;
-            char aceitaCartao;
-            int tamanhoNome;
-            char* nomeLinha;
-            int tamanhoCor;
-            char* corLinha;
-        }; 
-     */
-    if(!bin || !linhas)
+    if (!bin || !linhas)
         return FALSE;
-    
-    
 
+    // Removido
+    fread(&linhas->removido, sizeof(linhas->removido), 1, bin);
 
+    // tamanhoRegistro
+    fread(&linhas->tamanhoRegistro, sizeof(linhas->tamanhoRegistro), 1, bin);
+
+    // codLinha
+    fread(&linhas->codLinha, sizeof(linhas->codLinha), 1, bin);
+
+    // aceitaCartao
+    fread(&linhas->aceitaCartao, sizeof(linhas->aceitaCartao), 1, bin);
+
+    // tamanhoNome
+    fread(&linhas->tamanhoNome, sizeof(linhas->tamanhoNome), 1, bin);
+
+    // nomeLinha
+    // Checar se o campo nomeLinha é nulo
+    if (linhas->tamanhoNome == 0)
+    {
+        free(linhas->nomeLinha);
+        linhas->nomeLinha = NULL;
+    }
+    else
+    {
+        linhas->nomeLinha = (char *)realloc(linhas->nomeLinha, ((linhas->tamanhoNome) + 1) * sizeof(char));
+        fread(&linhas->nomeLinha, sizeof(char), linhas->tamanhoNome, bin);
+    }
+
+    // tamanhoCor
+    fread(&linhas->tamanhoCor, sizeof(linhas->tamanhoCor), 1, bin);
+
+    // corLinha
+    // Checar se o campo corLinha é nulo
+    if (linhas->corLinha == 0)
+    {
+        free(linhas->corLinha);
+        linhas->corLinha = NULL;
+    }
+    else
+    {
+        linhas->corLinha = (char *)realloc(linhas->corLinha, ((linhas->tamanhoCor) + 1) * sizeof(char));
+        fread(&linhas->corLinha, sizeof(char), linhas->tamanhoCor, bin);
+    }
+
+    return TRUE;
 }
