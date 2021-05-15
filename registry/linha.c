@@ -10,6 +10,14 @@
  */
 #include "linha.h"
 
+/**
+ * @brief Le uma linha do linha.csv e preenche uma struct homonima, bem como atualiza o cabeçalho do .bin correspondente
+ * 
+ * @param fp 
+ * @param linha 
+ * @param cabecalho 
+ * @return boolean 
+ */
 boolean lerLinhaCSVLinha(FILE *fp, LINHA *linha, CABECALHOL *cabecalho)
 {
     const char delim[2] = ",";
@@ -145,6 +153,13 @@ boolean lerCabecalhoCSVLinha(FILE *fp, CABECALHOL *cabLinhas)
     return TRUE;
 }
 
+/**
+ * @brief escreve os dados do cabeçalho no arq bin correspondente
+ * 
+ * @param bin 
+ * @param cabLinhas 
+ * @return boolean 
+ */
 boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
 {
     if (!bin || !cabLinhas)
@@ -176,6 +191,13 @@ boolean escreveCabecalhoBINLinhas(FILE *bin, CABECALHOL *cabLinhas)
     return TRUE;
 }
 
+/**
+ * @brief escreve 1 registro no final do arquivo .bin correspondente aos dados das linhas de ônibus
+ * 
+ * @param bin 
+ * @param linhas 
+ * @return boolean 
+ */
 boolean escreverBINLinha(FILE *bin, LINHA *linhas)
 {
     if (!bin || !linhas)
@@ -207,59 +229,16 @@ boolean escreverBINLinha(FILE *bin, LINHA *linhas)
     if(linhas->corLinha != NULL)
         fwrite(linhas->corLinha, 1, linhas->tamanhoCor, bin);
 
-    // ------------------------- ATUALIZANDO CABEÇALHO -------------------------//
-
-    /*
-    // byteProxReg
-    // sizeof(status) = 1 byte
-
-    int64 byteProxReg = 0;
-
-    // Mover o ponteiro para byteProxReg no cabeçalho
-    fseek(bin, 1, SEEK_SET);
-    fread(&byteProxReg, sizeof(int64), 1, bin);
-
-    // Atualizando o offset do registro atual
-    byteProxReg += linhas->tamanhoRegistro;
-    fseek(bin, 1, SEEK_SET);
-    fwrite(&byteProxReg, sizeof(int64), 1, bin);
-
-    // nroRegistros
-    int nroRegistros = 0;
-
-    // pegando o valor de nroRegistros Atual
-    // sizeof(status) + sizeof(byteProxReg) = 9 bytes
-    fseek(bin, 9, SEEK_SET);
-    fread(&nroRegistros, sizeof(nroRegistros), 1, bin);
-
-    // contabilizando o registro
-    nroRegistros++;
-    fseek(bin, 9, SEEK_SET);
-    fread(&nroRegistros, sizeof(nroRegistros), 1, bin);
-
-    // nroRegRemovidos
-    if (!linhas->removido)
-        return TRUE;
-
-    int nroRegRemovidos = 0;
-
-    // pegando o valor de nroRegRemovidos atual
-    // sizeof(status) + sizeof(byteProxReg) + sizeof(nroRegistros) = 13 bytes
-    fseek(bin, 13, SEEK_SET);
-    fread(&nroRegRemovidos, sizeof(nroRegRemovidos), 1, bin);
-
-    // contabilizando registro se removido
-    nroRegRemovidos++;
-    fseek(bin, 13, SEEK_SET);
-    fread(&nroRegRemovidos, sizeof(nroRegRemovidos), 1, bin);
-
-    // retornar ao fim do arquivo, para escrever o proximo registro
-    fseek(bin, byteProxReg, SEEK_SET);
-    */
 
     return TRUE;
 }
 
+/**
+ * @brief atualiza no cabeçalho do arq .bin os campos que descrevem características do conteúdo do arquivo
+ * São eles: byteProxReg, nroRegistros, nroRegistrosRemovidos
+ * @param bin 
+ * @param cabecalho 
+ */
 void atualizaCabecalhoLinha(FILE *bin, CABECALHOL *cabecalho)
 {
     // Atualizar byteProxReg
