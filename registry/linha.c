@@ -359,3 +359,64 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas)
 
     return TRUE;
 }
+
+/**
+ * @brief imprime na tela o as linhas de linha.bin
+ * 
+ * @param cabLinhas 
+ * @param linha 
+ * @return boolean 
+ */
+boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha)
+{
+    if (!cabLinhas || !linha)
+        return FALSE;
+
+    // codLinha
+    printf("%s: ", cabLinhas->descreveCodigo);
+    printf("%d\n", linha->codLinha);
+
+    // nomeLinha
+    printf("%s: ", cabLinhas->descreveNome);
+    if (linha->nomeLinha == NULL)
+    {
+        printf("campo com valor nulo\n");
+    }
+    else
+    {
+        printf("%s\n", linha->nomeLinha);
+    }
+
+    // corLinha
+    printf("%s: ", cabLinhas->descreveLinha);
+    if (linha->corLinha == NULL)
+    {
+        printf("campo com valor nulo\n");
+    }
+    else
+    {
+        printf("%s\n", linha->corLinha);
+    }
+
+    // aceitaCartao
+    printf("%s: ", cabLinhas->descreveCartao);
+
+    switch (linha->aceitaCartao)
+    {
+        case 'S':
+            printf("PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR\n");
+            break;
+        case 'N':
+            printf("PAGAMENTO EM CARTAO E DINHEIRO\n");
+            break;
+        case 'F':
+            printf("PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA\n");
+            break;
+        default:
+            break;
+    }
+
+    printf("\n");
+
+    return TRUE;
+}
