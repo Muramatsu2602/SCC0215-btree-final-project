@@ -392,29 +392,69 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos)
         return FALSE;
 
     // Removido
+    fread(&veiculos->removido, sizeof(veiculos->removido), 1, bin);
 
     // tamanhoRegistro
+    fread(&veiculos->tamanhoRegistro, sizeof(veiculos->tamanhoRegistro), 1, bin);
 
     // prefixo
+    fread(veiculos->prefixo, sizeof(veiculos->prefixo), 5, bin);
 
     // data
+    fread(veiculos->data, sizeof(veiculos->data), 10, bin);
 
     // quantidadeLugares
+    fread(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
 
     // codLinha
+    fread(&veiculos->codLinha, sizeof(veiculos->codLinha), 1, bin);
 
     // tamanhoModelo
+    fread(&veiculos->tamanhoModelo, sizeof(veiculos->tamanhoModelo), 1, bin);
 
     // modelo
+    // Checar se o campo Modelo é nulo
+    if (veiculos->tamanhoModelo == 0)
+    {
+        free(veiculos->modelo);
+        veiculos->modelo = NULL;
+    }
+    else
+    {
+        veiculos->modelo = (char *)realloc(veiculos->modelo, ((veiculos->tamanhoModelo)+1) * sizeof(char));
+        fread(&veiculos->modelo, sizeof(char), veiculos->tamanhoModelo, bin);
+    }
 
     // tamanhoCategoria
+    fread(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
 
     // categoria
+    if (veiculos->tamanhoCategoria == 0)
+    {
+        free(veiculos->categoria);
+        veiculos->categoria = NULL;
+    }
+    else
+    {
+        veiculos->categoria = (char *)realloc(veiculos->categoria, ((veiculos->tamanhoCategoria)+1) * sizeof(char));
+        fread(&veiculos->categoria, sizeof(char), veiculos->tamanhoCategoria, bin);
+    }
 
     return TRUE;
 }
 
-void exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
+boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
 {
+    if(!cabVeiculos || !veiculo)
+        return FALSE;
 
+    // Prefixo
+
+    // Modelo
+
+    // Categoria
+
+    // Data
+
+    // Quantidade Lugares
 }
