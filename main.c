@@ -367,6 +367,8 @@ void funcionalidade7(char *nomeBIN, int N)
     fseek(bin, 0, SEEK_END);
 
     VEICULO veiculo;
+    veiculo.modelo = NULL;
+    veiculo.categoria = NULL;
     for (int i = 0; i < N; i++)
     {
         if (!lerEntradaVeiculo(&veiculo))
@@ -379,15 +381,22 @@ void funcionalidade7(char *nomeBIN, int N)
         escreverBINVeiculo(bin, &veiculo);
         cabVeiculos.nroRegistros++;
 
-        free(veiculo.modelo);
-        free(veiculo.categoria);
-        veiculo.modelo = NULL;
-        veiculo.categoria = NULL;
+        if(veiculo.modelo != NULL) 
+        {
+            free(veiculo.modelo);
+            veiculo.modelo = NULL;
+        }   
+        if(veiculo.categoria != NULL)
+        {
+            free(veiculo.categoria);
+            veiculo.categoria = NULL;
+        }
     }
 
     atualizaCabecalhoVeiculo(bin, &cabVeiculos);
     fecharArquivoBin(&bin);
 
+    binarioNaTela(nomeBIN);
     return;
 }
 
@@ -414,6 +423,8 @@ void funcionalidade8(char *nomeBIN, int N)
     fseek(bin, 0, SEEK_END);
 
     LINHA linha;
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
     for (int i = 0; i < N; i++)
     {
         if (!lerEntradaLinha(&linha))
@@ -426,15 +437,22 @@ void funcionalidade8(char *nomeBIN, int N)
         escreverBINLinha(bin, &linha);
         linha.removido == '1' ? cabLinhas.nroRegistros++ : cabLinhas.nroRegRemovidos++;
 
-        free(linha.nomeLinha);
-        free(linha.corLinha);
-        linha.nomeLinha = NULL;
-        linha.corLinha = NULL;
+        if(linha.nomeLinha != NULL)
+        {
+            free(linha.nomeLinha);
+            linha.nomeLinha = NULL;
+        }
+        if(linha.corLinha != NULL)
+        {
+            free(linha.corLinha);
+            linha.corLinha = NULL;
+        }
     }
 
     atualizaCabecalhoLinha(bin, &cabLinhas);
     fecharArquivoBin(&bin);
 
+    binarioNaTela(nomeBIN);
     return;
 }
 
@@ -505,14 +523,12 @@ int main(int agrc, char *argv[])
         // Recebe o número de novos registros a serem inseridos
         scanf("%s %d", arg1, &N);
         funcionalidade7(arg1, N);
-        binarioNaTela(arg1);
         break;
     case 8: // Inserção de novos registros no arquivo de entrada .bin de linhas
         // Recebe o nome do arquivo .bin de linhas
         // Recebe o número de novos registros a serem inseridos
         scanf("%s %d", arg1, &N);
         funcionalidade8(arg1, N);
-        binarioNaTela(arg1);
         break;
     }
     // Liberando memoria heap dos campos lidos

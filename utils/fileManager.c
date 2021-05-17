@@ -74,10 +74,25 @@ FILE *abrirArquivo(const char *filename, const char *mode)
 FILE *abrirArquivoBin(const char *filename, const char *mode)
 {
     FILE *fp = NULL;
-    const char status = '1';
+    char status;
 
     if ((fp = fopen(filename, mode)) != NULL)
     {
+        // Verificar se o arquivo foi fechado anteriormente com sucesso
+        fread(&status, sizeof(char), 1, fp);
+        
+        if(status == '0')
+        {
+            // O arquivo não foi fechado anteriormente com sucesso
+            fclose(fp);
+            return NULL;
+        }
+        
+        // Se foi fechado anteriormente com sucesso, mudar o campo status para 0 e prosseguir
+
+        status = '0';
+
+        fseek(fp, 0, SEEK_SET);
         fwrite(&status, sizeof(char), 1, fp);
 
         // voltando para o inicio do arquivo

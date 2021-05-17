@@ -672,7 +672,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     else
     {
         veiculo->tamanhoModelo = strlen(temp);
-        veiculo->modelo = (char *)malloc(sizeof(char) * veiculo->tamanhoModelo);
+        veiculo->modelo = (char *)malloc(sizeof(char) * (veiculo->tamanhoModelo+1));
         strcpy(veiculo->modelo, temp);
     }
 
@@ -685,7 +685,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     else
     {
         veiculo->tamanhoCategoria = strlen(temp);
-        veiculo->categoria = (char *)malloc(sizeof(char) * veiculo->tamanhoCategoria);
+        veiculo->categoria = (char *)malloc(sizeof(char) * (veiculo->tamanhoCategoria+1));
         strcpy(veiculo->categoria, temp);
     }
 
@@ -699,5 +699,6 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     if (veiculo->categoria != NULL)
         veiculo->tamanhoRegistro += strlen(veiculo->categoria);
 
+    free(temp);
     return TRUE;
 }
