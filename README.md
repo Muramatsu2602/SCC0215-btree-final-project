@@ -23,6 +23,7 @@ Este trabalho tem como objetivo armazenar dados em um arquivo binário de acordo
 ```
 
 ## Presentation Video 
+... url goes here ...
 
 ## Team
 * 1179444 - Giovanni Shibaki Camargo
