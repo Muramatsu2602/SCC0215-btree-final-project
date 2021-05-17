@@ -401,6 +401,44 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
 
 void funcionalidade7(char *nomeBIN, int N)
 {
+    // Abrir arquivo binário para leitura
+    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE1);
+    if (bin == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fclose(bin);
+        return;
+    }
+
+    CABECALHOV cabVeiculos;
+    // Ler o cabeçalho de veiculos do arquivo binário
+    if(!lerCabecalhoBINLinha(bin, &cabVeiculos))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fclose(bin);
+        return;
+    }
+
+    // Mover o ponteiro para o final do arquivo
+    fseek(bin, 0, SEEK_END);
+
+    VEICULO veiculo;
+    for(int i=0; i<N; i++)
+    {
+        if(!lerEntradaVeiculo(&cabVeiculos, &veiculo))
+        {
+            printf("Falha no processamento do arquivo.\n");
+            fclose(bin);
+            return;
+        }
+            
+        escreverBINVeiculo(bin, &veiculo);
+
+        free(veiculo.modelo);
+        free(veiculo.categoria);
+        veiculo.modelo = NULL;
+        veiculo.categoria = NULL;
+    }
 }
 
 void funcionalidade8(char *nomeBIN, int N)
@@ -472,13 +510,13 @@ int main(int agrc, char *argv[])
     case 7: // Inserção de novos registros no arquivo de entrada .bin de veiculos
         // Recebe o nome do arquivo .bin de veiculos
         // Recebe o número de novos registros a serem inseridos
-
+        scanf("%s %d", arg1, N);
         funcionalidade7(arg1, N);
         break;
     case 8: // Inserção de novos registros no arquivo de entrada .bin de linhas
         // Recebe o nome do arquivo .bin de linhas
         // Recebe o número de novos registros a serem inseridos
-
+        scanf("%s %d", arg1, N);
         funcionalidade8(arg1, N);
         break;
     }
