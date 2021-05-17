@@ -99,7 +99,7 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
     }
 
     // Abrir o arquivo binário para escrita
-    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE3);
+    FILE *bin = abrirArquivoBin(nomeBIN, FILE_MODE3);
     if (bin == NULL)
     {
         printf("Falha no processamento do arquivo.\n");
@@ -147,7 +147,7 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
 void funcionalidade3(char *nomeBIN)
 {
     // Abrir arquivo binário para leitura
-    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE1);
+    FILE *bin = abrirArquivoBin(nomeBIN, FILE_MODE1);
     if (bin == NULL)
     {
         printf("Falha no processamento do arquivo.\n");
@@ -188,7 +188,7 @@ void funcionalidade3(char *nomeBIN)
     }
 
     // Fechando arquivo binário
-    fclose(bin);
+    fecharArquivoBin(&bin);
 
     return;
 }
@@ -196,7 +196,7 @@ void funcionalidade3(char *nomeBIN)
 void funcionalidade4(char *nomeBIN)
 {
     // Abrir arquivo binário para leitura
-    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE1);
+    FILE *bin = abrirArquivoBin(nomeBIN, FILE_MODE1);
     if (bin == NULL)
     {
         printf("Falha no processamento do arquivo.\n");
@@ -237,7 +237,7 @@ void funcionalidade4(char *nomeBIN)
     }
 
     // Fechando arquivo binário
-    fclose(bin);
+    fecharArquivoBin(&bin);
 
     return;
 }
@@ -245,7 +245,7 @@ void funcionalidade4(char *nomeBIN)
 void funcionalidade5(char *nomeBIN, char *campo, char *valor)
 {
     // Abrir arquivo binário para leitura
-    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE1);
+    FILE *bin = abrirArquivoBin(nomeBIN, FILE_MODE1);
     if (bin == NULL)
     {
         printf("Falha no processamento do arquivo.\n");
@@ -285,40 +285,10 @@ void funcionalidade5(char *nomeBIN, char *campo, char *valor)
                 veiculo.categoria = NULL;
             }
         }
-
-        /*// Só exibir os veiculos que não estão marcados logicamente como excluidos e cujo valor do campo escolhido seja igual
-        if(veiculo.removido == '1')
-        {
-            if(strcmp(campo, "prefixo") == 0)
-            {
-                if(strcmp(veiculo.prefixo, valor) == 0)
-                    exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-            }
-            else if(strcmp(campo, "data") == 0)
-            {
-                if(strcmp(veiculo.data, valor) == 0)
-                    exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-            }
-            else if(strcmp(campo, "quantidadeLugares") == 0)
-            {
-                if(veiculo.quantidadeLugares == atoi(valor))
-                    exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-            }
-            else if(strcmp(campo, "modelo") == 0)
-            {
-                if(strcmp(veiculo.modelo, valor) == 0)
-                    exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-            }
-            else if(strcmp(campo, "categoria") == 0)
-            {
-                if(strcmp(veiculo.categoria, valor) == 0)
-                    exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-            }
-        }*/
     }
 
     // Fechando arquivo binário
-    fclose(bin);
+    fecharArquivoBin(&bin);
 
     return;
 }
@@ -326,7 +296,7 @@ void funcionalidade5(char *nomeBIN, char *campo, char *valor)
 void funcionalidade6(char *nomeBIN, char *campo, char *valor)
 {
     // Abrir arquivo binário para leitura
-    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE1);
+    FILE *bin = abrirArquivoBin(nomeBIN, FILE_MODE1);
     if (bin == NULL)
     {
         printf("Falha no processamento do arquivo.\n");
@@ -366,35 +336,10 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
                 linha.corLinha = NULL;
             }
         }
-
-        /*// Só exibir os veiculos que não estão marcados logicamente como excluidos e cujo valor do campo escolhido seja igual
-        if(linha.removido == '1')
-        {
-            if(strcmp(campo, "codLinha") == 0)
-            {
-                if(linha.codLinha == atoi(valor))
-                    exibirRegistrosLinha(&cabLinhas, &linha);
-            }
-            else if(strcmp(campo, "aceitaCartao") == 0)
-            {
-                if(linha.aceitaCartao == valor[0])
-                    exibirRegistrosLinha(&cabLinhas, &linha);
-            }
-            else if(strcmp(campo, "nomeLinha") == 0)
-            {
-                if(strcmp(linha.nomeLinha, valor) == 0)
-                    exibirRegistrosLinha(&cabLinhas, &linha);
-            }
-            else if(strcmp(campo, "corLinha") == 0)
-            {
-                if(strcmp(linha.corLinha, valor) == 0)
-                    exibirRegistrosLinha(&cabLinhas, &linha);
-            }
-        }*/
     }
 
     // Fechando arquivo binário
-    fclose(bin);
+    fecharArquivoBin(&bin);
 
     return;
 }
@@ -402,11 +347,10 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
 void funcionalidade7(char *nomeBIN, int N)
 {
     // Abrir arquivo binário para leitura
-    FILE *bin = abrirArquivo(nomeBIN, FILE_MODE1);
+    FILE *bin = abrirArquivoBin(nomeBIN, FILE_MODE1);
     if (bin == NULL)
     {
         printf("Falha no processamento do arquivo.\n");
-        fclose(bin);
         return;
     }
 
@@ -415,7 +359,7 @@ void funcionalidade7(char *nomeBIN, int N)
     if (!lerCabecalhoBINVeiculo(bin, &cabVeiculos))
     {
         printf("Falha no processamento do arquivo.\n");
-        fclose(bin);
+        fecharArquivoBin(&bin);
         return;
     }
 
@@ -428,7 +372,7 @@ void funcionalidade7(char *nomeBIN, int N)
         if (!lerEntradaVeiculo(&veiculo))
         {
             printf("Falha no processamento do arquivo.\n");
-            fclose(bin);
+            fecharArquivoBin(&bin);
             return;
         }
 
@@ -449,6 +393,49 @@ void funcionalidade7(char *nomeBIN, int N)
 
 void funcionalidade8(char *nomeBIN, int N)
 {
+    // Abrir arquivo binário para leitura
+    FILE *bin = abrirArquivoBin(nomeBIN, FILE_MODE1);
+    if (bin == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    CABECALHOL cabLinhas;
+    // Ler o cabeçalho de veiculos do arquivo binário
+    if (!lerCabecalhoBINLinha(bin, &cabLinhas))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&bin);
+        return;
+    }
+
+    // Mover o ponteiro para o final do arquivo
+    fseek(bin, 0, SEEK_END);
+
+    LINHA linha;
+    for (int i = 0; i < N; i++)
+    {
+        if (!lerEntradaLinha(&linha))
+        {
+            printf("Falha no processamento do arquivo.\n");
+            fecharArquivoBin(&bin);
+            return;
+        }
+
+        escreverBINLinha(bin, &linha);
+        linha.removido == '1' ? cabLinhas.nroRegistros++ : cabLinhas.nroRegRemovidos++;
+
+        free(linha.nomeLinha);
+        free(linha.corLinha);
+        linha.nomeLinha = NULL;
+        linha.corLinha = NULL;
+    }
+
+    atualizaCabecalhoLinha(bin, &cabLinhas);
+    fecharArquivoBin(&bin);
+
+    return;
 }
 
 int main(int agrc, char *argv[])

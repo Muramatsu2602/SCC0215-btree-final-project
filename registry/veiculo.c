@@ -150,7 +150,6 @@ boolean lerCabecalhoCSVVeiculo(FILE *fp, CABECALHOV *cabVeiculos)
     // Descreve prefixo
     token = strtok(input, delim);
     strcpy(cabVeiculos->descrevePrefixo, token);
-    // preenchendoLixo(strlen(cabVeiculos->descrevePrefixo), 18, cabVeiculos->descrevePrefixo);
 
     // Descreve Data
     token = strtok(NULL, delim);

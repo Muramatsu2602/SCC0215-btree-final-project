@@ -51,5 +51,6 @@
     boolean lerCabecalhoBINLinha(FILE *bin, CABECALHOL *cabLinhas);
     boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *valor);
     boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha);
+    boolean lerEntradaLinha(LINHA *linha);
 
 #endif
