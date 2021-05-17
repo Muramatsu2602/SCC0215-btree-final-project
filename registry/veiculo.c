@@ -483,6 +483,13 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     return TRUE;
 }
 
+/**
+ * @brief imprime na tela os registros do arquivo .bin de veiculos
+ * 
+ * @param cabVeiculos 
+ * @param veiculo 
+ * @return boolean 
+ */
 boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
 {
     if (!cabVeiculos || !veiculo)

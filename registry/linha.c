@@ -468,6 +468,12 @@ boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha)
     return TRUE;
 }
 
+/**
+ * @brief lê os dados da linha de onibus a ser inserida e preenche a struct LINHA
+ * 
+ * @param linha  
+ * @return boolean 
+ */
 boolean lerEntradaLinha(LINHA *linha)
 {
     if (!linha)
