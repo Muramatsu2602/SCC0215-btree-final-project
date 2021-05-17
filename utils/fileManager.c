@@ -106,25 +106,6 @@ FILE *abrirArquivoBin(const char *filename, const char *mode)
 }
 
 /**
- * @brief deleta o arquivo permanentemente
- * 
- * @param filename 
- * @return int 
- */
-int removerArquivo(const char *filename)
-{
-    if (!filename)
-        return EXIT_FAILURE;
-
-    int res = 0;
-
-    if ((res = remove(filename)) == 0)
-        return EXIT_SUCCESS;
-    else
-        return EXIT_FAILURE;
-}
-
-/**
  * @brief preenche caracteres vazios (ou lixo) com @, no formato '/0@@@@@
  * 
  * @param tamOcupado 
@@ -137,6 +118,7 @@ boolean preenchendoLixo(int tamOcupado, int tamMaximo, char *str)
     if (!str)
         return FALSE;
 
+    // preenche com @ a quantidade de caracteres da diferenca entre tamMaximo e tamOcupado
     for (int i = tamOcupado; i < tamMaximo; i++)
         str[i] = (char)'@';
 
@@ -192,8 +174,10 @@ boolean fecharArquivoBin(FILE **fp)
 
     const char status = '1';
 
+    // indo ao inicio do arquivo binario
     fseek(*fp, 0, SEEK_SET);
 
+    // atualizar status pra 1 no arquivo antes de fecha-lo
     if (!fwrite(&status, sizeof(char), 1, *fp))
         return FALSE;
 

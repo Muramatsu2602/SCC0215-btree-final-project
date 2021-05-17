@@ -4,20 +4,26 @@ Este trabalho tem como objetivo armazenar dados em um arquivo binário de acordo
 
 ## Project Structure
 ```.
-├── binary
-│   └── ...
+.
+├── bin
 ├── csv
 ├── LICENSE
 ├── main.c
 ├── Makefile
 ├── README.md
-├── register
-│   └── ...
+├── registry
+│   ├── linha.c
+│   ├── linha.h
+│   ├── veiculo.c
+│   └── veiculo.h
+├── test
 └── utils
-    └── ...
+    ├── fileManager.c
+    └── fileManager.h
 ```
 
 ## Presentation Video 
+... url goes here ...
 
 ## Team
 * 1179444 - Giovanni Shibaki Camargo

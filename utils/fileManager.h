@@ -30,7 +30,6 @@
     char *readLine(FILE *stream);
     FILE *abrirArquivo(const char *filename, const char *mode);
     FILE *abrirArquivoBin(const char*filename, const char*mode);
-    int removerArquivo(const char *filename);
     boolean preenchendoLixo(int tamOcupado, int tamMaximo, char *str);
     boolean fecharArquivoBin(FILE **fp);
 

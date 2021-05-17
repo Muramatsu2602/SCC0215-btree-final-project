@@ -543,7 +543,7 @@ boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
 }
 
 /**
- * @brief Recebe a data desformatada e exibe na tela 
+ * @brief Recebe a data desformatada e exibe na tela conforme especificado no documento de requisitos
  * 
  * @param data
  */
@@ -672,7 +672,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     else
     {
         veiculo->tamanhoModelo = strlen(temp);
-        veiculo->modelo = (char *)malloc(sizeof(char) * (veiculo->tamanhoModelo+1));
+        veiculo->modelo = (char *)malloc(sizeof(char) * (veiculo->tamanhoModelo + 1));
         strcpy(veiculo->modelo, temp);
     }
 
@@ -685,7 +685,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     else
     {
         veiculo->tamanhoCategoria = strlen(temp);
-        veiculo->categoria = (char *)malloc(sizeof(char) * (veiculo->tamanhoCategoria+1));
+        veiculo->categoria = (char *)malloc(sizeof(char) * (veiculo->tamanhoCategoria + 1));
         strcpy(veiculo->categoria, temp);
     }
 
@@ -693,9 +693,8 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     veiculo->tamanhoRegistro = (sizeof(veiculo->prefixo) - 1) + (sizeof(veiculo->data) - 1) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
 
     if (veiculo->modelo != NULL)
-    {
         veiculo->tamanhoRegistro += strlen(veiculo->modelo);
-    }
+
     if (veiculo->categoria != NULL)
         veiculo->tamanhoRegistro += strlen(veiculo->categoria);
 
