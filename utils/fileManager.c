@@ -61,6 +61,31 @@ FILE *abrirArquivo(const char *filename, const char *mode)
     if ((fp = fopen(filename, mode)) != NULL)
         return fp;
 
+    return NULL;
+}
+
+/**
+ * @brief igual ao abrirArquivo mas muda campo status para '0' enquanto o arq binario esta aberto
+ * 
+ * @param filename 
+ * @param mode 
+ * @return FILE* 
+ */
+FILE *abrirArquivoBin(const char *filename, const char *mode)
+{
+    FILE *fp = NULL;
+    const char status = '1';
+
+    if ((fp = fopen(filename, mode)) != NULL)
+    {
+        fwrite(&status, sizeof(char), 1, fp);
+
+        // voltando para o inicio do arquivo
+        fseek(fp, 0, SEEK_SET);
+
+        return fp;
+    }
+
     // printf("Erro na abertura do arquivo de nome %s!\n", filename);
     return NULL;
 }

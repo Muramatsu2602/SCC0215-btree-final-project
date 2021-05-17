@@ -329,9 +329,9 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *v
     // codLinha
     fread(&linhas->codLinha, sizeof(linhas->codLinha), 1, bin);
     pos += sizeof(linhas->codLinha);
-    if(flag == TRUE && strcmp(campo,"codLinha") == 0)
+    if (flag == TRUE && strcmp(campo, "codLinha") == 0)
     {
-        if(linhas->codLinha != atoi(valor))
+        if (linhas->codLinha != atoi(valor))
         {
             // Mover o ponteiro do arquivo para o próximo registro
             fseek(bin, (linhas->tamanhoRegistro - pos), SEEK_CUR);
@@ -342,9 +342,9 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *v
     // aceitaCartao
     fread(&linhas->aceitaCartao, sizeof(linhas->aceitaCartao), 1, bin);
     pos += sizeof(linhas->aceitaCartao);
-    if(flag == TRUE && strcmp(campo,"aceitaCartao") == 0)
+    if (flag == TRUE && strcmp(campo, "aceitaCartao") == 0)
     {
-        if(linhas->aceitaCartao == valor[0])
+        if (linhas->aceitaCartao == valor[0])
         {
             // Mover o ponteiro do arquivo para o próximo registro
             fseek(bin, (linhas->tamanhoRegistro - pos), SEEK_CUR);
@@ -364,17 +364,17 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *v
         fread(&linhas->nomeLinha[0], sizeof(char), linhas->tamanhoNome, bin);
         pos += linhas->tamanhoNome;
         linhas->nomeLinha[linhas->tamanhoNome] = '\0';
-        if(flag == TRUE && strcmp(campo,"nomeLinha") == 0)
+        if (flag == TRUE && strcmp(campo, "nomeLinha") == 0)
         {
-            if(strcmp(linhas->nomeLinha, valor) != 0)
+            if (strcmp(linhas->nomeLinha, valor) != 0)
             {
                 // Mover o ponteiro do arquivo para o próximo registro
-                fseek(bin, (linhas->tamanhoRegistro-pos), SEEK_CUR);
+                fseek(bin, (linhas->tamanhoRegistro - pos), SEEK_CUR);
                 free(linhas->nomeLinha);
                 linhas->nomeLinha = NULL;
                 return FALSE;
             }
-        }   
+        }
     }
 
     // tamanhoCor
@@ -389,19 +389,19 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *v
         fread(&linhas->corLinha[0], sizeof(char), linhas->tamanhoCor, bin);
         pos += linhas->tamanhoCor;
         linhas->corLinha[linhas->tamanhoCor] = '\0';
-        if(flag == TRUE && strcmp(campo,"corLinha") == 0)
+        if (flag == TRUE && strcmp(campo, "corLinha") == 0)
         {
-            if(strcmp(linhas->corLinha, valor) != 0)
+            if (strcmp(linhas->corLinha, valor) != 0)
             {
                 // Mover o ponteiro do arquivo para o próximo registro
-                fseek(bin, (linhas->tamanhoRegistro-pos), SEEK_CUR);
+                fseek(bin, (linhas->tamanhoRegistro - pos), SEEK_CUR);
                 free(linhas->nomeLinha);
                 linhas->nomeLinha = NULL;
                 free(linhas->corLinha);
                 linhas->corLinha = NULL;
                 return FALSE;
             }
-        }   
+        }
     }
 
     return TRUE;
@@ -464,6 +464,81 @@ boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha)
     }
 
     printf("\n");
+
+    return TRUE;
+}
+
+boolean lerEntradaLinha(LINHA *linha)
+{
+    if (!linha)
+        return FALSE;
+
+    char *temp = malloc(BUFFER);
+    int aux = 0; // ignorar o * no codLinha
+
+    // removido e codLinha
+    scan_quote_string(temp);
+    if (temp[0] == '*')
+    {
+        linha->removido = '0';
+        aux++;
+    }
+    else
+    {
+        linha->removido = '1';
+    }
+
+    // lendo a string depois do *
+    linha->codLinha = atoi(&temp[aux]);
+
+    // aceitaCartao
+    scan_quote_string(temp);
+    if (strcmp(temp, "") == 0)
+    {
+        linha->aceitaCartao = '\0';
+    }
+    else
+    {
+        linha->aceitaCartao = (char)temp[0];
+    }
+
+    // tamanhoNome e nomeLinha
+    scan_quote_string(temp);
+    if (strcmp(temp, "") == 0)
+    {
+        linha->tamanhoNome = 0;
+    }
+    else
+    {
+        linha->tamanhoNome = strlen(temp);
+        linha->nomeLinha = (char *)malloc(sizeof(char) * linha->tamanhoNome);
+        strcpy(linha->nomeLinha, temp);
+    }
+
+    // corLinha e tamanhoCor
+    scan_quote_string(temp);
+    if (strcmp(temp, "") == 0)
+    {
+        linha->tamanhoCor = 0;
+    }
+    else
+    {
+        linha->tamanhoCor = strlen(temp);
+        linha->corLinha = (char *)malloc(sizeof(char) * linha->tamanhoCor);
+        strcpy(linha->corLinha, temp);
+    }
+
+    // tamanhoRegistro
+    linha->tamanhoRegistro = sizeof(linha->codLinha) + sizeof(linha->aceitaCartao) + sizeof(linha->tamanhoNome) + sizeof(linha->tamanhoCor);
+
+    if (linha->nomeLinha != NULL)
+    {
+        linha->tamanhoRegistro += strlen(linha->nomeLinha);
+    }
+    if (linha->corLinha != NULL)
+    {
+        linha->tamanhoRegistro += strlen(linha->corLinha);
+    }
 
     return TRUE;
 }
