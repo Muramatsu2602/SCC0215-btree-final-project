@@ -511,7 +511,7 @@ boolean lerEntradaLinha(LINHA *linha)
     else
     {
         linha->tamanhoNome = strlen(temp);
-        linha->nomeLinha = (char *)malloc(sizeof(char) * linha->tamanhoNome);
+        linha->nomeLinha = (char *)malloc(sizeof(char) * (linha->tamanhoNome+1));
         strcpy(linha->nomeLinha, temp);
     }
 
@@ -524,7 +524,7 @@ boolean lerEntradaLinha(LINHA *linha)
     else
     {
         linha->tamanhoCor = strlen(temp);
-        linha->corLinha = (char *)malloc(sizeof(char) * linha->tamanhoCor);
+        linha->corLinha = (char *)malloc(sizeof(char) * (linha->tamanhoCor+1));
         strcpy(linha->corLinha, temp);
     }
 
@@ -540,5 +540,6 @@ boolean lerEntradaLinha(LINHA *linha)
         linha->tamanhoRegistro += strlen(linha->corLinha);
     }
 
+    free(temp);
     return TRUE;
 }

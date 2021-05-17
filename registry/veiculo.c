@@ -355,10 +355,14 @@ boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos)
 }
 
 /**
- * @brief Le linha do .bin e preenche uma struct do tipo VEICULO
- * 
+ * @brief Função que realiza a leitura de veiculos a parir do arquivo binário
+ * A flag controla se será preciso checar os campos ou não. A checagem serve para evitar leituras desnecessárias no arquivo binário durante a execução da função 5.
+ * Para a função 5 a flag será TRUE e a função receberá também o campo e o valor de busca desejados
  * @param bin 
  * @param veiculos 
+ * @param flag
+ * @param campo
+ * @param valor
  * @return boolean 
  */
 boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, char *valor)
@@ -379,6 +383,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     fread(veiculos->prefixo, sizeof(char), 5, bin);
     pos += 5;
     veiculos->prefixo[5] = '\0';
+    // Caso o campo de busca seja o prefixo, checar se o campo bate com o valor, se não bater não é preciso ler os demais campos deste registro
     if (flag == TRUE && strcmp(campo, "prefixo") == 0)
     {
         if (strcmp(veiculos->prefixo, valor) != 0)
@@ -393,6 +398,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     fread(veiculos->data, sizeof(char), 10, bin);
     pos += 10;
     veiculos->data[10] = '\0';
+    // Caso o campo de busca seja a data, checar se o campo bate com o valor, se não bater não é preciso ler os demais campos deste registro
     if (flag == TRUE && strcmp(campo, "data") == 0)
     {
         if (strcmp(veiculos->data, valor) != 0)
@@ -406,6 +412,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     // quantidadeLugares
     fread(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
     pos += sizeof(veiculos->quantidadeLugares);
+    // Caso o campo de busca seja a quantidade de lugares, checar se o campo bate com o valor, se não bater não é preciso ler os demais campos deste registro
     if (flag == TRUE && strcmp(campo, "quantidadeLugares") == 0)
     {
         if (veiculos->quantidadeLugares != atoi(valor))
@@ -432,6 +439,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
         fread(&veiculos->modelo[0], sizeof(char), veiculos->tamanhoModelo, bin);
         pos += veiculos->tamanhoModelo;
         veiculos->modelo[veiculos->tamanhoModelo] = '\0';
+        // Caso o campo de busca seja o modelo, checar se o campo bate com o valor, se não bater não é preciso ler os demais campos deste registro
         if (flag == TRUE && strcmp(campo, "modelo") == 0)
         {
             if (strcmp(veiculos->modelo, valor) != 0)
@@ -456,6 +464,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
         fread(&veiculos->categoria[0], sizeof(char), veiculos->tamanhoCategoria, bin);
         pos += veiculos->tamanhoCategoria;
         veiculos->categoria[veiculos->tamanhoCategoria] = '\0';
+        // Caso o campo de busca seja a categoria, checar se o campo bate com o valor, se não bater não é preciso ler os demais campos deste registro
         if (flag == TRUE && strcmp(campo, "categoria") == 0)
         {
             if (strcmp(veiculos->modelo, valor) != 0)
@@ -663,7 +672,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     else
     {
         veiculo->tamanhoModelo = strlen(temp);
-        veiculo->modelo = (char *)malloc(sizeof(char) * veiculo->tamanhoModelo);
+        veiculo->modelo = (char *)malloc(sizeof(char) * (veiculo->tamanhoModelo+1));
         strcpy(veiculo->modelo, temp);
     }
 
@@ -676,7 +685,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     else
     {
         veiculo->tamanhoCategoria = strlen(temp);
-        veiculo->categoria = (char *)malloc(sizeof(char) * veiculo->tamanhoCategoria);
+        veiculo->categoria = (char *)malloc(sizeof(char) * (veiculo->tamanhoCategoria+1));
         strcpy(veiculo->categoria, temp);
     }
 
@@ -690,5 +699,6 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     if (veiculo->categoria != NULL)
         veiculo->tamanhoRegistro += strlen(veiculo->categoria);
 
+    free(temp);
     return TRUE;
 }

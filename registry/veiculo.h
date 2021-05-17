@@ -58,7 +58,7 @@
     boolean lerCabecalhoBINVeiculo(FILE *bin, CABECALHOV *cabVeiculos);
     boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, char *valor);
     boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo);
-    void exibirData(char *data);
-    boolean lerEntradaVeiculo(VEICULO* veiculo);
+    void exibirData(char *data); // Formata o campo data para exibir em extenso
+    boolean lerEntradaVeiculo(VEICULO* veiculo); // Funcionalidade 7 -> recebe um novo veiculo para ser inserido no arquivo binário
 
 #endif
