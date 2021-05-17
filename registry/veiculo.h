@@ -59,4 +59,6 @@
     boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, char *valor);
     boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo);
     void exibirData(char *data);
+    boolean lerEntradaVeiculo(CABECALHOV* cabVeiculo, VEICULO* veiculo);
+
 #endif

@@ -14,7 +14,7 @@
     #include <stdio.h>
     #include <ctype.h>
     
-    #define BUFFER 50
+    #define BUFFER 100
 
     #define boolean int
     #define TRUE 1

@@ -607,3 +607,50 @@ void exibirData(char *data)
 
     printf("%d\n",ano);
 }
+
+/**
+ * @brief le um veiculo do teclado, preenchendo os dados em uma struct VEICULO
+ * 
+ * @param cabVeiculo 
+ * @param veiculo 
+ * @return boolean 
+ */
+boolean lerEntradaVeiculo(CABECALHOV* cabVeiculo, VEICULO* veiculo){
+    if(!cabVeiculo || !veiculo )
+        return FALSE;
+
+    char *temp = malloc(BUFFER);
+
+    // removido
+    veiculo->removido = '1';
+
+    // prefixo
+    scan_quote_string(temp);
+    strcpy(veiculo->prefixo,temp);
+
+    // data
+    scan_quote_string(temp);
+    strcpy(veiculo->data,temp);
+
+    // quantLugares
+    scan_quote_string(temp);
+    veiculo->quantidadeLugares = (int) atoi(temp);
+
+    // codLinha
+    scan_quote_string(temp);
+    veiculo->codLinha = (int) atoi(temp);
+
+    // modelo
+    scan_quote_string(temp);
+    veiculo->tamanhoModelo = strlen(temp);
+    veiculo->modelo = (char*) malloc(sizeof(char)*veiculo->tamanhoModelo);
+    strcpy(veiculo->modelo, temp);
+
+    // categoria
+    scan_quote_string(temp);
+    veiculo->tamanhoCategoria = strlen(temp);
+    veiculo->categoria = (char*) malloc(sizeof(char)*veiculo->tamanhoCategoria);
+    strcpy(veiculo->categoria, temp);
+    
+    return TRUE;
+}
