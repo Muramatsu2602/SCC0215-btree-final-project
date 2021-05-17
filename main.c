@@ -57,6 +57,7 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     veiculos.modelo = NULL;
     veiculos.categoria = NULL;
 
+    // Ler cada linha do arquivo CSV e inserir os veiculos no arquivo binário
     while (lerLinhaCSVVeiculo(csv, &veiculos, &cabVeiculos))
     {
         if (!escreverBINVeiculo(bin, &veiculos))
@@ -121,6 +122,7 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
     linha.nomeLinha = NULL;
     linha.corLinha = NULL;
 
+    // Ler cada linha do arquivo CSV e inserir as linhas de obibus no arquivo binário
     while (lerLinhaCSVLinha(csv, &linha, &cabLinhas))
     {
         if (!escreverBINLinha(bin, &linha))
@@ -154,8 +156,8 @@ void funcionalidade3(char *nomeBIN)
         return;
     }
 
-    CABECALHOV cabVeiculos;
     // Ler o cabeçalho de veiculos do arquivo binário
+    CABECALHOV cabVeiculos;
     lerCabecalhoBINVeiculo(bin, &cabVeiculos);
 
     // Chegar se não há registros no arquivo
@@ -203,8 +205,8 @@ void funcionalidade4(char *nomeBIN)
         return;
     }
 
-    CABECALHOL cabLinhas;
     // Ler o cabeçalho de veiculos do arquivo binário
+    CABECALHOL cabLinhas;
     lerCabecalhoBINLinha(bin, &cabLinhas);
 
     // Chegar se não há registros no arquivo
@@ -252,8 +254,8 @@ void funcionalidade5(char *nomeBIN, char *campo, char *valor)
         return;
     }
 
-    CABECALHOV cabVeiculos;
     // Ler o cabeçalho de veiculos do arquivo binário
+    CABECALHOV cabVeiculos;
     lerCabecalhoBINVeiculo(bin, &cabVeiculos);
 
     // Chegar se não há registros no arquivo
@@ -303,8 +305,8 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
         return;
     }
 
-    CABECALHOL cabLinhas;
     // Ler o cabeçalho de veiculos do arquivo binário
+    CABECALHOL cabLinhas;
     lerCabecalhoBINLinha(bin, &cabLinhas);
 
     // Chegar se não há registros no arquivo
@@ -354,8 +356,8 @@ void funcionalidade7(char *nomeBIN, int N)
         return;
     }
 
-    CABECALHOV cabVeiculos;
     // Ler o cabeçalho de veiculos do arquivo binário
+    CABECALHOV cabVeiculos;
     if (!lerCabecalhoBINVeiculo(bin, &cabVeiculos))
     {
         printf("Falha no processamento do arquivo.\n");
@@ -371,6 +373,7 @@ void funcionalidade7(char *nomeBIN, int N)
     veiculo.categoria = NULL;
     for (int i = 0; i < N; i++)
     {
+        // Ler dados do veiculo a ser inserido no arquivo binário
         if (!lerEntradaVeiculo(&veiculo))
         {
             printf("Falha no processamento do arquivo.\n");
@@ -378,6 +381,7 @@ void funcionalidade7(char *nomeBIN, int N)
             return;
         }
 
+        // Escrever no arquivo binário o novo veiculo inserido
         escreverBINVeiculo(bin, &veiculo);
         cabVeiculos.nroRegistros++;
 
@@ -393,6 +397,7 @@ void funcionalidade7(char *nomeBIN, int N)
         }
     }
 
+    // Atualizar cabeçalho do arquivo binário com o novo número de registros, byteOffSet e fechar o arquivo, atualizando o status como 1
     atualizaCabecalhoVeiculo(bin, &cabVeiculos);
     fecharArquivoBin(&bin);
 
@@ -427,6 +432,7 @@ void funcionalidade8(char *nomeBIN, int N)
     linha.corLinha = NULL;
     for (int i = 0; i < N; i++)
     {
+        // Ler dados da linha de onibus a ser inserida no arquivo binário
         if (!lerEntradaLinha(&linha))
         {
             printf("Falha no processamento do arquivo.\n");
@@ -434,6 +440,7 @@ void funcionalidade8(char *nomeBIN, int N)
             return;
         }
 
+        // Escrever no arquivo binário a nova linha de onibus inserida
         escreverBINLinha(bin, &linha);
         linha.removido == '1' ? cabLinhas.nroRegistros++ : cabLinhas.nroRegRemovidos++;
 
@@ -449,6 +456,7 @@ void funcionalidade8(char *nomeBIN, int N)
         }
     }
 
+    // Atualizar cabeçalho do arquivo binário com o novo número de registros, byteOffSet e fechar o arquivo, atualizando o status como 1
     atualizaCabecalhoLinha(bin, &cabLinhas);
     fecharArquivoBin(&bin);
 
@@ -461,6 +469,7 @@ int main(int agrc, char *argv[])
     int funcionalidade = 0;
     scanf("%d ", &funcionalidade);
 
+    // arg1, arg2 e arg3 são auxiliares que recebem os argumentos de cada funcionalidade do programa
     char *arg1 = (char *)malloc(BUFFER);
     char *arg2 = (char *)malloc(BUFFER);
     char *arg3 = (char *)malloc(BUFFER);
@@ -468,70 +477,45 @@ int main(int agrc, char *argv[])
 
     switch (funcionalidade)
     {
-    case 1: // Lê o arquivo .csv para veiculos e cria o arquivo binário de veiculos
-        // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
-        // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
+    case 1:
         scanf("%s %s", arg1, arg2);
         funcionalidade1(arg1, arg2);
         binarioNaTela(arg2);
         break;
-    case 2: // Lê o arquivo .csv para linhas e cria o arquivo binário de linhas
-        // Recebe o nome do arquivo .csv e o nome do arquivo .bin a ser criado
-        // Lembrar da manipulação do campo STATUS no cabeçalho do arquivo
+    case 2:
         scanf("%s %s", arg1, arg2);
         funcionalidade2(arg1, arg2);
         binarioNaTela(arg2);
         break;
-    case 3: // Abre o arquivo .bin de veiculos e exibe todos os dados nele contidos
-        // Cada dado deve ser exibido em uma linha diferente e cada <veiculo> será separado por uma linha em branco
-        // Para valores nulos exibir: "campo com valor nulo"
-        // Recebe o nome do arquivo .bin de veiculos
+    case 3:
         scanf("%s", arg1);
         funcionalidade3(arg1);
         break;
-    case 4: // Abre o arquivo .bin de linhas e exibe todos os dados nele contidos
-        // Cada dado deve ser exibido em uma linha diferente e cada <linha> será separado por uma linha em branco
-        // Para valores nulos exibir: "campo com valor nulo"
-        // Recebe o nome do arquivo .bin de linhas
-        /*
-                Importante!! Com relação ao campo aceitaCartao, mostrar por extenso o tipo:
-                    S - PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR
-                    N - PAGAMENTO EM CARTAO E DINHEIRO
-                    F - PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA
-            */
+    case 4:
         scanf("%s", arg1);
         funcionalidade4(arg1);
         break;
-    case 5: // Abrir o arquivo .bin de veiculos e exibir na tela os veículos que atendem aos critérios de busca enviados
-        // Recebe o nome do arquivo .bin de veiculos
-        // Recebe o nome do campo a ser buscado
-        // Recebe o valor do campo a ser buscado
+    case 5:
         scanf("%s %s", arg1, arg2);
         scan_quote_string(arg3);
         funcionalidade5(arg1, arg2, arg3);
         break;
-    case 6: // Abrir o arquivo .bin de linhas e exibir na tela as linhas de onibus que atendem aos critérios de busca enviados
-        // Recebe o nome do arquivo .bin de linhas
-        // Recebe o nome do campo a ser buscado
-        // Recebe o valor do campo a ser buscado
+    case 6:
         scanf("%s %s", arg1, arg2);
         scan_quote_string(arg3);
         funcionalidade6(arg1, arg2, arg3);
         break;
-    case 7: // Inserção de novos registros no arquivo de entrada .bin de veiculos
-        // Recebe o nome do arquivo .bin de veiculos
-        // Recebe o número de novos registros a serem inseridos
+    case 7:
         scanf("%s %d", arg1, &N);
         funcionalidade7(arg1, N);
         break;
-    case 8: // Inserção de novos registros no arquivo de entrada .bin de linhas
-        // Recebe o nome do arquivo .bin de linhas
-        // Recebe o número de novos registros a serem inseridos
+    case 8:
         scanf("%s %d", arg1, &N);
         funcionalidade8(arg1, N);
         break;
     }
-    // Liberando memoria heap dos campos lidos
+
+    // Liberando memoria heap dos argumentos de cada funcionalidade
     free(arg1);
     free(arg2);
     free(arg3);
