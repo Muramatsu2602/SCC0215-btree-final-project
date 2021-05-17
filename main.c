@@ -112,7 +112,7 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
         printf("Falha no processamento do arquivo.\n");
         return;
     }
-    
+
     // Criar a struct para armazenamento temporário dos dados da linha de onibus
     LINHA linha;
 
@@ -157,12 +157,12 @@ void funcionalidade3(char *nomeBIN)
     CABECALHOV cabVeiculos;
     // Ler o cabeçalho de veiculos do arquivo binário
     lerCabecalhoBINVeiculo(bin, &cabVeiculos);
-    
+
     // Chegar se não há registros no arquivo
-    if(feof(bin) || cabVeiculos.nroRegistros == 0)
+    if (feof(bin) || cabVeiculos.nroRegistros == 0)
     {
         printf("Registro inexistente.\n");
-    }    
+    }
 
     // Agora ler os registros e exibir na tela
     VEICULO veiculo;
@@ -171,13 +171,13 @@ void funcionalidade3(char *nomeBIN)
 
     int totalRegistros = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
 
-    for(int i=0; i<totalRegistros; i++)
+    for (int i = 0; i < totalRegistros; i++)
     {
         // Ler o registro
         lerBINVeiculo(bin, &veiculo, FALSE, NULL, NULL);
 
         // Só exibir os veiculos que não estão marcados logicamente como excluidos
-        if(veiculo.removido == '1')
+        if (veiculo.removido == '1')
             exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
 
         // liberando memoria dos campos dinamicos
@@ -208,10 +208,10 @@ void funcionalidade4(char *nomeBIN)
     lerCabecalhoBINLinha(bin, &cabLinhas);
 
     // Chegar se não há registros no arquivo
-    if(feof(bin) || cabLinhas.nroRegistros == 0)
+    if (feof(bin) || cabLinhas.nroRegistros == 0)
     {
         printf("Registro inexistente.\n");
-    }    
+    }
 
     // Agora ler os registros e exibir na tela
     LINHA linha;
@@ -220,13 +220,13 @@ void funcionalidade4(char *nomeBIN)
 
     int totalRegistros = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
 
-    for(int i=0; i<totalRegistros; i++)
+    for (int i = 0; i < totalRegistros; i++)
     {
         // Ler o registro
         lerBINLinha(bin, &linha, FALSE, NULL, NULL);
 
         // Só exibir os veiculos que não estão marcados logicamente como excluidos
-        if(linha.removido == '1')
+        if (linha.removido == '1')
             exibirRegistrosLinha(&cabLinhas, &linha);
 
         // liberando memoria os campos dinamicos
@@ -255,12 +255,12 @@ void funcionalidade5(char *nomeBIN, char *campo, char *valor)
     CABECALHOV cabVeiculos;
     // Ler o cabeçalho de veiculos do arquivo binário
     lerCabecalhoBINVeiculo(bin, &cabVeiculos);
-    
+
     // Chegar se não há registros no arquivo
-    if(feof(bin) || cabVeiculos.nroRegistros == 0)
+    if (feof(bin) || cabVeiculos.nroRegistros == 0)
     {
         printf("Registro inexistente.\n");
-    }    
+    }
 
     // Agora ler os registros e exibir na tela
     VEICULO veiculo;
@@ -269,13 +269,13 @@ void funcionalidade5(char *nomeBIN, char *campo, char *valor)
 
     int totalRegistros = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
 
-    for(int i=0; i<totalRegistros; i++)
+    for (int i = 0; i < totalRegistros; i++)
     {
         // Ler o registro
-        if(lerBINVeiculo(bin, &veiculo, TRUE, campo, valor))
+        if (lerBINVeiculo(bin, &veiculo, TRUE, campo, valor))
         {
             // Exibir apenas os veiculos que não estão marcadas logicamente como excluidos
-            if(veiculo.removido == '1')
+            if (veiculo.removido == '1')
             {
                 exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
                 // liberando memoria dos campos dinamicos
@@ -338,10 +338,10 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
     lerCabecalhoBINLinha(bin, &cabLinhas);
 
     // Chegar se não há registros no arquivo
-    if(feof(bin) || cabLinhas.nroRegistros == 0)
+    if (feof(bin) || cabLinhas.nroRegistros == 0)
     {
         printf("Registro inexistente.\n");
-    }    
+    }
 
     // Agora ler os registros e exibir na tela
     LINHA linha;
@@ -350,13 +350,13 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
 
     int totalRegistros = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
 
-    for(int i=0; i<totalRegistros; i++)
+    for (int i = 0; i < totalRegistros; i++)
     {
         // Ler o registro
-        if(lerBINLinha(bin, &linha, TRUE, campo, valor))
+        if (lerBINLinha(bin, &linha, TRUE, campo, valor))
         {
             // Exibir apenas as linhas que não estão marcadas logicamente como excluidas
-            if(linha.removido == '1')
+            if (linha.removido == '1')
             {
                 exibirRegistrosLinha(&cabLinhas, &linha);
                 // liberando memoria os campos dinamicos
@@ -412,7 +412,7 @@ void funcionalidade7(char *nomeBIN, int N)
 
     CABECALHOV cabVeiculos;
     // Ler o cabeçalho de veiculos do arquivo binário
-    if(!lerCabecalhoBINLinha(bin, &cabVeiculos))
+    if (!lerCabecalhoBINVeiculo(bin, &cabVeiculos))
     {
         printf("Falha no processamento do arquivo.\n");
         fclose(bin);
@@ -423,22 +423,28 @@ void funcionalidade7(char *nomeBIN, int N)
     fseek(bin, 0, SEEK_END);
 
     VEICULO veiculo;
-    for(int i=0; i<N; i++)
+    for (int i = 0; i < N; i++)
     {
-        if(!lerEntradaVeiculo(&cabVeiculos, &veiculo))
+        if (!lerEntradaVeiculo(&veiculo))
         {
             printf("Falha no processamento do arquivo.\n");
             fclose(bin);
             return;
         }
-            
+
         escreverBINVeiculo(bin, &veiculo);
+        cabVeiculos.nroRegistros++;
 
         free(veiculo.modelo);
         free(veiculo.categoria);
         veiculo.modelo = NULL;
         veiculo.categoria = NULL;
     }
+
+    atualizaCabecalhoVeiculo(bin, &cabVeiculos);
+    fecharArquivoBin(&bin);
+
+    return;
 }
 
 void funcionalidade8(char *nomeBIN, int N)
@@ -510,14 +516,16 @@ int main(int agrc, char *argv[])
     case 7: // Inserção de novos registros no arquivo de entrada .bin de veiculos
         // Recebe o nome do arquivo .bin de veiculos
         // Recebe o número de novos registros a serem inseridos
-        scanf("%s %d", arg1, N);
+        scanf("%s %d", arg1, &N);
         funcionalidade7(arg1, N);
+        binarioNaTela(arg1);
         break;
     case 8: // Inserção de novos registros no arquivo de entrada .bin de linhas
         // Recebe o nome do arquivo .bin de linhas
         // Recebe o número de novos registros a serem inseridos
-        scanf("%s %d", arg1, N);
+        scanf("%s %d", arg1, &N);
         funcionalidade8(arg1, N);
+        binarioNaTela(arg1);
         break;
     }
     // Liberando memoria heap dos campos lidos

@@ -35,7 +35,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
         free(input);
         return FALSE;
     }
-    
+
     // verificando se a linha lida no CSV esta excluida
     int aux = 0;
     if (input[0] == '*')
@@ -61,7 +61,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
     if (strcmp(token, "NULO") == 0)
     {
         veiculo->data[0] = '\0';
-        preenchendoLixo(strlen(veiculo->data)+1, 10, veiculo->data);
+        preenchendoLixo(strlen(veiculo->data) + 1, 10, veiculo->data);
     }
     else
         strcpy(veiculo->data, token);
@@ -93,7 +93,7 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
     }
     else
     {
-        veiculo->modelo = (char *)realloc(veiculo->modelo, ((veiculo->tamanhoModelo)+1) * sizeof(char));
+        veiculo->modelo = (char *)realloc(veiculo->modelo, ((veiculo->tamanhoModelo) + 1) * sizeof(char));
         strcpy(veiculo->modelo, token);
     }
 
@@ -110,18 +110,18 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
     }
     else
     {
-        veiculo->categoria = (char *)realloc(veiculo->categoria, ((veiculo->tamanhoCategoria)+1) * sizeof(char));
+        veiculo->categoria = (char *)realloc(veiculo->categoria, ((veiculo->tamanhoCategoria) + 1) * sizeof(char));
         strcpy(veiculo->categoria, token);
     }
 
     // int tamanhoRegistro;
-    veiculo->tamanhoRegistro = (sizeof(veiculo->prefixo)-1) + (sizeof(veiculo->data)-1) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
+    veiculo->tamanhoRegistro = (sizeof(veiculo->prefixo) - 1) + (sizeof(veiculo->data) - 1) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
 
-    if(veiculo->modelo != NULL)
+    if (veiculo->modelo != NULL)
     {
         veiculo->tamanhoRegistro += strlen(veiculo->modelo);
     }
-    if(veiculo->categoria != NULL)
+    if (veiculo->categoria != NULL)
         veiculo->tamanhoRegistro += strlen(veiculo->categoria);
 
     free(input);
@@ -262,16 +262,15 @@ boolean escreverBINVeiculo(FILE *bin, VEICULO *veiculos)
     fwrite(&veiculos->tamanhoModelo, sizeof(veiculos->tamanhoModelo), 1, bin);
 
     // modelo
-    if(veiculos->modelo != NULL)
+    if (veiculos->modelo != NULL)
         fwrite(veiculos->modelo, 1, veiculos->tamanhoModelo, bin);
 
     // tamanhoCategoria
     fwrite(&veiculos->tamanhoCategoria, sizeof(veiculos->tamanhoCategoria), 1, bin);
 
     // Categoria
-    if(veiculos->categoria != NULL)
+    if (veiculos->categoria != NULL)
         fwrite(veiculos->categoria, 1, veiculos->tamanhoCategoria, bin);
-
 
     return TRUE;
 }
@@ -373,7 +372,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
 
     // Removido
     fread(&veiculos->removido, sizeof(veiculos->removido), 1, bin);
-    
+
     // tamanhoRegistro
     fread(&veiculos->tamanhoRegistro, sizeof(veiculos->tamanhoRegistro), 1, bin);
 
@@ -381,39 +380,39 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     fread(veiculos->prefixo, sizeof(char), 5, bin);
     pos += 5;
     veiculos->prefixo[5] = '\0';
-    if(flag == TRUE && strcmp(campo,"prefixo") == 0)
+    if (flag == TRUE && strcmp(campo, "prefixo") == 0)
     {
-        if(strcmp(veiculos->prefixo, valor) != 0)
+        if (strcmp(veiculos->prefixo, valor) != 0)
         {
             // Mover o ponteiro do arquivo para o próximo registro
             fseek(bin, (veiculos->tamanhoRegistro - pos), SEEK_CUR);
             return FALSE;
         }
-    } 
+    }
 
     // data
     fread(veiculos->data, sizeof(char), 10, bin);
     pos += 10;
     veiculos->data[10] = '\0';
-    if(flag == TRUE && strcmp(campo,"data") == 0)
+    if (flag == TRUE && strcmp(campo, "data") == 0)
     {
-        if(strcmp(veiculos->data, valor) != 0)
+        if (strcmp(veiculos->data, valor) != 0)
         {
             // Mover o ponteiro do arquivo para o próximo registro
-            fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
+            fseek(bin, (veiculos->tamanhoRegistro - pos), SEEK_CUR);
             return FALSE;
         }
-    } 
+    }
 
     // quantidadeLugares
     fread(&veiculos->quantidadeLugares, sizeof(veiculos->quantidadeLugares), 1, bin);
     pos += sizeof(veiculos->quantidadeLugares);
-    if(flag == TRUE && strcmp(campo,"quantidadeLugares") == 0)
+    if (flag == TRUE && strcmp(campo, "quantidadeLugares") == 0)
     {
-        if(veiculos->quantidadeLugares != atoi(valor))
+        if (veiculos->quantidadeLugares != atoi(valor))
         {
             // Mover o ponteiro do arquivo para o próximo registro
-            fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
+            fseek(bin, (veiculos->tamanhoRegistro - pos), SEEK_CUR);
             return FALSE;
         }
     }
@@ -430,21 +429,21 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     // Checar se o campo Modelo é nulo
     if (veiculos->tamanhoModelo != 0)
     {
-        veiculos->modelo = (char *)realloc(veiculos->modelo, ((veiculos->tamanhoModelo)+1) * sizeof(char));
+        veiculos->modelo = (char *)realloc(veiculos->modelo, ((veiculos->tamanhoModelo) + 1) * sizeof(char));
         fread(&veiculos->modelo[0], sizeof(char), veiculos->tamanhoModelo, bin);
         pos += veiculos->tamanhoModelo;
         veiculos->modelo[veiculos->tamanhoModelo] = '\0';
-        if(flag == TRUE && strcmp(campo,"modelo") == 0)
+        if (flag == TRUE && strcmp(campo, "modelo") == 0)
         {
-            if(strcmp(veiculos->modelo, valor) != 0)
+            if (strcmp(veiculos->modelo, valor) != 0)
             {
                 // Mover o ponteiro do arquivo para o próximo registro
-                fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
+                fseek(bin, (veiculos->tamanhoRegistro - pos), SEEK_CUR);
                 free(veiculos->modelo);
                 veiculos->modelo = NULL;
                 return FALSE;
             }
-        }   
+        }
     }
 
     // tamanhoCategoria
@@ -454,23 +453,23 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     // categoria
     if (veiculos->tamanhoCategoria != 0)
     {
-        veiculos->categoria = (char *)realloc(veiculos->categoria, ((veiculos->tamanhoCategoria)+1) * sizeof(char));
+        veiculos->categoria = (char *)realloc(veiculos->categoria, ((veiculos->tamanhoCategoria) + 1) * sizeof(char));
         fread(&veiculos->categoria[0], sizeof(char), veiculos->tamanhoCategoria, bin);
         pos += veiculos->tamanhoCategoria;
         veiculos->categoria[veiculos->tamanhoCategoria] = '\0';
-        if(flag == TRUE && strcmp(campo,"categoria") == 0)
+        if (flag == TRUE && strcmp(campo, "categoria") == 0)
         {
-            if(strcmp(veiculos->modelo, valor) != 0)
+            if (strcmp(veiculos->modelo, valor) != 0)
             {
                 // Mover o ponteiro do arquivo para o próximo registro
-                fseek(bin, (veiculos->tamanhoRegistro-pos), SEEK_CUR);
+                fseek(bin, (veiculos->tamanhoRegistro - pos), SEEK_CUR);
                 free(veiculos->modelo);
                 veiculos->modelo = NULL;
                 free(veiculos->categoria);
                 veiculos->categoria = NULL;
                 return FALSE;
             }
-        }   
+        }
     }
 
     return TRUE;
@@ -478,38 +477,38 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
 
 boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
 {
-    if(!cabVeiculos || !veiculo)
+    if (!cabVeiculos || !veiculo)
         return FALSE;
 
     // Prefixo
-    printf("%s: ",cabVeiculos->descrevePrefixo);
-    printf("%s\n",veiculo->prefixo);
+    printf("%s: ", cabVeiculos->descrevePrefixo);
+    printf("%s\n", veiculo->prefixo);
 
     // Modelo
-    printf("%s: ",cabVeiculos->descreveModelo);
-    if(veiculo->modelo == NULL)
+    printf("%s: ", cabVeiculos->descreveModelo);
+    if (veiculo->modelo == NULL)
     {
         printf("campo com valor nulo\n");
     }
     else
     {
-        printf("%s\n",veiculo->modelo);
+        printf("%s\n", veiculo->modelo);
     }
 
     // Categoria
-    printf("%s: ",cabVeiculos->descreveCategoria);
-    if(veiculo->categoria == NULL)
+    printf("%s: ", cabVeiculos->descreveCategoria);
+    if (veiculo->categoria == NULL)
     {
         printf("campo com valor nulo\n");
     }
     else
     {
-        printf("%s\n",veiculo->categoria);
+        printf("%s\n", veiculo->categoria);
     }
 
     // Data
-    printf("%s: ",cabVeiculos->descreveData);
-    if(veiculo->data[0] == '\0')
+    printf("%s: ", cabVeiculos->descreveData);
+    if (veiculo->data[0] == '\0')
     {
         printf("campo com valor nulo\n");
     }
@@ -520,14 +519,14 @@ boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
     }
 
     // Quantidade Lugares
-    printf("%s: ",cabVeiculos->descreveLugares);
-    if(veiculo->quantidadeLugares == -1)
+    printf("%s: ", cabVeiculos->descreveLugares);
+    if (veiculo->quantidadeLugares == -1)
     {
         printf("campo com valor nulo\n");
     }
     else
     {
-        printf("%d\n",veiculo->quantidadeLugares);
+        printf("%d\n", veiculo->quantidadeLugares);
     }
 
     // Pular uma linha entre registros
@@ -561,51 +560,51 @@ void exibirData(char *data)
     token = strtok(NULL, delim);
     dia = atoi(token);
 
-    if(dia < 10)
+    if (dia < 10)
         printf("0");
-    printf("%d de ",dia);
-    
-    switch(mes)
+    printf("%d de ", dia);
+
+    switch (mes)
     {
-        case 1:
-            printf("janeiro de ");
-            break;
-        case 2:
-            printf("fevereiro de ");
-            break;
-        case 3:
-            printf("março de ");
-            break;
-        case 4:
-            printf("abril de ");
-            break;
-        case 5:
-            printf("maio de ");
-            break;
-        case 6:
-            printf("junho de ");
-            break;
-        case 7:
-            printf("julho de ");
-            break;
-        case 8:
-            printf("agosto de ");
-            break;
-        case 9:
-            printf("setembro de ");
-            break;
-        case 10:
-            printf("outubro de ");
-            break;
-        case 11:
-            printf("novembro de ");
-            break;
-        case 12:
-            printf("dezembro de ");
-            break;
+    case 1:
+        printf("janeiro de ");
+        break;
+    case 2:
+        printf("fevereiro de ");
+        break;
+    case 3:
+        printf("março de ");
+        break;
+    case 4:
+        printf("abril de ");
+        break;
+    case 5:
+        printf("maio de ");
+        break;
+    case 6:
+        printf("junho de ");
+        break;
+    case 7:
+        printf("julho de ");
+        break;
+    case 8:
+        printf("agosto de ");
+        break;
+    case 9:
+        printf("setembro de ");
+        break;
+    case 10:
+        printf("outubro de ");
+        break;
+    case 11:
+        printf("novembro de ");
+        break;
+    case 12:
+        printf("dezembro de ");
+        break;
     }
 
-    printf("%d\n",ano);
+    printf("%d\n", ano);
 }
 
 /**
@@ -615,8 +614,9 @@ void exibirData(char *data)
  * @param veiculo 
  * @return boolean 
  */
-boolean lerEntradaVeiculo(CABECALHOV* cabVeiculo, VEICULO* veiculo){
-    if(!cabVeiculo || !veiculo )
+boolean lerEntradaVeiculo(VEICULO *veiculo)
+{
+    if (!veiculo)
         return FALSE;
 
     char *temp = malloc(BUFFER);
@@ -626,31 +626,70 @@ boolean lerEntradaVeiculo(CABECALHOV* cabVeiculo, VEICULO* veiculo){
 
     // prefixo
     scan_quote_string(temp);
-    strcpy(veiculo->prefixo,temp);
+    strcpy(veiculo->prefixo, temp);
 
     // data
     scan_quote_string(temp);
-    strcpy(veiculo->data,temp);
+    if (strcmp(temp, "") == 0)
+    {
+        veiculo->data[0] = '\0';
+        preenchendoLixo(strlen(veiculo->data) + 1, 10, veiculo->data);
+    }
+    else
+    {
+        strcpy(veiculo->data, temp);
+    }
 
-    // quantLugares
+    // quantidadeLugares
     scan_quote_string(temp);
-    veiculo->quantidadeLugares = (int) atoi(temp);
+    veiculo->quantidadeLugares = (int)atoi(temp);
 
     // codLinha
     scan_quote_string(temp);
-    veiculo->codLinha = (int) atoi(temp);
+    if (strcmp(temp, "") == 0)
+    {
+        veiculo->codLinha = -1;
+    }
+    else
+    {
+        veiculo->codLinha = (int)atoi(temp);
+    }
 
     // modelo
     scan_quote_string(temp);
-    veiculo->tamanhoModelo = strlen(temp);
-    veiculo->modelo = (char*) malloc(sizeof(char)*veiculo->tamanhoModelo);
-    strcpy(veiculo->modelo, temp);
+    if (strcmp(temp, "") == 0)
+    {
+        veiculo->tamanhoModelo = 0;
+    }
+    else
+    {
+        veiculo->tamanhoModelo = strlen(temp);
+        veiculo->modelo = (char *)malloc(sizeof(char) * veiculo->tamanhoModelo);
+        strcpy(veiculo->modelo, temp);
+    }
 
     // categoria
     scan_quote_string(temp);
-    veiculo->tamanhoCategoria = strlen(temp);
-    veiculo->categoria = (char*) malloc(sizeof(char)*veiculo->tamanhoCategoria);
-    strcpy(veiculo->categoria, temp);
-    
+    if (strcmp(temp, "") == 0)
+    {
+        veiculo->tamanhoCategoria = 0;
+    }
+    else
+    {
+        veiculo->tamanhoCategoria = strlen(temp);
+        veiculo->categoria = (char *)malloc(sizeof(char) * veiculo->tamanhoCategoria);
+        strcpy(veiculo->categoria, temp);
+    }
+
+    // tamanhoRegistro
+    veiculo->tamanhoRegistro = (sizeof(veiculo->prefixo) - 1) + (sizeof(veiculo->data) - 1) + sizeof(veiculo->quantidadeLugares) + sizeof(veiculo->codLinha) + sizeof(veiculo->tamanhoModelo) + sizeof(veiculo->tamanhoCategoria);
+
+    if (veiculo->modelo != NULL)
+    {
+        veiculo->tamanhoRegistro += strlen(veiculo->modelo);
+    }
+    if (veiculo->categoria != NULL)
+        veiculo->tamanhoRegistro += strlen(veiculo->categoria);
+
     return TRUE;
 }
