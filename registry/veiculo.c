@@ -69,14 +69,14 @@ boolean lerLinhaCSVVeiculo(FILE *fp, VEICULO *veiculo, CABECALHOV *cabecalho)
     // Quantidade de lugares sentados disponiveis
     token = strtok(NULL, delim);
     if (strcmp(token, "NULO") == 0)
-        veiculo->quantidadeLugares = -1;
+        veiculo->quantidadeLugares = INT_FIELD_NULL;
     else
         veiculo->quantidadeLugares = (int)atoi(token);
 
     // Linha associada ao veiculo
     token = strtok(NULL, delim);
     if (strcmp(token, "NULO") == 0)
-        veiculo->codLinha = -1;
+        veiculo->codLinha = INT_FIELD_NULL;
     else
         veiculo->codLinha = (int)atoi(token);
 
@@ -483,6 +483,13 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
     return TRUE;
 }
 
+/**
+ * @brief Imprime na tela 
+ * 
+ * @param cabVeiculos 
+ * @param veiculo 
+ * @return boolean 
+ */
 boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
 {
     if (!cabVeiculos || !veiculo)
@@ -528,7 +535,7 @@ boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
 
     // Quantidade Lugares
     printf("%s: ", cabVeiculos->descreveLugares);
-    if (veiculo->quantidadeLugares == -1)
+    if (veiculo->quantidadeLugares == INT_FIELD_NULL)
     {
         printf("campo com valor nulo\n");
     }
@@ -656,7 +663,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     scan_quote_string(temp);
     if (strcmp(temp, "") == 0)
     {
-        veiculo->codLinha = -1;
+        veiculo->codLinha = INT_FIELD_NULL;
     }
     else
     {

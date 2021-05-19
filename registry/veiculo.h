@@ -17,6 +17,8 @@
 
     #include "../utils/fileManager.h"
 
+    #define INT_FIELD_NULL -1
+
     struct _veiculo
     {	
         char removido;
