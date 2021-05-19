@@ -484,7 +484,7 @@ boolean lerBINVeiculo(FILE *bin, VEICULO *veiculos, boolean flag, char *campo, c
 }
 
 /**
- * @brief Imprime na tela 
+ * @brief imprime na tela os registros do arquivo .bin de veiculos
  * 
  * @param cabVeiculos 
  * @param veiculo 
