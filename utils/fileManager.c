@@ -74,7 +74,7 @@ FILE *abrirArquivo(const char *filename, const char *mode)
 FILE *abrirArquivoBin(const char *filename, const char *mode)
 {
     FILE *fp = NULL;
-    char status;
+    char status = 0;
 
     if ((fp = fopen(filename, mode)) != NULL)
     {
