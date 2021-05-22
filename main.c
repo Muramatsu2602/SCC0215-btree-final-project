@@ -16,6 +16,12 @@
 #include "registry/linha.h"
 #include "registry/veiculo.h"
 
+/**
+ * @brief Realiza a leitura do arquivo CSV e cria e insere um arquivo binário contendo o cabeçalho e os veiculos lidos.
+ * 
+ * @param nomeCSV nome do arquivo CSV a ser lido
+ * @param nomeBIN nome do arquivo binário a ser criado
+ */
 void funcionalidade1(char *nomeCSV, char *nomeBIN)
 {
     // Abrir arquivo CSV para leitura
@@ -81,6 +87,12 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     return;
 }
 
+/**
+ * @brief Realiza a leitura do arquivo CSV e cria e insere um arquivo binário contendo o cabeçalho e as linhas de ônibus lidas.
+ * 
+ * @param nomeCSV nome do arquivo CSV a ser lido
+ * @param nomeBIN nome do arquivo binário a ser criado
+ */
 void funcionalidade2(char *nomeCSV, char *nomeBIN)
 {
     // Abrir arquivo CSV para leitura
@@ -146,6 +158,11 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
     return;
 }
 
+/**
+ * @brief Realiza a recuperação dos dados de todos os registros armazenados no arquivo BINÁRIO de veiculos e os exibe de maneira organizada.
+ * 
+ * @param nomeBIN nome do arquivo binário de veiculos
+ */
 void funcionalidade3(char *nomeBIN)
 {
     // Abrir arquivo binário para leitura
@@ -195,6 +212,11 @@ void funcionalidade3(char *nomeBIN)
     return;
 }
 
+/**
+ * @brief Realiza a recuperação dos dados de todos os registros armazenados no arquivo BINÁRIO de linhas de ônibus e os exibe de maneira organizada.
+ * 
+ * @param nomeBIN nome do arquivo binário de linhas de ônibus
+ */
 void funcionalidade4(char *nomeBIN)
 {
     // Abrir arquivo binário para leitura
@@ -244,6 +266,14 @@ void funcionalidade4(char *nomeBIN)
     return;
 }
 
+/**
+ * @brief Faz a recuperação de dados de todos os registros do arquivo BINÁRIO que satisfaçam um critério de busca determinado pelo usuário.
+ * Exibe apenas os registros cujo valor do campo bate com o determinado pelo usuário.
+ * 
+ * @param nomeBIN
+ * @param campo
+ * @param valor
+ */
 void funcionalidade5(char *nomeBIN, char *campo, char *valor)
 {
     // Abrir arquivo binário para leitura
@@ -295,6 +325,14 @@ void funcionalidade5(char *nomeBIN, char *campo, char *valor)
     return;
 }
 
+/**
+ * @brief Faz a recuperação de dados de todos os registros do arquivo BINÁRIO que satisfaçam um critério de busca determinado pelo usuário.
+ * Exibe apenas os registros cujo valor do campo bate com o determinado pelo usuário.
+ * 
+ * @param nomeBIN
+ * @param campo 
+ * @param valor
+ */
 void funcionalidade6(char *nomeBIN, char *campo, char *valor)
 {
     // Abrir arquivo binário para leitura
@@ -346,6 +384,12 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
     return;
 }
 
+/**
+ * @brief Permite a inserção de N novos registros no arquivo binário de veiculos. Utiliza da função scan_quote_string para a leitura dos campos.
+ * 
+ * @param nomeBIN
+ * @param N número de novos registros a serem inseridos.
+ */
 void funcionalidade7(char *nomeBIN, int N)
 {
     // Abrir arquivo binário para leitura
@@ -405,6 +449,12 @@ void funcionalidade7(char *nomeBIN, int N)
     return;
 }
 
+/**
+ * @brief Permite a inserção de N novos registros no arquivo binário de linhas de ônibus. Utiliza da função scan_quote_string para a leitura dos campos.
+ * 
+ * @param nomeBIN
+ * @param N número de novos registros a serem inseridos.
+ */
 void funcionalidade8(char *nomeBIN, int N)
 {
     // Abrir arquivo binário para leitura
