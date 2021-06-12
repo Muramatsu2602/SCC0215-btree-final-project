@@ -1,27 +1,13 @@
-# SCC0215 - Project 1
+# SCC0215 - Project 2
 
-Este trabalho tem como objetivo armazenar dados em um arquivo binário de acordo com uma organização de campos e registros, bem como recuperar todos os dados armazenados.
+Este trabalho tem como objetivo indexar arquivos de dados usando um índice
+árvore-B.
 
 ## Team
 * 11796444 - Giovanni Shibaki Camargo
 * 11796451 - Pedro Kenzo Muramatsu Carmo
 
 ## Project Structure
-```.
-.
-├── bin
-├── csv
-├── LICENSE
-├── main.c
-├── Makefile
-├── README.md
-├── registry
-│   ├── linha.c
-│   ├── linha.h
-│   ├── veiculo.c
-│   └── veiculo.h
-├── test
-└── utils
-    ├── fileManager.c
-    └── fileManager.h
+``
+
 ```
