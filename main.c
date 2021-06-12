@@ -563,6 +563,10 @@ int main(int agrc, char *argv[])
         scanf("%s %d", arg1, &N);
         funcionalidade8(arg1, N);
         break;
+    case 9:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade9();
+
     }
 
     // Liberando memoria heap dos argumentos de cada funcionalidade

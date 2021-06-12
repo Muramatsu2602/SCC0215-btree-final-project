@@ -8,6 +8,29 @@ Este trabalho tem como objetivo indexar arquivos de dados usando um índice
 * 11796451 - Pedro Kenzo Muramatsu Carmo
 
 ## Project Structure
-``
 
+```
+.
+├── index
+│   ├── linhaIndex.c
+│   ├── linhaIndex.h
+│   ├── veiculoIndex.c
+│   └── veiculoIndex.h
+├── LICENSE
+├── main.c
+├── Makefile
+├── README.md
+├── registry
+│   ├── linha.c
+│   ├── linha.h
+│   ├── veiculo.c
+│   └── veiculo.h
+├── test
+│   └──...
+│
+└── utils
+    ├── convertePrefixo.h
+    ├── fileManager.c
+    ├── fileManager.h
+    └── testaConvertePrefixo.c
 ```
