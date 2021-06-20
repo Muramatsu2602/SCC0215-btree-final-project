@@ -14,6 +14,7 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
+    #include <limits.h>
 
     typedef unsigned long long int int64;
     
@@ -27,7 +28,7 @@
     struct _cabecalhoIndex
     {
         char status;
-        int noRaiz;
+        int RRNnoRaiz;
         int RRNproxNo; // aqui invocamos a func preenchendoLixo do fileManager.c
     };
 
