@@ -10,7 +10,7 @@
  */
 
 #include "index.h"
-#include "../utils/func/sort.h"
+#include "../utils/auxFunc/indexManager.h"
 
 /**
  * @brief Algoritmo de inserção de novas chaves no arquivo de indices
@@ -110,7 +110,18 @@ void insereChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
 
         cabecalho->RRNproxNo = cabecalho->noRaiz + 1;
     }
-    else
+
+    // Inicia uma pesquisa que desce até o nível dos nós folhas
+    int rrnAtual = cabecalho->noRaiz;
+    int isFolha = 0;    // controle (para quando acha folha)
+    int ponteiroAnterior = 0;
+
+    // Posiciona o ponteiro para a página correspondente ao rrn
+    lerBINIndice(fp, indice, rrnAtual);
+    if(indice->folha == '1')
+        isFolha = TRUE;
+        
+    while(isFolha != 1)
     {
         // Inicia uma pesquisa que desce até o nível dos nós folhas
         int rrnAtual = cabecalho->noRaiz;
@@ -258,54 +269,54 @@ void inserirChaveOrdenada(FILE *fp, INDEX *indice, int novaChave, int64 endereco
  * @param indice struct de páginas do indice
  * @param RRN RRN da página a ser lida
  */
-boolean lerBINIndice(FILE *fp, INDEX *indice, int RRN)
+boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN)
 {
     if (!fp || !cabecalho || !indice)
         return FALSE;
 
     // posiciona o ponteiro do arquivo logo depois do fim do cabeçalho
-    fseek(fp, (RRN * TAMANHO_NO) + TAMANHO_NO);
+    fseek(fp, (RRN*TAMANHO_NO)+TAMANHO_NO, SEEK_SET);
 
     // Folha
-    fread(&indice->folha, sizeof(char), 1, bin);
+    fread(&indice->folha, sizeof(char), 1, fp);
 
     // nroChavesIndexadas
-    fread(&indice->nroChavesIndexadas, sizeof(int), 1, bin);
+    fread(&indice->nroChavesIndexadas, sizeof(int), 1, fp);
 
     // RRNdoNo
-    fread(&indice->RRNdoNo, sizeof(int), 1, bin);
+    fread(&indice->RRNdoNo, sizeof(int), 1, fp);
 
     // P1
-    fread(&indice->P1, sizeof(int), 1, bin);
+    fread(&indice->P1, sizeof(int), 1, fp);
     // C1
-    fread(&indice->C1, sizeof(int), 1, bin);
+    fread(&indice->C1, sizeof(int), 1, fp);
     // Pr1
-    fread(&indice->Pr1, sizeof(int64), 1, bin);
+    fread(&indice->Pr1, sizeof(int64), 1, fp);
 
     // P2
-    fread(&indice->P2, sizeof(int), 1, bin);
+    fread(&indice->P2, sizeof(int), 1, fp);
     // C2
-    fread(&indice->C2, sizeof(int), 1, bin);
+    fread(&indice->C2, sizeof(int), 1, fp);
     // Pr2
-    fread(&indice->Pr2, sizeof(int64), 1, bin);
+    fread(&indice->Pr2, sizeof(int64), 1, fp);
 
     // P3
-    fread(&indice->P3, sizeof(int), 1, bin);
+    fread(&indice->P3, sizeof(int), 1, fp);
     // C3
-    fread(&indice->C3, sizeof(int), 1, bin);
+    fread(&indice->C3, sizeof(int), 1, fp);
     // Pr3
-    fread(&indice->Pr3, sizeof(int64), 1, bin);
+    fread(&indice->Pr3, sizeof(int64), 1, fp);
 
     // P4
-    fread(&indice->P4, sizeof(int), 1, bin);
+    fread(&indice->P4, sizeof(int), 1, fp);
     // C4
-    fread(&indice->C4, sizeof(int), 1, bin);
+    fread(&indice->C4, sizeof(int), 1, fp);
     // Pr4
-    fread(&indice->Pr4, sizeof(int64), 1, bin);
+    fread(&indice->Pr4, sizeof(int64), 1, fp);
 
     // P5
-    fread(&indice->P5, sizeof(int), 1, bin);
-
+    fread(&indice->P5, sizeof(int), 1, fp);
+    
     return TRUE;
 }
 
@@ -322,49 +333,49 @@ boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice)
         return FALSE;
 
     // Posicionar o ponteiro do arquivo binário na posição do RRN do próximo nó
-    fseek(fp, (cabecalho->RRNproxNo + 1) * TAMANHO_NO);
+    fseek(fp, (cabecalho->RRNproxNo+1)*TAMANHO_NO, SEEK_SET);
 
     // Inserção do nó no arquivo binário
 
     // Folha
-    fwrite(&indice->folha, sizeof(char), 1, bin);
+    fwrite(&indice->folha, sizeof(char), 1, fp);
 
     // nroChavesIndexadas
-    fwrite(&indice->nroChavesIndexadas, sizeof(int), 1, bin);
+    fwrite(&indice->nroChavesIndexadas, sizeof(int), 1, fp);
 
     // RRNdoNo
-    fwrite(&indice->RRNdoNo, sizeof(int), 1, bin);
+    fwrite(&indice->RRNdoNo, sizeof(int), 1, fp);
 
     // P1
-    fwrite(&indice->P1, sizeof(int), 1, bin);
+    fwrite(&indice->P1, sizeof(int), 1, fp);
     // C1
-    fwrite(&indice->C1, sizeof(int), 1, bin);
+    fwrite(&indice->C1, sizeof(int), 1, fp);
     // Pr1
-    fwrite(&indice->Pr1, sizeof(int64), 1, bin);
+    fwrite(&indice->Pr1, sizeof(int64), 1, fp);
 
     // P2
-    fwrite(&indice->P2, sizeof(int), 1, bin);
+    fwrite(&indice->P2, sizeof(int), 1, fp);
     // C2
-    fwrite(&indice->C2, sizeof(int), 1, bin);
+    fwrite(&indice->C2, sizeof(int), 1, fp);
     // Pr2
-    fwrite(&indice->Pr2, sizeof(int64), 1, bin);
+    fwrite(&indice->Pr2, sizeof(int64), 1, fp);
 
     // P3
-    fwrite(&indice->P3, sizeof(int), 1, bin);
+    fwrite(&indice->P3, sizeof(int), 1, fp);
     // C3
-    fwrite(&indice->C3, sizeof(int), 1, bin);
+    fwrite(&indice->C3, sizeof(int), 1, fp);
     // Pr3
-    fwrite(&indice->Pr3, sizeof(int64), 1, bin);
+    fwrite(&indice->Pr3, sizeof(int64), 1, fp);
 
     // P4
-    fwrite(&indice->P4, sizeof(int), 1, bin);
+    fwrite(&indice->P4, sizeof(int), 1, fp);
     // C4
-    fwrite(&indice->C4, sizeof(int), 1, bin);
+    fwrite(&indice->C4, sizeof(int), 1, fp);
     // Pr4
-    fwrite(&indice->Pr4, sizeof(int64), 1, bin);
+    fwrite(&indice->Pr4, sizeof(int64), 1, fp);
 
     // P5
-    fwrite(&indice->P5, sizeof(int), 1, bin);
+    fwrite(&indice->P5, sizeof(int), 1, fp);
 
     return TRUE;
 }
