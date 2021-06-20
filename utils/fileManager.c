@@ -44,6 +44,7 @@ char *readLine(FILE *stream)
     // erasing the included '\n'
     str[position - 1] = '\0';
 
+
     return str;
 }
 

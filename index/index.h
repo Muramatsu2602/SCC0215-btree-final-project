@@ -37,27 +37,9 @@
         int nroChavesIndexadas;
         int RRNdoNo;
 
-        // int P[5];
-        // int C[4];
-        // int64 Pr[4];
-
-        int P1;
-        int C1;
-        int64 Pr1;
-
-        int P2;
-        int C2;
-        int64 Pr2;
-
-        int P3;
-        int C3;
-        int64 Pr3;
-
-        int P4;
-        int C4;
-        int64 Pr4;
-
-        int P5;
+        int P[5];   // ponteiros para uma subárvore ou assume o valor -1 caso não exista subárvore
+        int C[4];   // chaves de busca
+        int64 Pr[4];// campo de referência para o registro no arquivo de dados que contém o registro de dados correspondente a C
     };
 
     typedef struct _cabecalhoIndex CABECALHOI;

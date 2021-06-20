@@ -18,9 +18,78 @@
  * @param fp 
  * @param cabecalho 
  * @param indice 
+ * @param rrnAtual 
  * @param chave 
  * @param enderecoBin 
+ * @param rrnDireitoChavePromovida 
+ * @param chavePromovida 
+ * @param enderecoBinPromovida 
+ * @param rrnPromovido 
+ * @return int  PROMOTION  
+    Parâmetros de retorno
+        0 -> promotion: quando uma inserção é feita e a chave é promovida
+        1 -> no promotion: quando a inserção é feita e nenhuma chave é promovida
+        2 -> error: não irá acontecer segundo as especificações do projeto
  */
+
+int insereChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int rrnAtual, int chave, int64 enderecoBin, int rrnDireitoChavePromovida, int chavePromovida, int64 enderecoBinPromovida, int rrnPromovido)
+{
+    INDEX PAGE;
+    INDEX NEWPAGE;
+    int pos = -1; // Posição na página na qual a chave ocorre ou deveria ocorrer
+
+    int p_b_key; //  chave promovida do nível inferir para ser inserida em PAGE
+    int p_b_rrn; //  rrn promovido do nível anterior para ser inserido em PAGE
+
+    if ()
+
+        // se o rrnAtual é um nó folha
+        if (rrnAtual == -1)
+        {
+            chavePromovida = chave;
+            rrnDireitoChavePromovida = -1;
+            return 0;
+        }
+        else
+        {
+            // Achar qual será a página que deverá ir
+            boolean flag = 0;
+            int rrnAtual2 = rrnAtual;
+            int aux = 9;
+
+            for (int i = 0; i < 4 && flag == 0; i += 2)
+            {
+                if (chave < indice->C[i])
+                {
+                    ponteiroAnterior = ((rrnAtual + 1) * TAMANHO_NO) + aux;
+                    rrnAtual2 = indice->P[i];
+                    flag == 1;
+                }
+                else if (chave > indice->C[i] && chave < indice->C[i + 1])
+                {
+                    ponteiroAnterior = ((rrnAtual + 1) * TAMANHO_NO) + aux + 4;
+                    rrnAtual2 = indice->P[i + 1];
+                    flag == 1;
+                }
+                aux += 8;
+            }
+
+            // Se a chave for maior do que a última chave presente na página atual
+            if (flag == 0)
+            {
+                ponteiroAnterior = ((rrnAtual + 1) * TAMANHO_NO) + aux;
+                rrnAtual2 = indice->P[4];
+            }
+            
+            // a chave de busca não foi encontrada, portanto
+            // procura a chave de busca no nó filho
+            int returnValue = insereChave(fp, cabecalho, indice, rrnAtual2, chave, enderecoBin,);
+
+            // NO PROMOTION
+            if(returnValue == 1)
+        }
+}
+
 void insereChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int64 enderecoBin)
 {
     // Primeiro caso: Árvore vazia
@@ -29,6 +98,7 @@ void insereChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
     {
         // Criar um nó página, inserir no arquivo binário de indice, colocar o RRN no cabecalho->noRaiz
         // Inserir a chave ordenadamente na primeira página criado
+        cabecalho->noRaiz = 0;
         inicializarNovaPagina(indice, cabecalho->noRaiz, 1);
 
         indice->C1 = chave;
@@ -38,74 +108,78 @@ void insereChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
         // Escrever a nova página no arquivo
         escreverBINIndex(fp, cabecalho, indice);
 
-        cabecalho->noRaiz = 0; // TAMANHO_PAGINA*1
-        cabecalho->RRNproxNo = 1;
+        cabecalho->RRNproxNo = cabecalho->noRaiz + 1;
     }
-
-    // Inicia uma pesquisa que desce até o nível dos nós folhas
-    int rrnAtual = cabecalho->noRaiz;
-    int isFolha = 0;    // controle (para quando acha folha)
-    int ponteiroAnterior = 0;
-
-    // Posiciona o ponteiro para a página correspondente ao rrn
-    lerBINIndice(fp, indice, rrnAtual);
-    if(indice->folha == '1')
-        isFolha = true;
-        
-    while(isFolha != 1)
-    {
-        // Achar qual será a página que deverá ir
-        if(chave < indice->C1)
-        {
-            ponteiroAnterior = ((rrnAtual+1)*TAMANHO_NO) + 9;
-            rrnAtual = indice->P1;
-        }
-        else if(chave > indice->C1 && chave < indice->C2)
-        {
-            ponteiroAnterior = ((rrnAtual+1)*TAMANHO_NO) + 25;
-            rrnAtual = indice->P2;
-        }
-        else if(chave < indice->C3)
-        {
-            ponteiroAnterior = ((rrnAtual+1)*TAMANHO_NO) + 41;
-            rrnAtual = indice->P3;
-        }
-        else if(chave > indice->C3 && chave < indice->C4)
-        {
-            ponteiroAnterior = ((rrnAtual+1)*TAMANHO_NO) + 57;
-            rrnAtual = indice->P4;
-        }
-        else
-        {
-            ponteiroAnterior = ((rrnAtual+1)*TAMANHO_NO) + 73;
-            rrnAtual = indice->P5;
-        }
-
-        lerBINIndice(fp, indice, rrnAtual);
-        if(indice->folha == '1')
-            isFolha = TRUE;
-    }
-    
-    // Verificar se a página do rrnAtual está cheia
-    if(indice->nroChavesIndexadas == NUM_CHAVES_NO)
-    {
-        // Fazer o split
-        
-        // Se for o nó raiz, o nó promovido do split será o novo nó raiz
-        if(rrnAtual == cabecalho->noRaiz)
-            divideNo(fp, cabecalho, indice, chave, ponteiroAnterior, TRUE);
-        else
-            divideNo(fp, cabecalho, indice, chave, ponteiroAnterior, FALSE);
-    } 
     else
     {
-        // Inserir ordenado
+        // Inicia uma pesquisa que desce até o nível dos nós folhas
+        int rrnAtual = cabecalho->noRaiz;
+        boolean isFolha = 0; // controle (para quando acha folha)
+        int ponteiroAnterior = -1;
 
+        // Posiciona o ponteiro para a página correspondente ao rrn
+        lerBINIndice(fp, indice, rrnAtual);
+        if (indice->folha == '1')
+            isFolha = true;
+
+        while (isFolha != 1)
+        {
+            int aux = 9; // Byte inicial para onde o P0 aponta.
+            boolean flag = 0;
+
+            // Achar qual será a página que deverá ir
+            for (int i = 0; i < 4 && flag == 0; i += 2)
+            {
+                if (chave < indice->C[i])
+                {
+                    ponteiroAnterior = ((rrnAtual + 1) * TAMANHO_NO) + aux;
+                    rrnAtual = indice->P[i];
+                    flag == 1;
+                }
+                else if (chave > indice->C[i] && chave < indice->C[i + 1])
+                {
+                    ponteiroAnterior = ((rrnAtual + 1) * TAMANHO_NO) + aux + 4;
+                    rrnAtual = indice->P[i + 1];
+                    flag == 1;
+                }
+                aux += 8;
+            }
+
+            // Se a chave for maior do que a última chave presente na página atual
+            if (flag == 0)
+            {
+                ponteiroAnterior = ((rrnAtual + 1) * TAMANHO_NO) + aux;
+                rrnAtual = indice->P[4];
+            }
+
+            // ler
+            lerBINIndice(fp, indice, rrnAtual);
+            if (indice->folha == '1')
+                isFolha = TRUE;
+        }
+
+        // Depois que encontrou o nó folha, tentará fazer a inserção
+        // Verificar se a página do rrnAtual está cheia
+        if (indice->nroChavesIndexadas == NUM_CHAVES_NO)
+        {
+            // A página está cheia, portanto fazer o split
+
+            // Se for o nó raiz, o nó promovido do split será o novo nó raiz
+            if (rrnAtual == cabecalho->noRaiz)
+                divideNo(fp, cabecalho, indice, chave, ponteiroAnterior, TRUE);
+            else
+                divideNo(fp, cabecalho, indice, chave, ponteiroAnterior, FALSE);
+        }
+        else
+        {
+            // Inserir ordenado
+        }
     }
 }
 
 /**
- * @brief 
+ * @brief realiza o procedimento de SPLIT, criando duas novas paginas e 
+ * promovendo um dos nos da pagina original
  * 
  * @param fp 
  * @param cabecalho 
@@ -114,38 +188,49 @@ void insereChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
  */
 void divideNo(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int novaChave, int ponteiroAnterior, boolean raiz)
 {
+    // Primeiro, verificar se o ponteiro anterior
 
     // a e h k (g)
     // [a e] (g) [h k]
 
     // Se o nó a ser feito split for o nó raiz, ao final do split fazer com que cabecalho->noRaiz aponte para o INDEX paginaPromocao
-    INDEX novaPagina;
-    INDEX paginaPromocao; // equivalente ao NewPage  
+    INDEX novaPagina; // Nova página que receberá o que está a direita da página a ser promovida
+    inicializarNovaPagina(novaPagina, cabecalho->RRNproxNo, TRUE);
+    cabecalho->RRNproxNo++;
 
-    // Distribuir as chaves mais uniformemente possível
+    INDEX paginaPromocao; // Nova página que conterá a chave promovida
+    inicializarNovaPagina(paginaPromocao, cabecalho->RRNproxNo, FALSE);
+    cabecalho->RRNproxNo++;
+
+    // Distribuir as chaves mais uniformemente possível ordenando o array chaves
     int chaves[5];
-    chaves[0] = indice->C1;
-    chaves[1] = indice->C2;
-    chaves[2] = indice->C3;
-    chaves[3] = indice->C4;
-    chaves[4] = novaChave;
-    insertionSort(&chaves, 5);
+    for (int i = 0, int j = 0; i < 5; i++)
+    {
+        if (indice->C[j] > novaChave)
+        {
+            chaves[i] = novaChave;
+        }
+        else
+        {
+            chaves[i] = indice->C[j];
+            j++;
+        }
+    }
 
     // Agora, o elemento do meio será aquele que será promovido
-
-    inicializarNovaPagina(paginaPromocao); // pega o elemento do meio
     paginaPromocao.nroChavesIndexadas = 1;
-    paginaPromocao.folha = '0';
-    paginaPromocao.RRNdoNo = cabecalho->RRNproxNo;
-    cabecalho->RRNproxNo++;
-    paginaPromocao.C1 = chaves[2];
-    
-    
+    paginaPromocao.C[0] = chaves[2];
+    paginaPromocao.P[0] = indice->RRNdoNo;
+    paginaPromocao.P[1] = novaPagina.RRNdoNo;
 
+    // As chaves a esquerda da chave promovida continuarão na página original
+
+    // As chaves a direita da chave promovida ficarão na nova página criada
 }
 
 /**
- * @brief 
+ * @brief essa função é convocada quando a inserção se dá em uma página não cheia, ou seja,
+ * sem a necessidade de um SPLIT
  * 
  * @param fp 
  * @param indice 
@@ -154,78 +239,16 @@ void divideNo(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int novaChave, int
 void inserirChaveOrdenada(FILE *fp, INDEX *indice, int novaChave, int64 enderecoBin)
 {
     // Se fosse vetor:
-    /*for(int i=0; i<4; i++)
+    for (int i = 0; i < 4; i++)
     {
-        if(indice->C[i] == -1)
+        // so podemos inserir em uma folha
+        if (indice->C[i] == -1)
         {
             indice->C[i] = novaChave;
             indice->Pr[i] = enderecoBin;
         }
     }
-    ordenarChaves();*/
-
-    if(novaChave < indice->C1 || indice->C1 == -1)
-    {
-        // novaChave será o novo C1
-        int aux1 = indice->C1;
-        int64 aux2 = indice->Pr1;
-        indice->C1 = novaChave;
-        indice->Pr1 = enderecoBin;
-
-        // Mover todos uma posição para frente
-        int aux3 = indice->C2;
-        int64 aux4 = indice->Pr2;
-
-        indice->C2 = aux1;
-        indice->Pr2 = aux2;
-
-        aux5 = indice->C3;
-        aux6 = indice->Pr3
-
-        indice->C3 = aux3;
-        indice->Pr3 = aux4
-
-        indice->C4 = aux5;
-        indice->Pr4 = aux6;
-    }
-    else if(novaChave < indice->C2 || indice->C2 == -1)
-    {
-        // novaChave será o novo C2
-        int aux1 = indice->C2;
-        int64 aux2 = indice->Pr2;
-        indice->C2 = novaChave;
-        indice->Pr2 = enderecoBin;
-
-        // Mover todos uma posição para frente
-        int aux3 = indice->C3;
-        int64 aux4 = indice->Pr3;
-
-        indice->C3 = aux1;
-        indice->Pr3 = aux2;
-
-        indice->C3 = aux3;
-        indice->Pr3 = aux4
-    }
-    else if(novaChave < indice->C3 || indice->C3 == -1)
-    {
-        // novaChave será o novo C2
-        int aux1 = indice->C3;
-        int64 aux2 = indice->Pr3;
-        indice->C3 = novaChave;
-        indice->Pr3 = enderecoBin;
-
-        // Mover todos uma posição para frente
-        int aux3 = indice->C4;
-        int64 aux4 = indice->Pr4;
-
-        indice->C4 = aux1;
-        indice->Pr4 = aux2;
-    }
-    else
-    {
-        indice->C4 = novaChave;
-        indice->Pr4 = enderecoBin;
-    }
+    ordenarChaves();
 }
 
 /**
@@ -239,9 +262,9 @@ boolean lerBINIndice(FILE *fp, INDEX *indice, int RRN)
 {
     if (!fp || !cabecalho || !indice)
         return FALSE;
-    
+
     // posiciona o ponteiro do arquivo logo depois do fim do cabeçalho
-    fseek(fp, (RRN*TAMANHO_NO)+TAMANHO_NO);
+    fseek(fp, (RRN * TAMANHO_NO) + TAMANHO_NO);
 
     // Folha
     fread(&indice->folha, sizeof(char), 1, bin);
@@ -282,7 +305,7 @@ boolean lerBINIndice(FILE *fp, INDEX *indice, int RRN)
 
     // P5
     fread(&indice->P5, sizeof(int), 1, bin);
-    
+
     return TRUE;
 }
 
@@ -299,7 +322,7 @@ boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice)
         return FALSE;
 
     // Posicionar o ponteiro do arquivo binário na posição do RRN do próximo nó
-    fseek(fp, (cabecalho->RRNproxNo+1)*TAMANHO_NO);
+    fseek(fp, (cabecalho->RRNproxNo + 1) * TAMANHO_NO);
 
     // Inserção do nó no arquivo binário
 
@@ -351,15 +374,15 @@ boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice)
  * 
  * @param indice 
  * @param RRN 
- * @param folha 
+ * @param folha booleano "é Folha".
  */
-void inicializarNovaPagina(INDEX *indice, int RRN, int folha)
+void inicializarNovaPagina(INDEX *indice, int RRN, boolean folha)
 {
     // indica se o nó é um nó folha ou não, representado por uma string de 1
-    // byte (0 indica que o nó não é folha e 1 indica que o nó é folha); 
-    if(folha == 1)
+    // byte (0 indica que o nó não é folha e 1 indica que o nó é folha);
+    if (folha == 1)
         indice->folha = '1';
-    else   
+    else
         indice->folha = '0';
 
     indice->RRNdoNo = RRN;
