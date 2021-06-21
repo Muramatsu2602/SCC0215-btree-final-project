@@ -11,26 +11,27 @@ Este trabalho tem como objetivo indexar arquivos de dados usando um índice
 
 ```
 .
+├── bin
+│   └── ...
+├── csv
+│   └── ...
 ├── index
-│   ├── linhaIndex.c
-│   ├── linhaIndex.h
-│   ├── veiculoIndex.c
-│   └── veiculoIndex.h
-├── LICENSE
+│   ├── index.c
+│   └── index.h
 ├── main.c
 ├── Makefile
-├── README.md
 ├── registry
 │   ├── linha.c
 │   ├── linha.h
 │   ├── veiculo.c
 │   └── veiculo.h
 ├── test
-│   └──...
-│
+│   ├── auxFunc
+│   │   ├── convertePrefixo.h
+│   │   ├── indexManager.h
+│   │   └── testaConvertePrefixo.c
+│   ├── fileManager.c
+│   └── fileManager.h
 └── utils
-    ├── convertePrefixo.h
-    ├── fileManager.c
-    ├── fileManager.h
-    └── testaConvertePrefixo.c
+
 ```
