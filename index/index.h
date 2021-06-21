@@ -47,4 +47,12 @@
     typedef struct _index INDEX;    
 
 
+    void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int64 enderecoBin);
+    void inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *raiz, int chave, int64 enderecoBin);
+    void divideNo(FILE *fp, CABECALHOI *cabecalho, int i, INDEX *raiz, INDEX *novaRaiz, int chaves[5], int64 enderecosBin[5]);
+    boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN);
+    boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice);
+    void inicializarNovaPagina(INDEX *indice, int RRN, boolean folha);
+
+
 #endif

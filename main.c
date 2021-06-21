@@ -15,9 +15,12 @@
 #include "utils/fileManager.h"
 #include "registry/linha.h"
 #include "registry/veiculo.h"
+#include "index/index.h"
+#include "utils/auxFunc/convertePrefixo.h"
 
 /**
- * @brief Realiza a leitura do arquivo CSV e cria e insere um arquivo binário contendo o cabeçalho e os veiculos lidos.
+ * @brief Realiza a leitura do arquivo CSV e cria e insere um arquivo binário contendo o cabeçalho
+ * e os veiculos lidos.
  * 
  * @param nomeCSV nome do arquivo CSV a ser lido
  * @param nomeBIN nome do arquivo binário a ser criado
@@ -88,7 +91,8 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
 }
 
 /**
- * @brief Realiza a leitura do arquivo CSV e cria e insere um arquivo binário contendo o cabeçalho e as linhas de ônibus lidas.
+ * @brief Realiza a leitura do arquivo CSV e cria e insere um arquivo binário contendo o cabeçalho e
+ * as linhas de ônibus lidas.
  * 
  * @param nomeCSV nome do arquivo CSV a ser lido
  * @param nomeBIN nome do arquivo binário a ser criado
@@ -159,7 +163,8 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
 }
 
 /**
- * @brief Realiza a recuperação dos dados de todos os registros armazenados no arquivo BINÁRIO de veiculos e os exibe de maneira organizada.
+ * @brief Realiza a recuperação dos dados de todos os registros armazenados no arquivo BINÁRIO de veiculos
+ * e os exibe de maneira organizada.
  * 
  * @param nomeBIN nome do arquivo binário de veiculos
  */
@@ -213,7 +218,8 @@ void funcionalidade3(char *nomeBIN)
 }
 
 /**
- * @brief Realiza a recuperação dos dados de todos os registros armazenados no arquivo BINÁRIO de linhas de ônibus e os exibe de maneira organizada.
+ * @brief Realiza a recuperação dos dados de todos os registros armazenados no arquivo BINÁRIO
+ * de linhas de ônibus e os exibe de maneira organizada.
  * 
  * @param nomeBIN nome do arquivo binário de linhas de ônibus
  */
@@ -267,7 +273,8 @@ void funcionalidade4(char *nomeBIN)
 }
 
 /**
- * @brief Faz a recuperação de dados de todos os registros do arquivo BINÁRIO que satisfaçam um critério de busca determinado pelo usuário.
+ * @brief Faz a recuperação de dados de todos os registros do arquivo BINÁRIO que satisfaçam 
+ * um critério de busca determinado pelo usuário.
  * Exibe apenas os registros cujo valor do campo bate com o determinado pelo usuário.
  * 
  * @param nomeBIN
@@ -326,7 +333,8 @@ void funcionalidade5(char *nomeBIN, char *campo, char *valor)
 }
 
 /**
- * @brief Faz a recuperação de dados de todos os registros do arquivo BINÁRIO que satisfaçam um critério de busca determinado pelo usuário.
+ * @brief Faz a recuperação de dados de todos os registros do arquivo BINÁRIO que satisfaçam 
+ * um critério de busca determinado pelo usuário.
  * Exibe apenas os registros cujo valor do campo bate com o determinado pelo usuário.
  * 
  * @param nomeBIN
@@ -385,7 +393,8 @@ void funcionalidade6(char *nomeBIN, char *campo, char *valor)
 }
 
 /**
- * @brief Permite a inserção de N novos registros no arquivo binário de veiculos. Utiliza da função scan_quote_string para a leitura dos campos.
+ * @brief Permite a inserção de N novos registros no arquivo binário de veiculos. 
+ * Utiliza da função scan_quote_string para a leitura dos campos.
  * 
  * @param nomeBIN
  * @param N número de novos registros a serem inseridos.
@@ -429,12 +438,12 @@ void funcionalidade7(char *nomeBIN, int N)
         escreverBINVeiculo(bin, &veiculo);
         cabVeiculos.nroRegistros++;
 
-        if(veiculo.modelo != NULL) 
+        if (veiculo.modelo != NULL)
         {
             free(veiculo.modelo);
             veiculo.modelo = NULL;
-        }   
-        if(veiculo.categoria != NULL)
+        }
+        if (veiculo.categoria != NULL)
         {
             free(veiculo.categoria);
             veiculo.categoria = NULL;
@@ -494,12 +503,12 @@ void funcionalidade8(char *nomeBIN, int N)
         escreverBINLinha(bin, &linha);
         linha.removido == '1' ? cabLinhas.nroRegistros++ : cabLinhas.nroRegRemovidos++;
 
-        if(linha.nomeLinha != NULL)
+        if (linha.nomeLinha != NULL)
         {
             free(linha.nomeLinha);
             linha.nomeLinha = NULL;
         }
-        if(linha.corLinha != NULL)
+        if (linha.corLinha != NULL)
         {
             free(linha.corLinha);
             linha.corLinha = NULL;
@@ -514,6 +523,207 @@ void funcionalidade8(char *nomeBIN, int N)
     return;
 }
 
+/**
+ * @brief Cria um arquivo de índice árvore-B para o arquivo de dados veiculo definido 
+ * de acordo com a especificação do primeiro trabalho prático
+ * 
+ * @param arqVeiculoBIN 
+ * @param arqIndicePrefixo 
+ */
+void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
+{
+    FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE3);
+    FILE *binIndex = abrirArquivoBin(arqIndicePrefixo, FILE_MODE3);
+
+    if (binVeiculo == NULL || binIndex == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Ler o cabeçalho de veiculos do arquivo binário
+    CABECALHOV cabVeiculos;
+    lerCabecalhoBINVeiculo(binVeiculo, &cabVeiculos);
+
+    // Chegar se não há registros no arquivo
+    if (feof(binVeiculo) || cabVeiculos.nroRegistros == 0)
+    {
+        printf("Registro inexistente.\n");
+    }
+
+    // Agora ler os registros e exibir na tela
+    VEICULO veiculo;
+    veiculo.modelo = NULL;
+    veiculo.categoria = NULL;
+
+    int totalRegistros = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
+
+    // Armazena o byteoffset do arquivo de veiculos atual
+    int64 byteoffset = ftell(binVeiculo);
+
+    CABECALHOI cabIndex;
+    INDEX index;
+
+    for (int i = 0; i < totalRegistros; i++)
+    {
+        // Ler o registro
+        if (lerBINVeiculo(binVeiculo, &veiculo, TRUE, NULL, NULL))
+        {
+            // Inserir no arquivo de índices apenas os veículos que não estão marcados como logicamente removidos
+            if (veiculo.removido == '1')
+            {
+                int chave = convertePrefixo(veiculo.prefixo);
+
+                inserirIndex(binVeiculo, &cabIndex, &index, chave, byteoffset);
+
+                // liberando memoria dos campos dinamicos
+                free(veiculo.modelo);
+                free(veiculo.categoria);
+                veiculo.modelo = NULL;
+                veiculo.categoria = NULL;
+            }
+            byteoffset = ftell(binVeiculo);
+        }
+    }
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binVeiculo);
+    fecharArquivoBin(&binIndex);
+
+    return;
+}
+
+/**
+ * @brief Cria um arquivo de índice árvore-B para o arquivo de dados linha definido de acordo
+ * com a especificação do primeiro trabalho prático. O campo a ser indexado é codLinha
+ * 
+ * @param arqLinhaBIN 
+ * @param arqIndicePrefixo 
+ */
+void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
+{
+    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE3);
+    FILE *binIndex = abrirArquivoBin(arqIndicePrefixo, FILE_MODE3);
+
+    if (binLinha == NULL || binIndex == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Ler o cabeçalho de veiculos do arquivo binário
+    CABECALHOL cabLinhas;
+    lerCabecalhoBINLinha(binLinha, &cabLinhas);
+
+    // Chegar se não há registros no arquivo
+    if (feof(binLinha) || cabLinhas.nroRegistros == 0)
+    {
+        printf("Registro inexistente.\n");
+    }
+
+    // Agora ler os registros e exibir na tela
+    LINHA linha;
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
+
+    int totalRegistros = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
+
+    // Armazena o byteoffset do arquivo de veiculos atual
+    int64 byteoffset = ftell(binLinha);
+
+    CABECALHOI cabIndex;
+    INDEX index;
+
+    for (int i = 0; i < totalRegistros; i++)
+    {
+        // Ler o registro
+        if (lerBINLinha(binLinha, &linha, TRUE, NULL, NULL))
+        {
+            // Exibir apenas as linhas que não estão marcadas logicamente como excluidas
+            if (linha.removido == '1')
+            {
+                int chave = linha.codLinha;
+
+                inserirIndex(binLinha, &cabIndex, &index, chave, byteoffset);
+                
+                // liberando memoria os campos dinamicos
+                free(linha.nomeLinha);
+                free(linha.corLinha);
+                linha.nomeLinha = NULL;
+                linha.corLinha = NULL;
+            }
+            byteoffset = ftell(binLinha);
+        }
+    }
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binLinha);
+    fecharArquivoBin(&binIndex);
+
+    return;
+}
+
+/**
+ * @brief Permita a recuperação dos dados de todos os registros do arquivo de dados veiculo que 
+ * satisfaçam um critério de busca determinado pelo usuário sobre o campo prefixo, usando
+ * o índice árvore-B criado na funcionalidade
+ *
+ * @param arqVeiculoBIN 
+ * @param arqIndicePrefixo 
+ * @param prefixo 
+ * @param valor 
+ */
+void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, int prefixo, char*valor)
+{
+    
+    return;
+}
+
+/**
+ * @brief Permita a recuperação dos dados de todos os registros do arquivo de dados linha que 
+ * satisfaçam um critério de busca determinado pelo usuário sobre o campo codLinha, usando
+ * o índice árvore-B criado na funcionalidade
+ *
+ * @param arqVeiculoLIN
+ * @param arqIndicePrefixo 
+ * @param prefixo 
+ * @param valor 
+ */
+void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, int prefixo, char*valor)
+{
+    
+    return;
+}
+
+/**
+ * @brief Estende a funcionalidade [7] de forma que, a cada inserção de um registro no arquivo de 
+ * dados veiculo, a chave de busca correspondente a essa inserção seja inserida no arquivo de índice árvore-B
+ * 
+ * @param arqVeiculoBIN 
+ * @param arqIndicePrefixo 
+ * @param n Número de registros a serem inseridos
+ */
+void funcionalidade13(char *arqVeiculoBIN, char *arqIndicePrefixo, int n)
+{
+    
+    return;
+}
+
+/**
+ * @brief  Estenda a funcionalidade [8] de forma que, a cada inserção de um registro no
+ * arquivo de dados linha, a chave de busca correspondente a essa inserção seja inserida
+ * no arquivo de índice árvore-B
+ * 
+ * @param arqVeiculoBIN 
+ * @param arqIndicePrefixo 
+ * @param n Número de registros a serem inseridos
+ */
+void funcionalidade14(char *arqLinhaBIN, char *arqIndicePrefixo, int n)
+{
+    
+    return;
+}
+
 int main(int agrc, char *argv[])
 {
     int funcionalidade = 0;
@@ -523,56 +733,83 @@ int main(int agrc, char *argv[])
     char *arg1 = (char *)malloc(BUFFER);
     char *arg2 = (char *)malloc(BUFFER);
     char *arg3 = (char *)malloc(BUFFER);
-    int N = 0; // Utilizado nas funcionalidades 7 e 8 para inserção de novos dados nos arquivos binários de veiculos e linhas
-
+    char *arg4 = (char *)malloc(BUFFER);
+    int N = 0;                 // Utilizado nas funcionalidades 7 e 8 para inserção de novos dados nos arquivos binários de veiculos e linhas
+    
+    // todas as funcionalidades do programa
     switch (funcionalidade)
     {
-    case 1:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade1(arg1, arg2);
-        binarioNaTela(arg2);
-        break;
-    case 2:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade2(arg1, arg2);
-        binarioNaTela(arg2);
-        break;
-    case 3:
-        scanf("%s", arg1);
-        funcionalidade3(arg1);
-        break;
-    case 4:
-        scanf("%s", arg1);
-        funcionalidade4(arg1);
-        break;
-    case 5:
-        scanf("%s %s", arg1, arg2);
-        scan_quote_string(arg3);
-        funcionalidade5(arg1, arg2, arg3);
-        break;
-    case 6:
-        scanf("%s %s", arg1, arg2);
-        scan_quote_string(arg3);
-        funcionalidade6(arg1, arg2, arg3);
-        break;
-    case 7:
-        scanf("%s %d", arg1, &N);
-        funcionalidade7(arg1, N);
-        break;
-    case 8:
-        scanf("%s %d", arg1, &N);
-        funcionalidade8(arg1, N);
-        break;
-    case 9:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade9();
-
+        // PRIMEIRO Trabalho Prático
+        case 1:
+            scanf("%s %s", arg1, arg2);
+            funcionalidade1(arg1, arg2);
+            binarioNaTela(arg2);
+            break;
+        case 2:
+            scanf("%s %s", arg1, arg2);
+            funcionalidade2(arg1, arg2);
+            binarioNaTela(arg2);
+            break;
+        case 3:
+            scanf("%s", arg1);
+            funcionalidade3(arg1);
+            break;
+        case 4:
+            scanf("%s", arg1);
+            funcionalidade4(arg1);
+            break;
+        case 5:
+            scanf("%s %s", arg1, arg2);
+            scan_quote_string(arg3);
+            funcionalidade5(arg1, arg2, arg3);
+            break;
+        case 6:
+            scanf("%s %s", arg1, arg2);
+            scan_quote_string(arg3);
+            funcionalidade6(arg1, arg2, arg3);
+            break;
+        case 7:
+            scanf("%s %d", arg1, &N);
+            funcionalidade7(arg1, N);
+            break;
+        case 8:
+            scanf("%s %d", arg1, &N);
+            funcionalidade8(arg1, N);
+            break;
+        // SEGUNDO Trabalho Prático
+        case 9:
+            scanf("%s %s", arg1, arg2);
+            funcionalidade9(arg1,arg2);
+            break;
+        case 10:
+            scanf("%s %s", arg1, arg2);
+            funcionalidade10(arg1,arg2);
+            break;
+        case 11:
+            scanf("%s %s %s", arg1, arg2, arg3);
+            scan_quote_string(arg4);
+            funcionalidade11(arg1, arg2, convertePrefixo(arg3), arg4);
+            break;
+        case 12:
+            scanf("%s %s %s", arg1, arg2, arg3);
+            scan_quote_string(arg4);
+            funcionalidade12(arg1, arg2, convertePrefixo(arg3), arg4);
+            break;
+        case 13:
+            scanf("%s %s %d", arg1, arg2, &N);
+            funcionalidade13(arg1,arg2,N);
+            break;
+        case 14:
+            scanf("%s %s %d", arg1, arg2, &N);
+            funcionalidade13(arg1,arg2,N);
+            break;
     }
 
     // Liberando memoria heap dos argumentos de cada funcionalidade
     free(arg1);
     free(arg2);
     free(arg3);
+    free(arg4);
 
     return EXIT_SUCCESS;
 }
