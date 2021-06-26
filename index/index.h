@@ -55,10 +55,13 @@
     void divideNo(FILE *fp, CABECALHOI *cabecalho, int i, INDEX *raiz, INDEX *novaRaiz, int chaves[5], int64 enderecosBin[5]);
     boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN);
     boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice);
+    boolean atualizarBINIndex(FILE *fp, INDEX *indice);
     boolean escreverBinCabIndex(FILE *fp, CABECALHOI *cabecalho);
     boolean inicializarNovaPagina(INDEX *indice, int RRN, boolean folha);
     boolean inicializarNovaPagina(INDEX *indice, int RRN, boolean folha);
     boolean inicializarCabecalhoIndex(CABECALHOI *cabecalho);
     boolean inicializarIndex(INDEX *index);
+
+    void identificaFolha(INDEX *indice);
 
 #endif

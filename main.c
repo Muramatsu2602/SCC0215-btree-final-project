@@ -568,7 +568,7 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     INDEX index;  
     inicializarIndex(&index);
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 6; i++)
     {
         // Ler o registro
         if (lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL))
@@ -593,7 +593,7 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculo);
     fecharArquivoBin(&binIndex);
-
+    
     return;
 }
 
@@ -784,6 +784,7 @@ int main(int agrc, char *argv[])
         case 9:
             scanf("%s %s", arg1, arg2);
             funcionalidade9(arg1,arg2);
+            binarioNaTela(arg2);
             break;
         case 10:
             scanf("%s %s", arg1, arg2);
