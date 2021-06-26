@@ -568,7 +568,7 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     INDEX index;  
     inicializarIndex(&index);
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 50; i++)
     {
         // Ler o registro
         if (lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL))
@@ -589,6 +589,9 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
             byteoffset = ftell(binVeiculo);
         }
     }
+
+    // Atualizar o cabecalho de index
+    escreverBinCabIndex(binIndex, &cabIndex);
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculo);
