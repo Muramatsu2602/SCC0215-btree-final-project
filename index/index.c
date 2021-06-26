@@ -8,9 +8,7 @@
  * @copyright Copyright (c) 2021
  * 
  */
-
 #include "index.h"
-#include "../utils/auxFunc/indexManager.h"
 
 /**
  * @brief 
@@ -23,49 +21,49 @@
  */
 void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int64 enderecoBin)
 {
-    INDEX raiz;
+    printf("%d | %lld\n",chave,enderecoBin);
     // Primeiro caso: Árvore vazia
     // Checar se o noRaiz da struct de cabeçalho está com valor -1
-    if (cabecalho->RRNnoRaiz == -1)
+    if (cabecalho->noRaiz == -1)
     {
+        printf("Entrou aqui.\n");
         // Criar um nó página, inserir no arquivo binário de indice, colocar o RRN no cabecalho->noRaiz
         // Inserir a chave ordenadamente na primeira página criado
-        cabecalho->RRNnoRaiz = 0;
-        inicializarNovaPagina(&raiz, cabecalho->RRNnoRaiz, 1);
+        cabecalho->noRaiz = 0;
 
-        raiz.C[0] = chave;
-        raiz.Pr[0] = enderecoBin;
-        raiz.nroChavesIndexadas++;
+        indice->C[0] = chave;
+        indice->Pr[0] = enderecoBin;
+        indice->nroChavesIndexadas++;
 
         // Escrever a nova página no arquivo
-        escreverBINIndex(fp, cabecalho, &raiz);
+        escreverBINIndex(fp, cabecalho, indice);
 
-        cabecalho->RRNproxNo = cabecalho->RRNnoRaiz + 1;
+        cabecalho->RRNproxNo = cabecalho->noRaiz + 1;
     }
     // Se a árvore existe
     else
     {
-        lerBINIndice(fp, &raiz, cabecalho, cabecalho->RRNnoRaiz);
+        lerBINIndice(fp, indice, cabecalho, cabecalho->noRaiz);
 
         // se o nó está cheio, então a árvore B cresce em altura
-        if (raiz.nroChavesIndexadas == NUM_CHAVES_NO)
+        if (indice->nroChavesIndexadas == NUM_CHAVES_NO)
         {
             // Criar a nova raiz
             INDEX novaRaiz;
             inicializarNovaPagina(&novaRaiz, cabecalho->RRNproxNo, FALSE);
             escreverBINIndex(fp, cabecalho, &novaRaiz);
-            cabecalho->RRNnoRaiz = cabecalho->RRNproxNo;
+            cabecalho->noRaiz = cabecalho->RRNproxNo;
             cabecalho->RRNproxNo++;
 
             // Página a esquerda da novaRaiz será a raiz original
-            novaRaiz.P[0] = raiz.RRNdoNo;
+            novaRaiz.P[0] = indice->RRNdoNo;
 
             int chaves[5];
             int64 enderecosBin[5];
             int j = 0;
             for (int i = 0; i < 5; i++)
             {
-                if (chave < raiz.C[j])
+                if (chave < indice->C[j])
                 {
                     enderecosBin[i] = enderecoBin;
                     chaves[i] = chave;
@@ -73,22 +71,20 @@ void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int
                 }
                 else
                 {
-                    enderecosBin[i] = raiz.Pr[j];
-                    chaves[i] = raiz.C[j];
+                    enderecosBin[i] = indice->Pr[j];
+                    chaves[i] = indice->C[j];
                     j++;
                 }
             }
 
             // Dar split na raiz antiga e promover o valor central
-            divideNo(fp, cabecalho, 0, &raiz, &novaRaiz, chaves, enderecosBin);
+            divideNo(fp, cabecalho, 0, indice, &novaRaiz, chaves, enderecosBin);
 
-            // TODO: Verificar a linha intermediaria que aparece no geek for geeks
-
-            cabecalho->RRNnoRaiz = novaRaiz.RRNdoNo;
+            cabecalho->noRaiz = novaRaiz.RRNdoNo;
         }
         else
         {
-            inserirChave(fp, cabecalho, &raiz, chave, enderecoBin);
+            inserirChave(fp, cabecalho, indice, chave, enderecoBin);
         }
     }
 }
@@ -104,6 +100,7 @@ void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int
  */
 void inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *raiz, int chave, int64 enderecoBin)
 {
+    printf("ENTROU AQUI!");
     // i guarda a posição da última chave inserida em raiz
     int i = raiz->nroChavesIndexadas - 1;
 
@@ -185,7 +182,7 @@ void divideNo(FILE *fp, CABECALHOI *cabecalho, int i, INDEX *raiz, INDEX *novaRa
     INDEX novaPagina;
     inicializarNovaPagina(&novaPagina, cabecalho->RRNproxNo, FALSE);
     escreverBINIndex(fp, cabecalho, &novaPagina);
-    cabecalho->RRNnoRaiz = cabecalho->RRNproxNo;
+    cabecalho->noRaiz = cabecalho->RRNproxNo;
     cabecalho->RRNproxNo++;
 
     novaPagina.nroChavesIndexadas = 2;
@@ -235,7 +232,7 @@ boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN)
         return FALSE;
 
     // posiciona o ponteiro do arquivo logo depois do fim do cabeçalho
-    fseek(fp, (RRN * TAMANHO_NO) + TAMANHO_NO, SEEK_SET);
+    fseek(fp, (RRN + 1) * TAMANHO_NO, SEEK_SET);
 
     // Folha
     fread(&indice->folha, sizeof(char), 1, fp);
@@ -262,6 +259,33 @@ boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN)
     return TRUE;
 }
 
+boolean escreverBinCabIndex(FILE *fp, CABECALHOI *cabecalho)
+{
+    if(cabecalho == NULL)
+    {
+        return FALSE;
+    }
+
+    fseek(fp, 0, SEEK_SET);
+
+    // Status
+    fwrite(&cabecalho->status, sizeof(char), 1, fp);
+
+    // noRaiz
+    fwrite(&cabecalho->noRaiz, sizeof(int), 1, fp);
+
+    // RRNproxNo
+    fwrite(&cabecalho->RRNproxNo, sizeof(int), 1, fp);
+
+    // Inserir lixo no restante do registro, completando os 77 bytes
+    char lixo[68];
+    preenchendoLixo(0, 68, lixo);
+
+    fwrite(lixo, sizeof(char), 68, fp);
+   
+    return TRUE;
+}
+
 /**
  * @brief 
  * 
@@ -272,7 +296,10 @@ boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN)
 boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice)
 {
     if (!fp || !cabecalho || !indice)
+    {
+        //printf("Deu ruim.\n");
         return FALSE;
+    }
 
     // Posicionar o ponteiro do arquivo binário na posição do RRN do próximo nó
     fseek(fp, (cabecalho->RRNproxNo + 1) * TAMANHO_NO, SEEK_SET);
@@ -281,7 +308,7 @@ boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice)
 
     // Folha
     fwrite(&indice->folha, sizeof(char), 1, fp);
-
+    
     // nroChavesIndexadas
     fwrite(&indice->nroChavesIndexadas, sizeof(int), 1, fp);
 
@@ -300,7 +327,7 @@ boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice)
 
     // P[4]
     fwrite(&indice->P[4], sizeof(int), 1, fp);
-
+    
     return TRUE;
 }
 
@@ -311,8 +338,11 @@ boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice)
  * @param RRN 
  * @param folha 
  */
-void inicializarNovaPagina(INDEX *indice, int RRN, boolean folha)
+boolean inicializarNovaPagina(INDEX *indice, int RRN, boolean folha)
 {
+    if(indice == NULL)
+        return FALSE;
+    
     // indica se o nó é um nó folha ou não, representado por uma string de 1
     // byte (0 indica que o nó não é folha e 1 indica que o nó é folha);
     if (folha == 1)
@@ -333,4 +363,50 @@ void inicializarNovaPagina(INDEX *indice, int RRN, boolean folha)
     {
         indice->P[i] = -1;
     }
+
+    return TRUE;
+}
+
+/**
+ * @brief 
+ * 
+ * @param index 
+ * @return boolean 
+ */
+boolean inicializarIndex(INDEX *index)
+{
+    if(index == NULL)
+        return FALSE;
+    
+    index->folha = -1;
+    index->nroChavesIndexadas = 0;
+    index->RRNdoNo = 0;
+
+    for(int i=0; i<4; i++)
+    {
+        index->P[i] = -1;
+        index->C[i] = -1;
+        index->Pr[i] = -1;
+    }
+    index->P[4] = -1;
+
+    return TRUE;
+}
+
+/**
+ * @brief 
+ * 
+ * @param cabecalho 
+ * @return boolean 
+ */
+boolean inicializarCabecalhoIndex(CABECALHOI *cabecalho)
+{
+    if(cabecalho == NULL)
+        return FALSE;
+
+    cabecalho->status = '0';
+    cabecalho->noRaiz = -1;
+    cabecalho->RRNproxNo = 0;
+    
+    return TRUE;
 }

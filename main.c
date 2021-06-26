@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils/fileManager.h"
 #include "registry/linha.h"
 #include "registry/veiculo.h"
 #include "index/index.h"
@@ -532,8 +531,8 @@ void funcionalidade8(char *nomeBIN, int N)
  */
 void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
 {
-    FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE3);
-    FILE *binIndex = abrirArquivoBin(arqIndicePrefixo, FILE_MODE3);
+    FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
+    FILE *binIndex = abrirArquivo(arqIndicePrefixo, FILE_MODE3);
 
     if (binVeiculo == NULL || binIndex == NULL)
     {
@@ -561,20 +560,25 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     // Armazena o byteoffset do arquivo de veiculos atual
     int64 byteoffset = ftell(binVeiculo);
 
-    CABECALHOI cabIndex;
-    INDEX index;
+    // Inicializar e escrever o cabeçalho no arquivo de índice
+    CABECALHOI cabIndex; 
+    inicializarCabecalhoIndex(&cabIndex);
+    escreverBinCabIndex(binIndex, &cabIndex);
 
-    for (int i = 0; i < totalRegistros; i++)
+    INDEX index;  
+    inicializarIndex(&index);
+
+    for (int i = 0; i < 2; i++)
     {
         // Ler o registro
-        if (lerBINVeiculo(binVeiculo, &veiculo, TRUE, NULL, NULL))
+        if (lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL))
         {
             // Inserir no arquivo de índices apenas os veículos que não estão marcados como logicamente removidos
             if (veiculo.removido == '1')
             {
                 int chave = convertePrefixo(veiculo.prefixo);
 
-                inserirIndex(binVeiculo, &cabIndex, &index, chave, byteoffset);
+                inserirIndex(binIndex, &cabIndex, &index, chave, byteoffset);
 
                 // liberando memoria dos campos dinamicos
                 free(veiculo.modelo);

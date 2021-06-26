@@ -16,6 +16,9 @@
     #include <string.h>
     #include <limits.h>
 
+    // #include "../utils/auxFunc/indexManager.h"
+    #include "../utils/fileManager.h"
+
     typedef unsigned long long int int64;
     
     #define TAMANHO_NO 77
@@ -28,7 +31,7 @@
     struct _cabecalhoIndex
     {
         char status;
-        int RRNnoRaiz;
+        int noRaiz;
         int RRNproxNo; // aqui invocamos a func preenchendoLixo do fileManager.c
     };
 
@@ -52,7 +55,10 @@
     void divideNo(FILE *fp, CABECALHOI *cabecalho, int i, INDEX *raiz, INDEX *novaRaiz, int chaves[5], int64 enderecosBin[5]);
     boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN);
     boolean escreverBINIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice);
-    void inicializarNovaPagina(INDEX *indice, int RRN, boolean folha);
-
+    boolean escreverBinCabIndex(FILE *fp, CABECALHOI *cabecalho);
+    boolean inicializarNovaPagina(INDEX *indice, int RRN, boolean folha);
+    boolean inicializarNovaPagina(INDEX *indice, int RRN, boolean folha);
+    boolean inicializarCabecalhoIndex(CABECALHOI *cabecalho);
+    boolean inicializarIndex(INDEX *index);
 
 #endif
