@@ -568,12 +568,11 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     INDEX index;  
     inicializarIndex(&index);
 
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < totalRegistros; i++)
     {
         // Ler o registro
         if (lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL))
         {
-            byteoffset = ftell(binVeiculo);
             // Inserir no arquivo de índices apenas os veículos que não estão marcados como logicamente removidos
             if (veiculo.removido == '1')
             {
@@ -587,8 +586,28 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
                 veiculo.modelo = NULL;
                 veiculo.categoria = NULL;
             }
+            byteoffset = ftell(binVeiculo);
         }
     }
+
+    // Entradas manuais
+    /*inserirIndex(binIndex, &cabIndex, &index, 2, 2);
+    inserirIndex(binIndex, &cabIndex, &index, 3, 3);
+    inserirIndex(binIndex, &cabIndex, &index, 4, 4);
+    inserirIndex(binIndex, &cabIndex, &index, 5, 5);
+    inserirIndex(binIndex, &cabIndex, &index, 6, 6);
+    inserirIndex(binIndex, &cabIndex, &index, 7, 7);
+    inserirIndex(binIndex, &cabIndex, &index, 8, 8);
+    inserirIndex(binIndex, &cabIndex, &index, 10, 10);
+    inserirIndex(binIndex, &cabIndex, &index, 9, 9);
+    inserirIndex(binIndex, &cabIndex, &index, 11, 11);
+    inserirIndex(binIndex, &cabIndex, &index, 12, 12);
+    inserirIndex(binIndex, &cabIndex, &index, 1, 1);
+    inserirIndex(binIndex, &cabIndex, &index, 14, 14);
+    inserirIndex(binIndex, &cabIndex, &index, 13, 13);
+    inserirIndex(binIndex, &cabIndex, &index, 15, 15);
+    inserirIndex(binIndex, &cabIndex, &index, 16, 16);
+    inserirIndex(binIndex, &cabIndex, &index, 17, 17);*/
 
     // Atualizar o cabecalho de index
     escreverBinCabIndex(binIndex, &cabIndex);
