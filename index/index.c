@@ -44,7 +44,7 @@ void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int
     else
     {
         // Colocar em indice o nó raiz
-        lerBINIndice(fp, indice, cabecalho, cabecalho->noRaiz);
+        lerBINIndice(fp, indice, cabecalho->noRaiz);
 
         /*printf("\n====RAIZ ATUAL ====\n");
             printf("FOLHA: %c\n",indice->folha);
@@ -139,7 +139,7 @@ int inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
 
         // Colocar em aux a página do RRN encontrado
         INDEX aux;
-        if(lerBINIndice(fp, &aux, cabecalho, indice->P[(i + 1)]) == FALSE)
+        if(lerBINIndice(fp, &aux, indice->P[(i + 1)]) == FALSE)
         {
             inicializarNovaPagina(&aux, -1, FALSE);
         }
@@ -325,7 +325,7 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
         chaves[4] = chave;
         ponteiros[5] = rrnDirChave;
     }
-    printf("\nPonteiros: %d | %d | %d | %d | %d | %d\n",ponteiros[0],ponteiros[1],ponteiros[2],ponteiros[3],ponteiros[4],ponteiros[5]);
+    //printf("\nPonteiros: %d | %d | %d | %d | %d | %d\n",ponteiros[0],ponteiros[1],ponteiros[2],ponteiros[3],ponteiros[4],ponteiros[5]);
 
     /*
     // guarda posição da última chave inserida em página
@@ -416,9 +416,9 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
  * @param indice struct de páginas do indice
  * @param RRN RRN da página a ser lida
  */
-boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN)
+boolean lerBINIndice(FILE *fp, INDEX *indice, int RRN)
 {
-    if (!fp || !cabecalho || !indice || RRN == -1)
+    if (!fp || !indice || RRN == -1)
         return FALSE;
 
     // posiciona o ponteiro do arquivo logo depois do fim do cabeçalho
@@ -445,6 +445,33 @@ boolean lerBINIndice(FILE *fp, INDEX *indice, CABECALHOI *cabecalho, int RRN)
 
     // P[4]
     fread(&indice->P[4], sizeof(int), 1, fp);
+
+    return TRUE;
+}
+
+/**
+ * @brief preenche uma struct do tipo CABECALHOI com os dados advindos \
+ * do .bin da arvore B
+ * 
+ * @param fp 
+ * @param cabecalho 
+ * @return boolean 
+ */
+boolean lerBinCabIndex(FILE *fp, CABECALHOI *cabecalho)
+{
+    if(cabecalho == NULL)
+        return FALSE;
+
+    fseek(fp, 0, SEEK_SET);
+
+    // Status
+    fread(&cabecalho->status, sizeof(char), 1, fp);
+
+    // noRaiz
+    fread(&cabecalho->noRaiz, sizeof(int), 1, fp);
+
+    // RRNproxNo
+    fread(&cabecalho->RRNproxNo, sizeof(int), 1, fp);
 
     return TRUE;
 }
@@ -526,7 +553,6 @@ boolean escreverBINIndex(FILE *fp, int RRN, INDEX *indice)
  *
  * 
  * @param fp 
- * @param cabecalho 
  * @param indice 
  * @return boolean 
  */
@@ -646,4 +672,50 @@ boolean inicializarCabecalhoIndex(CABECALHOI *cabecalho)
     cabecalho->RRNproxNo = 0;
 
     return TRUE;
+}
+
+/**
+ * @brief algoritmo de pesquisa em arvore b
+ * Começa pela raiz, ou seja rrnAtual = cabecalho->noRaiz
+ * @param rrnAtual 
+ * @param chave 
+ * @param rrnEncontrado 
+ * @param posEncontrado 
+ * @return boolean 
+ */
+boolean procuraIndex(FILE *fp, int rrnAtual, int chave, int *rrnEncontrado, int *posEncontrado)
+{
+    if(rrnAtual == -1)
+        return NOT_FOUND;
+        
+    // read page RRN into PAGE
+    INDEX pagina;
+    inicializarNovaPagina(&pagina, rrnAtual, FALSE);
+    lerBINIndice(fp, &pagina, rrnAtual);
+
+    // pesquisa a página procurando a chave de busca
+    // i guarda a posição da última chave inserida em raiz
+    int i = pagina.nroChavesIndexadas - 1;
+
+    // procurando no folha
+    while (i >= 0 && pagina.C[i] > chave)
+        i--;
+
+    if(chave == pagina.C[i])
+    {
+        *rrnEncontrado = rrnAtual;
+        *posEncontrado = i;
+        return FOUND;
+    }
+    else
+    {
+        //a chave de busca não foi encontrada, portanto
+        //procura a chave de busca no nó filho
+        if(lerBINIndice(fp, &pagina, pagina.P[(i + 1)]) == FALSE)
+        {
+            pagina.RRNdoNo = -1;
+        }
+
+        return procuraIndex(fp, pagina.RRNdoNo, chave, rrnEncontrado, posEncontrado);
+    }  
 }

@@ -43,4 +43,4 @@ clean:
 
 zip:
 	@echo "Creating a zip folder with all the important files!"
-	@zip -r trabalho1-11796444_giovanni-1196451_pedro.zip utils/* registry/* $(MAIN) Makefile README.md
+	@zip -r trabalho1-11796444_giovanni-1196451_pedro.zip utils/* registry/* index/* $(MAIN) Makefile README.md

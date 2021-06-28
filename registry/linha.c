@@ -313,7 +313,6 @@ boolean lerCabecalhoBINLinha(FILE *bin, CABECALHOL *cabLinhas)
  */
 boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *valor)
 {
-
     if (!bin || !linhas)
         return FALSE;
 
@@ -342,6 +341,7 @@ boolean lerBINLinha(FILE *bin, LINHA *linhas, boolean flag, char *campo, char *v
     // aceitaCartao
     fread(&linhas->aceitaCartao, sizeof(linhas->aceitaCartao), 1, bin);
     pos += sizeof(linhas->aceitaCartao);
+    
     if (flag == TRUE && strcmp(campo, "aceitaCartao") == 0)
     {
         if (linhas->aceitaCartao == valor[0])

@@ -86,6 +86,7 @@ void funcionalidade1(char *nomeCSV, char *nomeBIN)
     fecharArquivoBin(&bin);
     fclose(csv);
 
+    binarioNaTela(nomeBIN);
     return;
 }
 
@@ -158,6 +159,7 @@ void funcionalidade2(char *nomeCSV, char *nomeBIN)
     fecharArquivoBin(&bin);
     fclose(csv);
 
+    binarioNaTela(nomeBIN);
     return;
 }
 
@@ -561,11 +563,11 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     int64 byteoffset = ftell(binVeiculo);
 
     // Inicializar e escrever o cabeçalho no arquivo de índice
-    CABECALHOI cabIndex; 
+    CABECALHOI cabIndex;
     inicializarCabecalhoIndex(&cabIndex);
     escreverBinCabIndex(binIndex, &cabIndex);
 
-    INDEX index;  
+    INDEX index;
     inicializarIndex(&index);
 
     for (int i = 0; i < totalRegistros; i++)
@@ -590,32 +592,14 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
         }
     }
 
-    // Entradas manuais
-    /*inserirIndex(binIndex, &cabIndex, &index, 2, 2);
-    inserirIndex(binIndex, &cabIndex, &index, 3, 3);
-    inserirIndex(binIndex, &cabIndex, &index, 4, 4);
-    inserirIndex(binIndex, &cabIndex, &index, 5, 5);
-    inserirIndex(binIndex, &cabIndex, &index, 6, 6);
-    inserirIndex(binIndex, &cabIndex, &index, 7, 7);
-    inserirIndex(binIndex, &cabIndex, &index, 8, 8);
-    inserirIndex(binIndex, &cabIndex, &index, 10, 10);
-    inserirIndex(binIndex, &cabIndex, &index, 9, 9);
-    inserirIndex(binIndex, &cabIndex, &index, 11, 11);
-    inserirIndex(binIndex, &cabIndex, &index, 12, 12);
-    inserirIndex(binIndex, &cabIndex, &index, 1, 1);
-    inserirIndex(binIndex, &cabIndex, &index, 14, 14);
-    inserirIndex(binIndex, &cabIndex, &index, 13, 13);
-    inserirIndex(binIndex, &cabIndex, &index, 15, 15);
-    inserirIndex(binIndex, &cabIndex, &index, 16, 16);
-    inserirIndex(binIndex, &cabIndex, &index, 17, 17);*/
-
     // Atualizar o cabecalho de index
     escreverBinCabIndex(binIndex, &cabIndex);
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculo);
     fecharArquivoBin(&binIndex);
-    
+
+    binarioNaTela(arqIndicePrefixo);
     return;
 }
 
@@ -628,8 +612,8 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
  */
 void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
 {
-    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE3);
-    FILE *binIndex = abrirArquivoBin(arqIndicePrefixo, FILE_MODE3);
+    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
+    FILE *binIndex = abrirArquivo(arqIndicePrefixo, FILE_MODE3);
 
     if (binLinha == NULL || binIndex == NULL)
     {
@@ -657,21 +641,24 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
     // Armazena o byteoffset do arquivo de veiculos atual
     int64 byteoffset = ftell(binLinha);
 
+    // Inicializar e escrever o cabeçalho no arquivo de índice
     CABECALHOI cabIndex;
+    inicializarCabecalhoIndex(&cabIndex);
+    escreverBinCabIndex(binIndex, &cabIndex);
+
     INDEX index;
+    inicializarIndex(&index);
 
     for (int i = 0; i < totalRegistros; i++)
     {
         // Ler o registro
-        if (lerBINLinha(binLinha, &linha, TRUE, NULL, NULL))
+        if (lerBINLinha(binLinha, &linha, FALSE, NULL, NULL))
         {
             // Exibir apenas as linhas que não estão marcadas logicamente como excluidas
             if (linha.removido == '1')
             {
-                int chave = linha.codLinha;
+                inserirIndex(binIndex, &cabIndex, &index, linha.codLinha, byteoffset);
 
-                inserirIndex(binLinha, &cabIndex, &index, chave, byteoffset);
-                
                 // liberando memoria os campos dinamicos
                 free(linha.nomeLinha);
                 free(linha.corLinha);
@@ -682,10 +669,14 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
         }
     }
 
+    // Atualizar o cabecalho de index
+    escreverBinCabIndex(binIndex, &cabIndex);
+
     // Fechando arquivos binários
     fecharArquivoBin(&binLinha);
     fecharArquivoBin(&binIndex);
 
+    binarioNaTela(arqIndicePrefixo);
     return;
 }
 
@@ -696,12 +687,77 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
  *
  * @param arqVeiculoBIN 
  * @param arqIndicePrefixo 
- * @param prefixo 
+ * @param prefixo ja convertido usando convertePrefixo
  * @param valor 
  */
-void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, int prefixo, char*valor)
+void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, char *prefixo, int valor)
 {
-    
+    FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
+    FILE *binIndex = abrirArquivo(arqIndicePrefixo, FILE_MODE1);
+    // Registros marcados como logicamente removidos não devem ser exibidos.
+    if (!binVeiculo || !binIndex)
+    {
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Inicializando  o cabecalho do indice
+    CABECALHOI cabIndex;
+    inicializarCabecalhoIndex(&cabIndex);
+    lerBinCabIndex(binIndex, &cabIndex);
+
+    // Fazer a busca do registro com a chave buscada
+    int rrnEncontrado = 0;
+    int posEncontrado = 0;
+
+    if (procuraIndex(binIndex, cabIndex.noRaiz, valor, &rrnEncontrado, &posEncontrado) == NOT_FOUND)
+    {
+        printf("Registro inexistente.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    // Encontrou, então ler o registro no arquivo binário de veiculos e exibir na tela
+    INDEX index;
+    inicializarIndex(&index);
+    lerBINIndice(binIndex, &index, rrnEncontrado);
+
+    int byteOffSet = index.Pr[posEncontrado];
+
+    // Ler o cabeçalho de veiculos do arquivo binário
+    VEICULO veiculo;
+    veiculo.modelo = NULL;
+    veiculo.categoria = NULL;
+
+    CABECALHOV cabVeiculo;
+    if (!lerCabecalhoBINVeiculo(binVeiculo, &cabVeiculo))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    // Mover o ponteiro do arquivo de Veiculos para o byteOffSet
+    fseek(binVeiculo, byteOffSet, SEEK_SET);
+    lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL);
+
+    // Exibir o veiculo
+    exibirRegistrosVeiculo(&cabVeiculo, &veiculo);
+
+    // liberando memoria dos campos dinamicos
+    free(veiculo.modelo);
+    free(veiculo.categoria);
+    veiculo.modelo = NULL;
+    veiculo.categoria = NULL;
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binVeiculo);
+    fecharArquivoBin(&binIndex);
+
     return;
 }
 
@@ -715,9 +771,74 @@ void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, int prefixo, 
  * @param prefixo 
  * @param valor 
  */
-void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, int prefixo, char*valor)
+void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, char *prefixo, int valor)
 {
-    
+    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
+    FILE *binIndex = abrirArquivo(arqIndicePrefixo, FILE_MODE1);
+    // Registros marcados como logicamente removidos não devem ser exibidos.
+    if (!binLinha || !binIndex)
+    {
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Inicializando  o cabecalho do indice
+    CABECALHOI cabIndex;
+    inicializarCabecalhoIndex(&cabIndex);
+    lerBinCabIndex(binIndex, &cabIndex);
+
+    // Fazer a busca do registro com a chave buscada
+    int rrnEncontrado = 0;
+    int posEncontrado = 0;
+
+    if (procuraIndex(binIndex, cabIndex.noRaiz, valor, &rrnEncontrado, &posEncontrado) == NOT_FOUND)
+    {
+        printf("Registro inexistente.\n");
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    // Encontrou, então ler o registro no arquivo binário de veiculos e exibir na tela
+    INDEX index;
+    inicializarIndex(&index);
+    lerBINIndice(binIndex, &index, rrnEncontrado);
+
+    int byteOffSet = index.Pr[posEncontrado];
+
+    // Ler o cabeçalho de veiculos do arquivo binário
+    LINHA linha;
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
+
+    CABECALHOL cabLinha;
+    if (!lerCabecalhoBINLinha(binLinha, &cabLinha))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    // Mover o ponteiro do arquivo de Veiculos para o byteOffSet
+    fseek(binLinha, byteOffSet, SEEK_SET);
+    lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
+
+    // Exibir a linha
+    exibirRegistrosLinha(&cabLinha, &linha);
+
+    // liberando memoria dos campos dinamicos
+    free(linha.nomeLinha);
+    free(linha.corLinha);
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binLinha);
+    fecharArquivoBin(&binIndex);
+
     return;
 }
 
@@ -731,7 +852,61 @@ void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, int prefixo, ch
  */
 void funcionalidade13(char *arqVeiculoBIN, char *arqIndicePrefixo, int n)
 {
-    
+    // Abrir arquivo binário para leitura
+    FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
+    FILE *binIndex = abrirArquivoBin(arqIndicePrefixo, FILE_MODE1);
+    if (binVeiculo == NULL || binIndex == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Ler o cabeçalho de veiculos do arquivo binário
+    CABECALHOV cabVeiculos;
+    if (!lerCabecalhoBINVeiculo(bin, &cabVeiculos))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&bin);
+        return;
+    }
+
+    // Mover o ponteiro para o final do arquivo
+    fseek(bin, 0, SEEK_END);
+
+    VEICULO veiculo;
+    veiculo.modelo = NULL;
+    veiculo.categoria = NULL;
+    for (int i = 0; i < N; i++)
+    {
+        // Ler dados do veiculo a ser inserido no arquivo binário
+        if (!lerEntradaVeiculo(&veiculo))
+        {
+            printf("Falha no processamento do arquivo.\n");
+            fecharArquivoBin(&bin);
+            return;
+        }
+
+        // Escrever no arquivo binário o novo veiculo inserido
+        escreverBINVeiculo(bin, &veiculo);
+        cabVeiculos.nroRegistros++;
+
+        if (veiculo.modelo != NULL)
+        {
+            free(veiculo.modelo);
+            veiculo.modelo = NULL;
+        }
+        if (veiculo.categoria != NULL)
+        {
+            free(veiculo.categoria);
+            veiculo.categoria = NULL;
+        }
+    }
+
+    // Atualizar cabeçalho do arquivo binário com o novo número de registros, byteOffSet e fechar o arquivo, atualizando o status como 1
+    atualizaCabecalhoVeiculo(bin, &cabVeiculos);
+    fecharArquivoBin(&bin);
+
+    binarioNaTela(nomeBIN);
     return;
 }
 
@@ -746,7 +921,7 @@ void funcionalidade13(char *arqVeiculoBIN, char *arqIndicePrefixo, int n)
  */
 void funcionalidade14(char *arqLinhaBIN, char *arqIndicePrefixo, int n)
 {
-    
+
     return;
 }
 
@@ -760,76 +935,72 @@ int main(int agrc, char *argv[])
     char *arg2 = (char *)malloc(BUFFER);
     char *arg3 = (char *)malloc(BUFFER);
     char *arg4 = (char *)malloc(BUFFER);
-    int N = 0;                 // Utilizado nas funcionalidades 7 e 8 para inserção de novos dados nos arquivos binários de veiculos e linhas
-    
+    int N = 0; // Utilizado nas funcionalidades 7 e 8 para inserção de novos dados nos arquivos binários de veiculos e linhas
+
     // todas as funcionalidades do programa
     switch (funcionalidade)
     {
-        // PRIMEIRO Trabalho Prático
-        case 1:
-            scanf("%s %s", arg1, arg2);
-            funcionalidade1(arg1, arg2);
-            binarioNaTela(arg2);
-            break;
-        case 2:
-            scanf("%s %s", arg1, arg2);
-            funcionalidade2(arg1, arg2);
-            binarioNaTela(arg2);
-            break;
-        case 3:
-            scanf("%s", arg1);
-            funcionalidade3(arg1);
-            break;
-        case 4:
-            scanf("%s", arg1);
-            funcionalidade4(arg1);
-            break;
-        case 5:
-            scanf("%s %s", arg1, arg2);
-            scan_quote_string(arg3);
-            funcionalidade5(arg1, arg2, arg3);
-            break;
-        case 6:
-            scanf("%s %s", arg1, arg2);
-            scan_quote_string(arg3);
-            funcionalidade6(arg1, arg2, arg3);
-            break;
-        case 7:
-            scanf("%s %d", arg1, &N);
-            funcionalidade7(arg1, N);
-            break;
-        case 8:
-            scanf("%s %d", arg1, &N);
-            funcionalidade8(arg1, N);
-            break;
-        // SEGUNDO Trabalho Prático
-        case 9:
-            scanf("%s %s", arg1, arg2);
-            funcionalidade9(arg1,arg2);
-            binarioNaTela(arg2);
-            break;
-        case 10:
-            scanf("%s %s", arg1, arg2);
-            funcionalidade10(arg1,arg2);
-            break;
-        case 11:
-            scanf("%s %s %s", arg1, arg2, arg3);
-            scan_quote_string(arg4);
-            funcionalidade11(arg1, arg2, convertePrefixo(arg3), arg4);
-            break;
-        case 12:
-            scanf("%s %s %s", arg1, arg2, arg3);
-            scan_quote_string(arg4);
-            funcionalidade12(arg1, arg2, convertePrefixo(arg3), arg4);
-            break;
-        case 13:
-            scanf("%s %s %d", arg1, arg2, &N);
-            funcionalidade13(arg1,arg2,N);
-            break;
-        case 14:
-            scanf("%s %s %d", arg1, arg2, &N);
-            funcionalidade13(arg1,arg2,N);
-            break;
+    // PRIMEIRO Trabalho Prático
+    case 1:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade1(arg1, arg2);
+        break;
+    case 2:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade2(arg1, arg2);
+        break;
+    case 3:
+        scanf("%s", arg1);
+        funcionalidade3(arg1);
+        break;
+    case 4:
+        scanf("%s", arg1);
+        funcionalidade4(arg1);
+        break;
+    case 5:
+        scanf("%s %s", arg1, arg2);
+        scan_quote_string(arg3);
+        funcionalidade5(arg1, arg2, arg3);
+        break;
+    case 6:
+        scanf("%s %s", arg1, arg2);
+        scan_quote_string(arg3);
+        funcionalidade6(arg1, arg2, arg3);
+        break;
+    case 7:
+        scanf("%s %d", arg1, &N);
+        funcionalidade7(arg1, N);
+        break;
+    case 8:
+        scanf("%s %d", arg1, &N);
+        funcionalidade8(arg1, N);
+        break;
+    // SEGUNDO Trabalho Prático
+    case 9:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade9(arg1, arg2);
+        break;
+    case 10:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade10(arg1, arg2);
+        break;
+    case 11:
+        scanf("%s %s %s", arg1, arg2, arg3);
+        scan_quote_string(arg4);
+        funcionalidade11(arg1, arg2, arg3, convertePrefixo(arg4));
+        break;
+    case 12:
+        scanf("%s %s %s %d", arg1, arg2, arg3, &N);
+        funcionalidade12(arg1, arg2, arg3, N);
+        break;
+    case 13:
+        scanf("%s %s %d", arg1, arg2, &N);
+        funcionalidade13(arg1, arg2, N);
+        break;
+    case 14:
+        scanf("%s %s %d", arg1, arg2, &N);
+        funcionalidade13(arg1, arg2, N);
+        break;
     }
 
     // Liberando memoria heap dos argumentos de cada funcionalidade
