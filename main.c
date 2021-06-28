@@ -621,7 +621,7 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
         return;
     }
 
-    // Ler o cabeçalho de veiculos do arquivo binário
+    // Ler o cabeçalho de linhas do arquivo binário
     CABECALHOL cabLinhas;
     lerCabecalhoBINLinha(binLinha, &cabLinhas);
 
@@ -638,7 +638,7 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
 
     int totalRegistros = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
 
-    // Armazena o byteoffset do arquivo de veiculos atual
+    // Armazena o byteoffset do arquivo de linhas atual
     int64 byteoffset = ftell(binLinha);
 
     // Inicializar e escrever o cabeçalho no arquivo de índice
@@ -801,14 +801,14 @@ void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, char *prefixo, 
         return;
     }
 
-    // Encontrou, então ler o registro no arquivo binário de veiculos e exibir na tela
+    // Encontrou, então ler o registro no arquivo binário de linhas e exibir na tela
     INDEX index;
     inicializarIndex(&index);
     lerBINIndice(binIndex, &index, rrnEncontrado);
 
     int byteOffSet = index.Pr[posEncontrado];
 
-    // Ler o cabeçalho de veiculos do arquivo binário
+    // Ler o cabeçalho de linhas do arquivo binário
     LINHA linha;
     linha.nomeLinha = NULL;
     linha.corLinha = NULL;
@@ -822,7 +822,7 @@ void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, char *prefixo, 
         return;
     }
 
-    // Mover o ponteiro do arquivo de Veiculos para o byteOffSet
+    // Mover o ponteiro do arquivo de linhas para o byteOffSet
     fseek(binLinha, byteOffSet, SEEK_SET);
     lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
 
@@ -863,32 +863,52 @@ void funcionalidade13(char *arqVeiculoBIN, char *arqIndicePrefixo, int n)
 
     // Ler o cabeçalho de veiculos do arquivo binário
     CABECALHOV cabVeiculos;
-    if (!lerCabecalhoBINVeiculo(bin, &cabVeiculos))
+    if (!lerCabecalhoBINVeiculo(binVeiculo, &cabVeiculos))
     {
         printf("Falha no processamento do arquivo.\n");
-        fecharArquivoBin(&bin);
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
         return;
     }
 
+    // Inicializar e escrever o cabeçalho no arquivo de índice
+    CABECALHOI cabIndex;
+    inicializarCabecalhoIndex(&cabIndex);
+    if (!lerBinCabIndex(binIndex, &cabIndex))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    INDEX index;
+    inicializarIndex(&index);
+
     // Mover o ponteiro para o final do arquivo
-    fseek(bin, 0, SEEK_END);
+    fseek(binVeiculo, 0, SEEK_END);
 
     VEICULO veiculo;
     veiculo.modelo = NULL;
     veiculo.categoria = NULL;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < n; i++)
     {
         // Ler dados do veiculo a ser inserido no arquivo binário
         if (!lerEntradaVeiculo(&veiculo))
         {
             printf("Falha no processamento do arquivo.\n");
-            fecharArquivoBin(&bin);
+            fecharArquivoBin(&binVeiculo);
+            fecharArquivoBin(&binIndex);
             return;
         }
 
         // Escrever no arquivo binário o novo veiculo inserido
-        escreverBINVeiculo(bin, &veiculo);
+        int byteOffSet = ftell(binVeiculo);
+        escreverBINVeiculo(binVeiculo, &veiculo);
         cabVeiculos.nroRegistros++;
+
+        // Escrever no arquivo de index o novo registro
+        inserirIndex(binIndex, &cabIndex, &index, convertePrefixo(veiculo.prefixo), byteOffSet);
 
         if (veiculo.modelo != NULL)
         {
@@ -903,10 +923,15 @@ void funcionalidade13(char *arqVeiculoBIN, char *arqIndicePrefixo, int n)
     }
 
     // Atualizar cabeçalho do arquivo binário com o novo número de registros, byteOffSet e fechar o arquivo, atualizando o status como 1
-    atualizaCabecalhoVeiculo(bin, &cabVeiculos);
-    fecharArquivoBin(&bin);
+    atualizaCabecalhoVeiculo(binVeiculo, &cabVeiculos);
+    // Atualizar o cabecalho de index
+    escreverBinCabIndex(binIndex, &cabIndex);
 
-    binarioNaTela(nomeBIN);
+    // Fechar arquivos binários de veículo de index
+    fecharArquivoBin(&binVeiculo);
+    fecharArquivoBin(&binIndex);
+
+    binarioNaTela(arqIndicePrefixo);
     return;
 }
 
@@ -921,7 +946,87 @@ void funcionalidade13(char *arqVeiculoBIN, char *arqIndicePrefixo, int n)
  */
 void funcionalidade14(char *arqLinhaBIN, char *arqIndicePrefixo, int n)
 {
+    // Abrir arquivo binário para leitura
+    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
+    FILE *binIndex = abrirArquivoBin(arqIndicePrefixo, FILE_MODE1);
+    if (binLinha == NULL || binIndex == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
+    CABECALHOL cabLinhas;
+    // Ler o cabeçalho de linhas do arquivo binário
+    if (!lerCabecalhoBINLinha(binLinha, &cabLinhas))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    // Inicializar e escrever o cabeçalho no arquivo de índice
+    CABECALHOI cabIndex;
+    inicializarCabecalhoIndex(&cabIndex);
+    if (!lerBinCabIndex(binIndex, &cabIndex))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    INDEX index;
+    inicializarIndex(&index);
+
+    // Mover o ponteiro para o final do arquivo
+    fseek(binLinha, 0, SEEK_END);
+
+    LINHA linha;
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
+    for (int i = 0; i < n; i++)
+    {
+        // Ler dados da linha de onibus a ser inserida no arquivo binário
+        if (!lerEntradaLinha(&linha))
+        {
+            printf("Falha no processamento do arquivo.\n");
+            fecharArquivoBin(&binLinha);
+            fecharArquivoBin(&binIndex);
+            return;
+        }
+
+        // Escrever no arquivo binário a nova linha de onibus inserida
+        int byteOffSet = ftell(binLinha);
+        escreverBINLinha(binLinha, &linha);
+        linha.removido == '1' ? cabLinhas.nroRegistros++ : cabLinhas.nroRegRemovidos++;
+
+        // Escrever no arquivo de index o novo registro
+        inserirIndex(binIndex, &cabIndex, &index, linha.codLinha, byteOffSet);
+
+        if (linha.nomeLinha != NULL)
+        {
+            free(linha.nomeLinha);
+            linha.nomeLinha = NULL;
+        }
+        if (linha.corLinha != NULL)
+        {
+            free(linha.corLinha);
+            linha.corLinha = NULL;
+        }
+    }
+
+    // Atualizar cabeçalho do arquivo binário com o novo número de registros,
+    // byteOffSet e fechar o arquivo, atualizando o status como 1
+    atualizaCabecalhoLinha(binLinha, &cabLinhas);
+    // Atualizar o cabecalho de index
+    escreverBinCabIndex(binIndex, &cabIndex);
+
+    // Fechar arquivos binários de linhas de index
+    fecharArquivoBin(&binLinha);
+    fecharArquivoBin(&binIndex);
+
+    binarioNaTela(arqIndicePrefixo);
     return;
 }
 
@@ -940,67 +1045,67 @@ int main(int agrc, char *argv[])
     // todas as funcionalidades do programa
     switch (funcionalidade)
     {
-    // PRIMEIRO Trabalho Prático
-    case 1:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade1(arg1, arg2);
-        break;
-    case 2:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade2(arg1, arg2);
-        break;
-    case 3:
-        scanf("%s", arg1);
-        funcionalidade3(arg1);
-        break;
-    case 4:
-        scanf("%s", arg1);
-        funcionalidade4(arg1);
-        break;
-    case 5:
-        scanf("%s %s", arg1, arg2);
-        scan_quote_string(arg3);
-        funcionalidade5(arg1, arg2, arg3);
-        break;
-    case 6:
-        scanf("%s %s", arg1, arg2);
-        scan_quote_string(arg3);
-        funcionalidade6(arg1, arg2, arg3);
-        break;
-    case 7:
-        scanf("%s %d", arg1, &N);
-        funcionalidade7(arg1, N);
-        break;
-    case 8:
-        scanf("%s %d", arg1, &N);
-        funcionalidade8(arg1, N);
-        break;
-    // SEGUNDO Trabalho Prático
-    case 9:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade9(arg1, arg2);
-        break;
-    case 10:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade10(arg1, arg2);
-        break;
-    case 11:
-        scanf("%s %s %s", arg1, arg2, arg3);
-        scan_quote_string(arg4);
-        funcionalidade11(arg1, arg2, arg3, convertePrefixo(arg4));
-        break;
-    case 12:
-        scanf("%s %s %s %d", arg1, arg2, arg3, &N);
-        funcionalidade12(arg1, arg2, arg3, N);
-        break;
-    case 13:
-        scanf("%s %s %d", arg1, arg2, &N);
-        funcionalidade13(arg1, arg2, N);
-        break;
-    case 14:
-        scanf("%s %s %d", arg1, arg2, &N);
-        funcionalidade13(arg1, arg2, N);
-        break;
+        // PRIMEIRO Trabalho Prático
+        case 1:
+            scanf("%s %s", arg1, arg2);
+            funcionalidade1(arg1, arg2);
+            break;
+        case 2:
+            scanf("%s %s", arg1, arg2);
+            funcionalidade2(arg1, arg2);
+            break;
+        case 3:
+            scanf("%s", arg1);
+            funcionalidade3(arg1);
+            break;
+        case 4:
+            scanf("%s", arg1);
+            funcionalidade4(arg1);
+            break;
+        case 5:
+            scanf("%s %s", arg1, arg2);
+            scan_quote_string(arg3);
+            funcionalidade5(arg1, arg2, arg3);
+            break;
+        case 6:
+            scanf("%s %s", arg1, arg2);
+            scan_quote_string(arg3);
+            funcionalidade6(arg1, arg2, arg3);
+            break;
+        case 7:
+            scanf("%s %d", arg1, &N);
+            funcionalidade7(arg1, N);
+            break;
+        case 8:
+            scanf("%s %d", arg1, &N);
+            funcionalidade8(arg1, N);
+            break;
+        // SEGUNDO Trabalho Prático
+        case 9:
+            scanf("%s %s", arg1, arg2);
+            funcionalidade9(arg1, arg2);
+            break;
+        case 10:
+            scanf("%s %s", arg1, arg2);
+            funcionalidade10(arg1, arg2);
+            break;
+        case 11:
+            scanf("%s %s %s", arg1, arg2, arg3);
+            scan_quote_string(arg4);
+            funcionalidade11(arg1, arg2, arg3, convertePrefixo(arg4));
+            break;
+        case 12:
+            scanf("%s %s %s %d", arg1, arg2, arg3, &N);
+            funcionalidade12(arg1, arg2, arg3, N);
+            break;
+        case 13:
+            scanf("%s %s %d", arg1, arg2, &N);
+            funcionalidade13(arg1, arg2, N);
+            break;
+        case 14:
+            scanf("%s %s %d", arg1, arg2, &N);
+            funcionalidade14(arg1, arg2, N);
+            break;
     }
 
     // Liberando memoria heap dos argumentos de cada funcionalidade

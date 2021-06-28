@@ -73,7 +73,5 @@
     boolean inicializarIndex(INDEX *index);
 
     void identificaFolha(INDEX *indice);
-    boolean procuraIndex(FILE *fp, int rrnAtual, int chave, int *rrnEncontrado, int *posEncontrado);\
-
-
+    boolean procuraIndex(FILE *fp, int rrnAtual, int chave, int *rrnEncontrado, int *posEncontrado);
 #endif

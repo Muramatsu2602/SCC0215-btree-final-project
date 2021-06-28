@@ -21,8 +21,6 @@
  */
 void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int64 enderecoBin)
 {
-    //printf("\nINSERINDO CHAVE %d | BYTEOFFSET %lld\n",chave, enderecoBin);
-
     // Na primeira vez, a árvore estará vazia, então criar o no raiz
     if (cabecalho->noRaiz == -1)
     {
@@ -45,19 +43,6 @@ void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int
     {
         // Colocar em indice o nó raiz
         lerBINIndice(fp, indice, cabecalho->noRaiz);
-
-        /*printf("\n====RAIZ ATUAL ====\n");
-            printf("FOLHA: %c\n",indice->folha);
-            printf("NroChavesIndex: %d\n",indice->nroChavesIndexadas);
-            printf("RRNdoNo: %d\n",indice->RRNdoNo);
-
-            for(int i=0; i<4; i++)
-            {
-                printf("P[%d]: %d\n",i,indice->P[i]);
-                printf("C[%d]: %d\n",i,indice->C[i]);
-                printf("Pr[%d]: %lld\n",i,indice->Pr[i]);
-            }
-            printf("P[%d]: %d\n\n",4,indice->P[4]);*/
 
         int rrnPromoRChild = 0;
         int promoKey = 0;
@@ -86,19 +71,6 @@ void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int
 
             // Set ROOT to RRN of new root page
             cabecalho->noRaiz = novaRaiz.RRNdoNo;
-
-            /*printf("\nNOVA RAIZ\n");
-            printf("FOLHA: %c\n",novaRaiz.folha);
-            printf("NroChavesIndex: %d\n",novaRaiz.nroChavesIndexadas);
-            printf("RRNdoNo: %d\n",novaRaiz.RRNdoNo);
-
-            for(int i=0; i<4; i++)
-            {
-                printf("P[%d]: %d\n",i,novaRaiz.P[i]);
-                printf("C[%d]: %d\n",i,novaRaiz.C[i]);
-                printf("Pr[%d]: %lld\n",i,novaRaiz.Pr[i]);
-            }
-            printf("P[%d]: %d\n\n",4,novaRaiz.P[4]);*/
         }
     }
 }
@@ -175,23 +147,9 @@ int inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
             identificaFolha(indice);
             atualizarBINIndex(fp, indice);
 
-            /*printf("\nINSERIDO\n");
-            printf("I = %d", i);
-            printf("FOLHA: %c\n",indice->folha);
-            printf("NroChavesIndex: %d\n",indice->nroChavesIndexadas);
-            printf("RRNdoNo: %d\n",indice->RRNdoNo);
-
-            for(int i=0; i<4; i++)
-            {
-                printf("P[%d]: %d\n",i,indice->P[i]);
-                printf("C[%d]: %d\n",i,indice->C[i]);
-                printf("Pr[%d]: %lld\n",i,indice->Pr[i]);
-            }
-            printf("P[%d]: %d\n\n",4,indice->P[4]);*/
-
             return NO_PROMOTION; // inserção sem particionamento
         }
-        // isnerção com particionamento (split), indicando chave promovida 
+        // inserção com particionamento (split), indicando chave promovida 
         else
         {
             INDEX novaPagina;
@@ -259,35 +217,6 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
         ponteiros[i] = -1;
     }
 
-    /*ponteiros[0] = pagina->P[0];
-    int j = 0;
-    int flag = 0;
-    for(int i=0; i<5; i++)
-    {
-        if(chave < pagina->C[j])
-        {
-            chaves[i] = chave;
-            enderecosBin[i] = enderecoBinChave;
-            ponteiros[i+1] = rrnDirChave;
-            flag = 1;
-            chave = INT_MAX;
-        }
-        else
-        {
-            chaves[i] = pagina->C[j];
-            enderecosBin[i] = pagina->Pr[j];
-            ponteiros[i+1] = pagina->P[j+1];
-            j++;
-        }
-    }
-    if(flag == 0)
-    {
-        enderecosBin[4] = enderecoBinChave;
-        chaves[4] = chave;
-        ponteiros[5] = rrnDirChave;
-    }*/
-
-    //ponteiros[0] = pagina->P[0];
     int j = 0;
     int flag = 0;
     for (int i = 0; i < 5; i++)
@@ -325,21 +254,6 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
         chaves[4] = chave;
         ponteiros[5] = rrnDirChave;
     }
-    //printf("\nPonteiros: %d | %d | %d | %d | %d | %d\n",ponteiros[0],ponteiros[1],ponteiros[2],ponteiros[3],ponteiros[4],ponteiros[5]);
-
-    /*
-    // guarda posição da última chave inserida em página
-    int i = pagina->nroChavesIndexadas - 1;
-
-    // insert I_KEY and I_RRN into their proper place in the working page
-    // Procurar posição na pagina para inserir a nova chave
-    while (i >= 0 && pagina->C[i] > chave)
-        i--;
-
-    pagina->C[i+1] = chave;
-    pagina->Pr[i+1] = enderecoBinChave;
-    pagina->P[i+2] = rrnDirChave;
-    pagina->nroChavesIndexadas += 1;*/
 
     // Allocate and initializa a new page in the B-tree file to hold NEWPAGE
     inicializarNovaPagina(novaPagina, cabecalho->RRNproxNo, FALSE);
@@ -378,34 +292,6 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
     novaPagina->Pr[1] = enderecosBin[4];
     novaPagina->nroChavesIndexadas = 2;
 
-    /*printf("\nSPLIT1\n");
-    printf("FOLHA: %c\n",pagina->folha);
-    printf("NroChavesIndex: %d\n",pagina->nroChavesIndexadas);
-    printf("RRNdoNo: %d\n",pagina->RRNdoNo);
-
-    for(int i=0; i<4; i++)
-    {
-        printf("P[%d]: %d\n",i,pagina->P[i]);
-        printf("C[%d]: %d\n",i,pagina->C[i]);
-        printf("Pr[%d]: %lld\n",i,pagina->Pr[i]);
-    }
-    printf("P[%d]: %d\n\n",4,pagina->P[4]);
-
-    printf("\nSPLIT2\n");
-    printf("FOLHA: %c\n",novaPagina->folha);
-    printf("NroChavesIndex: %d\n",novaPagina->nroChavesIndexadas);
-    printf("RRNdoNo: %d\n",novaPagina->RRNdoNo);
-
-    for(int i=0; i<4; i++)
-    {
-        printf("P[%d]: %d\n",i,novaPagina->P[i]);
-        printf("C[%d]: %d\n",i,novaPagina->C[i]);
-        printf("Pr[%d]: %lld\n",i,novaPagina->Pr[i]);
-    }
-    printf("P[%d]: %d\n\n",4,novaPagina->P[4]);
-
-    printf("Promovido: %d  �\t %lld\t%d",*promoKey, *enderecoBinPromoKey, *rrnPromoRChild);
-    */
     return;
 }
 
@@ -450,9 +336,7 @@ boolean lerBINIndice(FILE *fp, INDEX *indice, int RRN)
 }
 
 /**
- * @brief preenche uma struct do tipo CABECALHOI com os dados advindos \
- * do .bin da arvore B
- * 
+ * @brief preenche uma struct do tipo CABECALHOI com os dados do arquivo .bin
  * @param fp 
  * @param cabecalho 
  * @return boolean 
@@ -476,6 +360,13 @@ boolean lerBinCabIndex(FILE *fp, CABECALHOI *cabecalho)
     return TRUE;
 }
 
+/**
+ * @brief insere em disco o cabecalho da arvore-B
+ * 
+ * @param fp 
+ * @param cabecalho 
+ * @return boolean 
+ */
 boolean escreverBinCabIndex(FILE *fp, CABECALHOI *cabecalho)
 {
     if (cabecalho == NULL)
@@ -495,8 +386,10 @@ boolean escreverBinCabIndex(FILE *fp, CABECALHOI *cabecalho)
     fwrite(&cabecalho->RRNproxNo, sizeof(int), 1, fp);
 
     // Inserir lixo no restante do registro, completando os 77 bytes
+    // 68 = TAMANHO_REGISTRO - (sizeof(cabecalho->status) + sizeof(cabecalho->noRaiz) + sizeof(cabecalho->RRNproxNo) )
     char lixo[68];
-    preenchendoLixo(0, 68, lixo);
+    if(!preenchendoLixo(0, 68, lixo))
+        return FALSE;
 
     fwrite(lixo, sizeof(char), 68, fp);
 
@@ -504,7 +397,7 @@ boolean escreverBinCabIndex(FILE *fp, CABECALHOI *cabecalho)
 }
 
 /**
- * @brief escreve uma nova pagina na arvore binaria
+ * @brief insere uma nova pagina na arvore binaria
  * 
  * @param fp 
  * @param cabecalho 
@@ -514,7 +407,6 @@ boolean escreverBINIndex(FILE *fp, int RRN, INDEX *indice)
 {
     if (!fp || !indice)
     {
-        //printf("Deu ruim.\n");
         return FALSE;
     }
 
@@ -549,9 +441,10 @@ boolean escreverBINIndex(FILE *fp, int RRN, INDEX *indice)
 }
 
 /**
- * @brief 
+ * @brief Atualiza a pagina com novas chaves e novos ponteiros.
+ *  É chamada sempre que uma nova chave for inserida em alguma das
+ *  paginas da arvore b.
  *
- * 
  * @param fp 
  * @param indice 
  * @return boolean 
@@ -560,7 +453,6 @@ boolean atualizarBINIndex(FILE *fp, INDEX *indice)
 {
     if (!fp || !indice)
     {
-        //printf("Deu ruim.\n");
         return FALSE;
     }
 
@@ -595,7 +487,8 @@ boolean atualizarBINIndex(FILE *fp, INDEX *indice)
 }
 
 /**
- * @brief Inicializa um nó da árvore B
+ * @brief Inicializa um nó da árvore B, colocando valores iniciais em cada uma de
+ * suas prioridades
  * 
  * @param indice 
  * @param RRN 
@@ -631,7 +524,8 @@ boolean inicializarNovaPagina(INDEX *indice, int RRN, boolean folha)
 }
 
 /**
- * @brief 
+ * @brief inicializa uma struct do tipo INDEX, atribuindo valores NIL,
+ * que podem variar de acordo com cada propriedade (0 ou -1)
  * 
  * @param index 
  * @return boolean 
@@ -657,7 +551,8 @@ boolean inicializarIndex(INDEX *index)
 }
 
 /**
- * @brief 
+ * @brief inicializa o cabecalho do index, atribuindo valores NIL,
+ * que podem variar dependendo da natureza da propriedade (0, '0' ou -1)
  * 
  * @param cabecalho 
  * @return boolean 
@@ -685,6 +580,7 @@ boolean inicializarCabecalhoIndex(CABECALHOI *cabecalho)
  */
 boolean procuraIndex(FILE *fp, int rrnAtual, int chave, int *rrnEncontrado, int *posEncontrado)
 {
+    // rrnAtual = -1 caso a chave não tenha sido encontrada
     if(rrnAtual == -1)
         return NOT_FOUND;
         
@@ -709,10 +605,10 @@ boolean procuraIndex(FILE *fp, int rrnAtual, int chave, int *rrnEncontrado, int 
     }
     else
     {
-        //a chave de busca não foi encontrada, portanto
-        //procura a chave de busca no nó filho
+        //a chave de busca não foi encontrada, portanto procura a chave de busca no nó filho
         if(lerBINIndice(fp, &pagina, pagina.P[(i + 1)]) == FALSE)
         {
+            // Caso não exista nó filho, a busca foi má sucedida, portanto RRNdoNo = -1
             pagina.RRNdoNo = -1;
         }
 
