@@ -568,11 +568,12 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     INDEX index;  
     inicializarIndex(&index);
 
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 18; i++)
     {
         // Ler o registro
         if (lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL))
         {
+            byteoffset = ftell(binVeiculo);
             // Inserir no arquivo de índices apenas os veículos que não estão marcados como logicamente removidos
             if (veiculo.removido == '1')
             {
@@ -586,7 +587,6 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
                 veiculo.modelo = NULL;
                 veiculo.categoria = NULL;
             }
-            byteoffset = ftell(binVeiculo);
         }
     }
 

@@ -60,6 +60,7 @@ void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int
 
             novaRaiz.C[0] = promoKey;
             novaRaiz.Pr[0] = enderecoBinPromoKey;
+            novaRaiz.nroChavesIndexadas += 1;
 
             // left child = root
             novaRaiz.P[0] = cabecalho->noRaiz;
@@ -67,8 +68,24 @@ void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int
             // right child = rrnPromoRChild
             novaRaiz.P[1] = rrnPromoRChild;
 
+            identificaFolha(&novaRaiz);
+            escreverBINIndex(fp, novaRaiz.RRNdoNo, &novaRaiz);
+
             // Set ROOT to RRN of new root page
             cabecalho->noRaiz = novaRaiz.RRNdoNo;
+
+            printf("\nNOVA RAIZ\n");
+            printf("FOLHA: %c\n",novaRaiz.folha);
+            printf("NroChavesIndex: %d\n",novaRaiz.nroChavesIndexadas);
+            printf("RRNdoNo: %d\n",novaRaiz.RRNdoNo);
+
+            for(int i=0; i<4; i++)
+            {
+                printf("P[%d]: %d\n",i,novaRaiz.P[i]);
+                printf("C[%d]: %d\n",i,novaRaiz.C[i]);
+                printf("Pr[%d]: %lld\n",i,novaRaiz.Pr[i]);
+            }
+            printf("P[%d]: %d\n\n",4,novaRaiz.P[4]);
         }
     }
 }
@@ -91,6 +108,7 @@ int inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
     if (indice == NULL || indice->RRNdoNo == -1)
     {
         *promoKey = chave;
+        *enderecoBinPromoKey = enderecoBin;
         *rrnPromoRChild = -1;
         return PROMOTION;
     }
@@ -109,11 +127,13 @@ int inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
         // Colocar em aux a página do RRN encontrado
         INDEX aux;
         if(lerBINIndice(fp, &aux, cabecalho, indice->P[(i + 1)]) == FALSE)
+        {
             inicializarNovaPagina(&aux, -1, FALSE);
+        }
 
-        int chavePromovidaNivelInferior = *promoKey; // P_B_KEY
-        int64 enderecoBinChavePromovidaNivelInferior = *enderecoBinPromoKey;
-        int rrnChavePromovidaNivelInferior = *rrnPromoRChild;
+        int chavePromovidaNivelInferior = 0; // P_B_KEY
+        int64 enderecoBinChavePromovidaNivelInferior = 0;
+        int rrnChavePromovidaNivelInferior = 0; // P_B_RRN (filho a direita de P_B_KEY)
         int RETURN_VALUE = inserirChave(fp, cabecalho, &aux, chave, enderecoBin, &rrnChavePromovidaNivelInferior, &chavePromovidaNivelInferior, &enderecoBinChavePromovidaNivelInferior);
         
         if(RETURN_VALUE == NO_PROMOTION)
@@ -130,15 +150,31 @@ int inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
             {
                 indice->C[i + 1] = indice->C[i];
                 indice->Pr[i + 1] = indice->Pr[i];
+                indice->P[i + 2] = indice->P[i+1];
                 i--;
             }
 
             // Inserir a nova chave na posição encontrada
-            indice->C[i + 1] = *promoKey;
-            indice->Pr[i + 1] = *enderecoBinPromoKey;
-            indice->P[i+2] = *rrnPromoRChild;
+            indice->C[i + 1] = chavePromovidaNivelInferior;
+            indice->Pr[i + 1] = enderecoBinChavePromovidaNivelInferior;
+            indice->P[i + 2] = rrnChavePromovidaNivelInferior;
             indice->nroChavesIndexadas += 1;
+            identificaFolha(indice);
             atualizarBINIndex(fp, indice);
+
+            printf("\nINSERIDO\n");
+            printf("I = %d", i);
+            printf("FOLHA: %c\n",indice->folha);
+            printf("NroChavesIndex: %d\n",indice->nroChavesIndexadas);
+            printf("RRNdoNo: %d\n",indice->RRNdoNo);
+
+            for(int i=0; i<4; i++)
+            {
+                printf("P[%d]: %d\n",i,indice->P[i]);
+                printf("C[%d]: %d\n",i,indice->C[i]);
+                printf("Pr[%d]: %lld\n",i,indice->Pr[i]);
+            }
+            printf("P[%d]: %d\n\n",4,indice->P[4]);
 
             return NO_PROMOTION; // inserção sem particionamento
         }
@@ -151,9 +187,11 @@ int inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int6
             divideNo(fp, chavePromovidaNivelInferior, enderecoBinChavePromovidaNivelInferior, rrnChavePromovidaNivelInferior, indice, promoKey, enderecoBinPromoKey, rrnPromoRChild, &novaPagina, cabecalho);
 
             // Write PAGE to file at CURRENT_RRN
+            identificaFolha(indice);
             escreverBINIndex(fp, indice->RRNdoNo, indice);
 
             // Wrtite NEWPAGE to file at RRN PROMO_R_CHILD
+            identificaFolha(&novaPagina);
             escreverBINIndex(fp, *rrnPromoRChild, &novaPagina);
 
             return PROMOTION;
@@ -211,6 +249,7 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
     int j = 0;
 
     ponteiros[0] = pagina->P[0];
+    int flag = 0;
     for (int i = 0; i < 5; i++)
     {
         if (chave < pagina->C[j])
@@ -218,6 +257,7 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
             enderecosBin[i] = enderecoBinChave;
             chaves[i] = chave;
             ponteiros[i+1] = rrnDirChave;
+            flag = 1;
 
             // Passar os ponteiros que estão a direita do ponteiro antigo para uma posição a direita
             for(int k=(i+1); k<6; k++)
@@ -237,7 +277,14 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
             j++;
         }
     }
+    if(flag == 0)
+    {
+        enderecosBin[4] = enderecoBinChave;
+        chaves[4] = chave;
+        ponteiros[5] = rrnDirChave;
+    }
 
+    
     // guarda posição da última chave inserida em página
     int i = pagina->nroChavesIndexadas - 1;
 
@@ -253,7 +300,6 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
 
     // Allocate and initializa a new page in the B-tree file to hold NEWPAGE
     inicializarNovaPagina(novaPagina, cabecalho->RRNproxNo, FALSE);
-    escreverBINIndex(fp, cabecalho->RRNproxNo, novaPagina);
     cabecalho->RRNproxNo += 1;
 
     // Set PROMO_KEY to the value of middle key, which will be promoted after the split
@@ -266,7 +312,9 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
     // Copy keys and child pointers preceding PROMO_KEY from working page to PAGE 
     // Ou seja, tudo que está antes da posição 2
     //[]A[]B[]X[]C[]D[]
+    int rrnAntigo = pagina->RRNdoNo;
     inicializarNovaPagina(pagina, pagina->RRNdoNo, FALSE);
+    pagina->RRNdoNo = rrnAntigo;
     pagina->P[0] = ponteiros[0];
     pagina->P[1] = ponteiros[1];
     pagina->P[2] = ponteiros[2];
