@@ -681,19 +681,19 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
 }
 
 /**
- * @brief Permita a recuperação dos dados de todos os registros do arquivo de dados veiculo que 
+ * @brief Permite a recuperação dos dados de todos os registros do arquivo de dados veiculo que 
  * satisfaçam um critério de busca determinado pelo usuário sobre o campo prefixo, usando
  * o índice árvore-B criado na funcionalidade
  *
  * @param arqVeiculoBIN 
  * @param arqIndicePrefixo 
- * @param prefixo ja convertido usando convertePrefixo
- * @param valor 
+ * @param valor chave do registro buscado
  */
-void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, char *prefixo, int valor)
+void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, int valor)
 {
     FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
     FILE *binIndex = abrirArquivo(arqIndicePrefixo, FILE_MODE1);
+    
     // Registros marcados como logicamente removidos não devem ser exibidos.
     if (!binVeiculo || !binIndex)
     {
@@ -725,6 +725,7 @@ void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, char *prefixo
     inicializarIndex(&index);
     lerBINIndice(binIndex, &index, rrnEncontrado);
 
+    // pegando o byteoffset correspondente à chave na posição encontrada
     int byteOffSet = index.Pr[posEncontrado];
 
     // Ler o cabeçalho de veiculos do arquivo binário
@@ -767,11 +768,10 @@ void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, char *prefixo
  * o índice árvore-B criado na funcionalidade
  *
  * @param arqVeiculoLIN
- * @param arqIndicePrefixo 
- * @param prefixo 
+ * @param arqIndicePrefixo
  * @param valor 
  */
-void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, char *prefixo, int valor)
+void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo,  int valor)
 {
     FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
     FILE *binIndex = abrirArquivo(arqIndicePrefixo, FILE_MODE1);
@@ -1092,11 +1092,11 @@ int main(int agrc, char *argv[])
         case 11:
             scanf("%s %s %s", arg1, arg2, arg3);
             scan_quote_string(arg4);
-            funcionalidade11(arg1, arg2, arg3, convertePrefixo(arg4));
+            funcionalidade11(arg1, arg2, convertePrefixo(arg4));
             break;
         case 12:
             scanf("%s %s %s %d", arg1, arg2, arg3, &N);
-            funcionalidade12(arg1, arg2, arg3, N);
+            funcionalidade12(arg1, arg2, N);
             break;
         case 13:
             scanf("%s %s %d", arg1, arg2, &N);
