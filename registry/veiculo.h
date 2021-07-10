@@ -18,21 +18,8 @@
     #include "../utils/fileManager.h"
 
     #define INT_FIELD_NULL -1
-
-    struct _veiculo
-    {	
-        char removido;
-        int tamanhoRegistro;
-        char prefixo[6];
-        char data[11];
-        int	quantidadeLugares;
-        int codLinha;
-        int tamanhoModelo;
-        char* modelo;
-        int tamanhoCategoria;
-        char* categoria;
-    };
-
+    #define TAM_CAB_VEICULO 181
+    
     // Todos as string possuem um byte a mais para ter o \0 ao final da string
     // Porém ao ser gravado no arquivo binário, esse \0 é desconsiderado
     struct _cabecalhoVeiculo
@@ -48,6 +35,21 @@
         char descreveModelo[18];
         char descreveCategoria[21];
     };
+
+    struct _veiculo
+    {	
+        char removido;
+        int tamanhoRegistro;
+        char prefixo[6];
+        char data[11];
+        int	quantidadeLugares;
+        int codLinha;
+        int tamanhoModelo;
+        char* modelo;
+        int tamanhoCategoria;
+        char* categoria;
+    };
+
 
     typedef struct _cabecalhoVeiculo CABECALHOV;
     typedef struct _veiculo VEICULO;

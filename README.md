@@ -1,6 +1,6 @@
-# SCC0215 - Project 2
+# SCC0215 - Project 3
 
-Este trabalho tem como objetivo indexar arquivos de dados usando um índice árvore-B.
+Implemente um programa em C por meio do qual seja possível realizar a junção de dois arquivos de dados, considerando diferentes formas de implementação dessa operação.
 
 ## Team
 * 11796444 - Giovanni Shibaki Camargo

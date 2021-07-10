@@ -975,8 +975,8 @@ void funcionalidade13(char *arqVeiculoBIN, char *arqIndicePrefixo, int n)
 }
 
 /**
- * @brief  Estenda a funcionalidade [8] de forma que, a cada inserção de um registro no
- * arquivo de dados linha, a chave de busca correspondente a essa inserção seja inserida
+ * @brief  Estende a funcionalidade [8] de forma que, a cada inserção de um registro no
+ * arquivo de dados linha, a chave de busca correspondente a essa inserção eh inserida
  * no arquivo de índice árvore-B
  * 
  * @param arqVeiculoBIN 
@@ -1069,7 +1069,7 @@ void funcionalidade14(char *arqLinhaBIN, char *arqIndicePrefixo, int n)
 }
 
 /**
- * @brief Permita a recuperação dos dados de todos os registros armazenados no arquivo de dados veiculo.bin,
+ * @brief Permite a recuperação dos dados de todos os registros armazenados no arquivo de dados veiculo.bin,
  * juntando-os de forma apropriada com os dados de linha.bin.
  * 
  * @param arqVeiculoBIN 
@@ -1081,23 +1081,297 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
 {
     // Abrir arquivos binários para leitura
     FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
-    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);    
+    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
+    if (binVeiculo == NULL || binLinha == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Ler os cabeçalhos de veiculos e de linhas em seus respsectivos arquivos binários
+    CABECALHOV cabVeiculos;
+    CABECALHOL cabLinhas;
+
+    if (!lerCabecalhoBINVeiculo(binVeiculo, &cabVeiculos) || !lerCabecalhoBINLinha(binLinha, &cabLinhas))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    // Checar se não há registros no arquivo
+    if (feof(binVeiculo) || feof(binLinha) || cabVeiculos.nroRegistros == 0 || cabLinhas.nroRegistros == 0)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binLinha);
+        return;
+    }
+
+    // Receber o total de registros dos arquivos de veiculo e linha
+    int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
+    int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
+
+    VEICULO veiculo;
+    veiculo.modelo = NULL;
+    veiculo.categoria = NULL;
+
+    LINHA linha;
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
+
+    // Variável para verificar se algum registro foi gerado na junção dos dois arquivos
+    int encontrados = 0;
+
+    // Junção de loop aninhado
+    for (int i = 0; i < totalRegistrosVeiculos; i++)
+    {
+        lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL);
+
+        // Voltar o arquivo de linhas para o primeiro registro após o cabecalho
+        fseek(binLinha, TAM_CAB_LINHA, SEEK_SET);
+
+        for (int j = 0; j < totalRegistrosLinhas; j++)
+        {
+            lerBINLinha(binLinha, &linha, FALSE, NULL, NULL)
+
+            // Se veiculo.codLinha = linha.codLinha então mostre os campos de veiculo e linha conforme solicitado
+            if (veiculo.codLinha == linha.codLinha)
+            {
+                encontrados++;
+                // Mostrar os 2
+                exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
+                exibirRegistrosLinha(&cabLinhas, &linha);
+                printf("\n");
+            }
+
+            // liberando memoria os campos dinamicos
+            free(linha.nomeLinha);
+            free(linha.corLinha);
+            linha.nomeLinha = NULL;
+            linha.corLinha = NULL;
+        }
+        // liberando memoria dos campos dinamicos
+        free(veiculo.modelo);
+        free(veiculo.categoria);
+        veiculo.modelo = NULL;
+        veiculo.categoria = NULL;
+    }
+
+    // Se não foi gerado nenhum registro na junção dos dois arquivos
+    if (encontrados == 0)
+    {
+        printf("Registro inexistente.\n");
+    }
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binVeiculo);
+    fecharArquivoBin(&binLinha);
+
+    return;
 }
 
-void funcionalidade16(){
-    
+/**
+ * @brief  Permite a recuperação dos dados de todos os registros armazenados no arquivo de
+* dados veiculo.bin, juntando-os de forma apropriada com os dados de linha.bin.
+ * 
+ * @param arqVeiculoBIN 
+ * @param arqLinhaBIN 
+ * @param nomeCampoVeiculo 
+ * @param nomeCampoLinha 
+ * @param arqIndiceLinhas 
+ */
+void funcionalidade16(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVeiculo, char *nomeCampoLinha, char *arqIndiceLinhas)
+{
+    // Abrir arquivos binários para leitura
+    FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
+    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
+    FILE *binIndex = abrirArquivoBin(arqIndiceLinhas, FILE_MODE1);
+    if (binVeiculo == NULL || binLinha == NULL || binIndex == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Ler o cabeçalhos de veiculos, linhas e index dos respectivos arquivos binários
+    CABECALHOV cabVeiculos;
+    CABECALHOL cabLinhas;
+    CABECALHOI cabIndex;
+
+    inicializarCabecalhoIndex(&cabIndex);
+
+    if (!lerCabecalhoBINVeiculo(binVeiculo, &cabVeiculos) || !lerCabecalhoBINLinha(binLinha, &cabLinhas) || !lerBinCabIndex(binIndex, &cabIndex))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    // Checar se não há registros nos arquivos
+    if (feof(binVeiculo) || feof(binLinha) || feof(binIndex) || cabVeiculos.nroRegistros == 0 || cabLinhas.nroRegistros == 0)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+
+    // Receber o total de registros dos arquivos de veiculo e linha
+    int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
+    int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
+
+    VEICULO veiculo;
+    veiculo.modelo = NULL;
+    veiculo.categoria = NULL;
+
+    LINHA linha;
+    linha.nomeLinha = NULL;
+    linha.corLinha = NULL;
+
+    INDEX index;
+    inicializarIndex(&index);
+
+    // Variável para verificar se algum registro foi gerado na junção dos dois arquivos
+    int encontrados = 0;
+
+    // Fazer a busca do registro com a chave buscada
+    int rrnEncontrado = 0;
+    int posEncontrado = 0;
+
+    // Junção de loop único
+    for (int i = 0; i < totalRegistrosVeiculos; i++)
+    {
+        lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL);
+
+        // percorrendo os registros do arq de linhas
+        for(int j=0; j < totalRegistrosLinhas; j++)
+        {
+            // Procurar a linha que contém o codLinha do veiculo atual
+            if (procuraIndex(binIndex, cabIndex.noRaiz, veiculo.codLinha, &rrnEncontrado, &posEncontrado) == FOUND)
+            {
+                // Encontrou, então mostrar o veiculo e a linha atuais
+                encontrados++;
+
+                // Primeiro ler a Linha no arquivo de linhas de onibus
+                lerBINIndice(binIndex, &index, rrnEncontrado);
+
+                // pegando o byteoffset correspondente à chave na posição encontrada
+                int byteOffSet = index.Pr[posEncontrado];
+
+                // Mover o ponteiro do arquivo de linhas para o byteOffSet
+                fseek(binLinha, byteOffSet, SEEK_SET);
+                lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
+
+                // Por fim, mostrar o veiculo e a linha atual
+                exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
+                exibirRegistrosLinha(&cabLinhas, &linha);
+                printf("\n");
+            }
+        }
+    }
+
+    // Se não foi gerado nenhum registro na junção dos dois arquivos
+    if (encontrados == 0)
+    {
+        printf("Registro inexistente.\n");
+    }
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binVeiculo);
+    fecharArquivoBin(&binLinha);
+    fecharArquivoBin(&binIndex);
+
+    return;
 }
 
-void funcionalidade17(){
+/**
+ * @brief Ordena o arquivo de dados veiculo.bin de acordo com um campo de ordenação codLinha
+ * 
+ * @param arqDesordenadoBIN 
+ * @param arqOrdenadoBIN 
+ * @param campoOrdenacao 
+ */
+void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campoOrdenacao)
+{
+    // Abrir arquivos binários para leitura
+    FILE *binVeiculoDesordenado = abrirArquivoBin(arqDesordenadoBIN, FILE_MODE1);
+    FILE *binVeiculoOrdenado = abrirArquivoBin(arqOrdenadoBIN, FILE_MODE3);
+    if (binVeiculoDesordenado == NULL || binVeiculoOrdenado == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Ler o cabeçalho do arquivo de veiculos desordenados
+    CABECALHOV cabVeiculos;
     
+    if (!lerCabecalhoBINVeiculo(binVeiculoDesordenado, &cabVeiculos))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
+    
+    int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
+
+    // Criar um vetor de veiculos que serão alocados na RAM para que a ordenação possa ser executada
+    VEICULO *veiculos = (VEICULO *) malloc(sizeof(VEICULO)*(cabVeiculos.nroRegistros));
+    int tamVetorVeiculos = 0;
+    
+    // Struct veiculo auxiliar para inserção no vetor final
+    VEICULO veiculoAux;
+    veiculo.modelo = NULL;
+    veiculo.categoria = NULL;
+
+    // Leitura de todos os veículos NÃO REMOVIDOS do disco para o array em RAM
+    for(int i=0; i<totalRegistrosVeiculos; i++)
+    {
+        lerBINVeiculo(binVeiculo, &veiculoAux, FALSE, NULL, NULL);
+        
+        // Se não está removido, inserir os dados no vetor de veiculos
+        if(veiculoAux.removido == '1')
+        {
+            // Colocar os dados de veiculoAux no índice atual do vetor de veículos
+            // TODO: Copiar os dados de veiculoAux para veiculos[tamVetorVeiculos-1]
+        }
+            
+        // liberando memoria dos campos dinamicos
+        free(veiculo.modelo);
+        free(veiculo.categoria);
+        veiculo.modelo = NULL;
+        veiculo.categoria = NULL;
+    }
+
 }
 
-void funcionalidade18(){
-    
+/**
+ * @brief Ordena o arquivo de dados linha.bin de acordo com um campo de ordenação codLinha 
+ *
+ * @param arqDesordenadoBIN 
+ * @param arqOrdenadoBIN 
+ * @param campoOrdenacao 
+ */
+void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campoOrdenacao)
+{
 }
 
-void funcionalidade19(){
-    
+/**
+ * @brief Permite a recuperação dos dados de todos os registros armazenados no arquivo de
+ * dados linha.bin, juntando-os de forma apropriada com os dados de veiculo.bin
+ *
+ * @param arqVeiculoBIN 
+ * @param arqLinhaBIN 
+ * @param nomeCampoVeiculo 
+ * @param nomeCampoLinha 
+ */
+void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVeiculo, char *nomeCampoLinha)
+{
 }
 
 int main(int agrc, char *argv[])
@@ -1116,88 +1390,88 @@ int main(int agrc, char *argv[])
     // todas as funcionalidades do programa
     switch (funcionalidade)
     {
-        // =============================== PRIMEIRO Trabalho Prático ===============================        
-        case 1:
-            scanf("%s %s", arg1, arg2);
-            funcionalidade1(arg1, arg2);
-            break;
-        case 2:
-            scanf("%s %s", arg1, arg2);
-            funcionalidade2(arg1, arg2);
-            break;
-        case 3:
-            scanf("%s", arg1);
-            funcionalidade3(arg1);
-            break;
-        case 4:
-            scanf("%s", arg1);
-            funcionalidade4(arg1);
-            break;
-        case 5:
-            scanf("%s %s", arg1, arg2);
-            scan_quote_string(arg3);
-            funcionalidade5(arg1, arg2, arg3);
-            break;
-        case 6:
-            scanf("%s %s", arg1, arg2);
-            scan_quote_string(arg3);
-            funcionalidade6(arg1, arg2, arg3);
-            break;
-        case 7:
-            scanf("%s %d", arg1, &N);
-            funcionalidade7(arg1, N);
-            break;
-        case 8:
-            scanf("%s %d", arg1, &N);
-            funcionalidade8(arg1, N);
-            break;
-        // =============================== SEGUNDO Trabalho Prático ===============================
-        case 9:
-            scanf("%s %s", arg1, arg2);
-            funcionalidade9(arg1, arg2);
-            break;
-        case 10:
-            scanf("%s %s", arg1, arg2);
-            funcionalidade10(arg1, arg2);
-            break;
-        case 11:
-            scanf("%s %s %s", arg1, arg2, arg3);
-            scan_quote_string(arg4);
-            funcionalidade11(arg1, arg2, convertePrefixo(arg4));
-            break;
-        case 12:
-            scanf("%s %s %s %d", arg1, arg2, arg3, &N);
-            funcionalidade12(arg1, arg2, N);
-            break;
-        case 13:
-            scanf("%s %s %d", arg1, arg2, &N);
-            funcionalidade13(arg1, arg2, N);
-            break;
-        case 14:
-            scanf("%s %s %d", arg1, arg2, &N);
-            funcionalidade14(arg1, arg2, N);
-            break;
-        // =============================== TERCEIRO Trabalho Prático ===============================        
-        case 15:
-            scanf("%s %s %s %s", arg1, arg2, arg3, arg4);
-            funcionalidade15(arg1, arg2, arg3, arg4);
-            break;
-        case 16:
-            scanf("%s %s %s %s %s", arg1, arg2, arg3, arg4, arg5);
-            funcionalidade16(arg1, arg2, arg3, arg4, arg5);
-            break;
-        case 17:
-            scanf("%s %s %s", arg1, arg2, arg3);
-            funcionalidade17(arg1, arg2, arg3);
-            break;
-        case 18:
-            scanf("%s %s %s", arg1, arg2, arg3);
-            funcionalidade18(arg1, arg2, arg3);
-            break;
-        case 19:
-            scanf("%s %s %s %s", arg1, arg2, arg3, arg4);
-            funcionalidade19(arg1, arg2, arg3, arg4);
-            break;
+    // =============================== PRIMEIRO Trabalho Prático ===============================
+    case 1:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade1(arg1, arg2);
+        break;
+    case 2:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade2(arg1, arg2);
+        break;
+    case 3:
+        scanf("%s", arg1);
+        funcionalidade3(arg1);
+        break;
+    case 4:
+        scanf("%s", arg1);
+        funcionalidade4(arg1);
+        break;
+    case 5:
+        scanf("%s %s", arg1, arg2);
+        scan_quote_string(arg3);
+        funcionalidade5(arg1, arg2, arg3);
+        break;
+    case 6:
+        scanf("%s %s", arg1, arg2);
+        scan_quote_string(arg3);
+        funcionalidade6(arg1, arg2, arg3);
+        break;
+    case 7:
+        scanf("%s %d", arg1, &N);
+        funcionalidade7(arg1, N);
+        break;
+    case 8:
+        scanf("%s %d", arg1, &N);
+        funcionalidade8(arg1, N);
+        break;
+    // =============================== SEGUNDO Trabalho Prático ===============================
+    case 9:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade9(arg1, arg2);
+        break;
+    case 10:
+        scanf("%s %s", arg1, arg2);
+        funcionalidade10(arg1, arg2);
+        break;
+    case 11:
+        scanf("%s %s %s", arg1, arg2, arg3);
+        scan_quote_string(arg4);
+        funcionalidade11(arg1, arg2, convertePrefixo(arg4));
+        break;
+    case 12:
+        scanf("%s %s %s %d", arg1, arg2, arg3, &N);
+        funcionalidade12(arg1, arg2, N);
+        break;
+    case 13:
+        scanf("%s %s %d", arg1, arg2, &N);
+        funcionalidade13(arg1, arg2, N);
+        break;
+    case 14:
+        scanf("%s %s %d", arg1, arg2, &N);
+        funcionalidade14(arg1, arg2, N);
+        break;
+    // =============================== TERCEIRO Trabalho Prático ===============================
+    case 15:
+        scanf("%s %s %s %s", arg1, arg2, arg3, arg4);
+        funcionalidade15(arg1, arg2, arg3, arg4);
+        break;
+    case 16:
+        scanf("%s %s %s %s %s", arg1, arg2, arg3, arg4, arg5);
+        funcionalidade16(arg1, arg2, arg3, arg4, arg5);
+        break;
+    case 17:
+        scanf("%s %s %s", arg1, arg2, arg3);
+        funcionalidade17(arg1, arg2, arg3);
+        break;
+    case 18:
+        scanf("%s %s %s", arg1, arg2, arg3);
+        funcionalidade18(arg1, arg2, arg3);
+        break;
+    case 19:
+        scanf("%s %s %s %s", arg1, arg2, arg3, arg4);
+        funcionalidade19(arg1, arg2, arg3, arg4);
+        break;
     }
 
     // Liberando memoria heap dos argumentos de cada funcionalidade

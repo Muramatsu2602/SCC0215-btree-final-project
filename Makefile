@@ -2,8 +2,8 @@
 # @file Makefile
 # @author 11796444 - Giovanni Shibaki Camargo 
 # @author 11796451 - Pedro Kenzo Muramatsu Carmo
-# @version 0.1
-# @date 2021-05-07
+# @version 0.3
+# @date 2021-07-10
 # 
 # @copyright Copyright (c) 2021
 
@@ -23,9 +23,6 @@ all:
 run:
 	./$(BINARY)
 
-test1:
-	./$(BINARY) < test/1.in
-
 valval: all
 	@echo "Looking for leaks!"
 	@valgrind $(VFLAGS) ./$(BINARY)
@@ -43,4 +40,4 @@ clean:
 
 zip:
 	@echo "Creating a zip folder with all the important files!"
-	@zip -r trabalho2-11796444_giovanni-11796451_pedro.zip utils/* registry/* index/* $(MAIN) Makefile README.md
+	@zip -r trabalho3-11796444_giovanni-11796451_pedro.zip utils/* registry/* index/* $(MAIN) Makefile README.md
