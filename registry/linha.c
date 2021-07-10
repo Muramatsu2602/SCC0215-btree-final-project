@@ -450,17 +450,17 @@ boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha)
 
     switch (linha->aceitaCartao)
     {
-    case 'S':
-        printf("PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR\n");
-        break;
-    case 'N':
-        printf("PAGAMENTO EM CARTAO E DINHEIRO\n");
-        break;
-    case 'F':
-        printf("PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA\n");
-        break;
-    default:
-        break;
+        case 'S':
+            printf("PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR\n");
+            break;
+        case 'N':
+            printf("PAGAMENTO EM CARTAO E DINHEIRO\n");
+            break;
+        case 'F':
+            printf("PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA\n");
+            break;
+        default:
+            break;
     }
 
     printf("\n");
@@ -513,6 +513,7 @@ boolean lerEntradaLinha(LINHA *linha)
     if (strcmp(temp, "") == 0)
     {
         linha->tamanhoNome = 0;
+        linha->nomeLinha = NULL;
     }
     else
     {
@@ -526,6 +527,7 @@ boolean lerEntradaLinha(LINHA *linha)
     if (strcmp(temp, "") == 0)
     {
         linha->tamanhoCor = 0;
+        linha->corLinha = NULL;
     }
     else
     {
@@ -541,6 +543,7 @@ boolean lerEntradaLinha(LINHA *linha)
     {
         linha->tamanhoRegistro += strlen(linha->nomeLinha);
     }
+
     if (linha->corLinha != NULL)
     {
         linha->tamanhoRegistro += strlen(linha->corLinha);

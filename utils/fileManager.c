@@ -116,7 +116,7 @@ FILE *abrirArquivoBin(const char *filename, const char *mode)
  */
 boolean preenchendoLixo(int tamOcupado, int tamMaximo, char *str)
 {
-    if (!str)
+    if (str == NULL)
         return FALSE;
 
     // preenche com @ a quantidade de caracteres da diferenca entre tamMaximo e tamOcupado

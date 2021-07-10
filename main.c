@@ -549,7 +549,10 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     // Chegar se não há registros no arquivo
     if (feof(binVeiculo) || cabVeiculos.nroRegistros == 0)
     {
-        printf("Registro inexistente.\n");
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
+        return;
     }
 
     // Agora ler os registros e exibir na tela
@@ -564,11 +567,22 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
 
     // Inicializar e escrever o cabeçalho no arquivo de índice
     CABECALHOI cabIndex;
-    inicializarCabecalhoIndex(&cabIndex);
-    escreverBinCabIndex(binIndex, &cabIndex);
+    if (!inicializarCabecalhoIndex(&cabIndex) || !escreverBinCabIndex(binIndex, &cabIndex))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
 
     INDEX index;
-    inicializarIndex(&index);
+    if (!inicializarIndex(&index))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binIndex);
+        return;
+    }
 
     for (int i = 0; i < totalRegistros; i++)
     {
@@ -628,7 +642,9 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
     // Chegar se não há registros no arquivo
     if (feof(binLinha) || cabLinhas.nroRegistros == 0)
     {
-        printf("Registro inexistente.\n");
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
     }
 
     // Agora ler os registros e exibir na tela
@@ -643,11 +659,20 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
 
     // Inicializar e escrever o cabeçalho no arquivo de índice
     CABECALHOI cabIndex;
-    inicializarCabecalhoIndex(&cabIndex);
-    escreverBinCabIndex(binIndex, &cabIndex);
+    if (!inicializarCabecalhoIndex(&cabIndex) || !escreverBinCabIndex(binIndex, &cabIndex))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+    }
 
     INDEX index;
-    inicializarIndex(&index);
+    if (!inicializarIndex(&index))
+    {
+        printf("Falha no processamento do arquivo.\n");
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
+    }
 
     for (int i = 0; i < totalRegistros; i++)
     {
@@ -693,13 +718,13 @@ void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, int valor)
 {
     FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
     FILE *binIndex = abrirArquivo(arqIndicePrefixo, FILE_MODE1);
-    
+
     // Registros marcados como logicamente removidos não devem ser exibidos.
     if (!binVeiculo || !binIndex)
     {
+        printf("Falha no processamento do arquivo.\n");
         fecharArquivoBin(&binVeiculo);
         fecharArquivoBin(&binIndex);
-        printf("Falha no processamento do arquivo.\n");
         return;
     }
 
@@ -746,8 +771,15 @@ void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, int valor)
     fseek(binVeiculo, byteOffSet, SEEK_SET);
     lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL);
 
-    // Exibir o veiculo
-    exibirRegistrosVeiculo(&cabVeiculo, &veiculo);
+    // Exibir o veiculo somente se não estiver marcado logicamente como removido
+    if (veiculo.removido == '0')
+    {
+        printf("Registro inexistente.\n");
+    }
+    else
+    {
+        exibirRegistrosVeiculo(&cabVeiculo, &veiculo);
+    }
 
     // liberando memoria dos campos dinamicos
     free(veiculo.modelo);
@@ -771,16 +803,16 @@ void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, int valor)
  * @param arqIndicePrefixo
  * @param valor 
  */
-void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo,  int valor)
+void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, int valor)
 {
     FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
     FILE *binIndex = abrirArquivo(arqIndicePrefixo, FILE_MODE1);
     // Registros marcados como logicamente removidos não devem ser exibidos.
     if (!binLinha || !binIndex)
     {
+        printf("Falha no processamento do arquivo.\n");
         fecharArquivoBin(&binLinha);
         fecharArquivoBin(&binIndex);
-        printf("Falha no processamento do arquivo.\n");
         return;
     }
 
@@ -826,8 +858,15 @@ void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo,  int valor)
     fseek(binLinha, byteOffSet, SEEK_SET);
     lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
 
-    // Exibir a linha
-    exibirRegistrosLinha(&cabLinha, &linha);
+    // Exibir a linha somente se não estiver marcada logicamente como removida
+    if (linha.removido == '0')
+    {
+        printf("Registro inexistente.\n");
+    }
+    else
+    {
+        exibirRegistrosLinha(&cabLinha, &linha);
+    }
 
     // liberando memoria dos campos dinamicos
     free(linha.nomeLinha);
@@ -1016,8 +1055,7 @@ void funcionalidade14(char *arqLinhaBIN, char *arqIndicePrefixo, int n)
         }
     }
 
-    // Atualizar cabeçalho do arquivo binário com o novo número de registros,
-    // byteOffSet e fechar o arquivo, atualizando o status como 1
+    // Atualizar cabeçalho do arquivo binário com o novo número de registros, byteOffSet e fechar o arquivo, atualizando o status como 1
     atualizaCabecalhoLinha(binLinha, &cabLinhas);
     // Atualizar o cabecalho de index
     escreverBinCabIndex(binIndex, &cabIndex);
@@ -1030,6 +1068,38 @@ void funcionalidade14(char *arqLinhaBIN, char *arqIndicePrefixo, int n)
     return;
 }
 
+/**
+ * @brief Permita a recuperação dos dados de todos os registros armazenados no arquivo de dados veiculo.bin,
+ * juntando-os de forma apropriada com os dados de linha.bin.
+ * 
+ * @param arqVeiculoBIN 
+ * @param arqLinhaBIN 
+ * @param nomeCampoVeiculo 
+ * @param nomeCampoLinha 
+ */
+void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVeiculo, char *nomeCampoLinha)
+{
+    // Abrir arquivos binários para leitura
+    FILE *binVeiculo = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
+    FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);    
+}
+
+void funcionalidade16(){
+    
+}
+
+void funcionalidade17(){
+    
+}
+
+void funcionalidade18(){
+    
+}
+
+void funcionalidade19(){
+    
+}
+
 int main(int agrc, char *argv[])
 {
     int funcionalidade = 0;
@@ -1040,12 +1110,13 @@ int main(int agrc, char *argv[])
     char *arg2 = (char *)malloc(BUFFER);
     char *arg3 = (char *)malloc(BUFFER);
     char *arg4 = (char *)malloc(BUFFER);
+    char *arg5 = (char *)malloc(BUFFER);
     int N = 0; // Utilizado nas funcionalidades 7 e 8 para inserção de novos dados nos arquivos binários de veiculos e linhas
 
     // todas as funcionalidades do programa
     switch (funcionalidade)
     {
-        // PRIMEIRO Trabalho Prático
+        // =============================== PRIMEIRO Trabalho Prático ===============================        
         case 1:
             scanf("%s %s", arg1, arg2);
             funcionalidade1(arg1, arg2);
@@ -1080,7 +1151,7 @@ int main(int agrc, char *argv[])
             scanf("%s %d", arg1, &N);
             funcionalidade8(arg1, N);
             break;
-        // SEGUNDO Trabalho Prático
+        // =============================== SEGUNDO Trabalho Prático ===============================
         case 9:
             scanf("%s %s", arg1, arg2);
             funcionalidade9(arg1, arg2);
@@ -1106,6 +1177,27 @@ int main(int agrc, char *argv[])
             scanf("%s %s %d", arg1, arg2, &N);
             funcionalidade14(arg1, arg2, N);
             break;
+        // =============================== TERCEIRO Trabalho Prático ===============================        
+        case 15:
+            scanf("%s %s %s %s", arg1, arg2, arg3, arg4);
+            funcionalidade15(arg1, arg2, arg3, arg4);
+            break;
+        case 16:
+            scanf("%s %s %s %s %s", arg1, arg2, arg3, arg4, arg5);
+            funcionalidade16(arg1, arg2, arg3, arg4, arg5);
+            break;
+        case 17:
+            scanf("%s %s %s", arg1, arg2, arg3);
+            funcionalidade17(arg1, arg2, arg3);
+            break;
+        case 18:
+            scanf("%s %s %s", arg1, arg2, arg3);
+            funcionalidade18(arg1, arg2, arg3);
+            break;
+        case 19:
+            scanf("%s %s %s %s", arg1, arg2, arg3, arg4);
+            funcionalidade19(arg1, arg2, arg3, arg4);
+            break;
     }
 
     // Liberando memoria heap dos argumentos de cada funcionalidade
@@ -1113,6 +1205,7 @@ int main(int agrc, char *argv[])
     free(arg2);
     free(arg3);
     free(arg4);
+    free(arg5);
 
     return EXIT_SUCCESS;
 }

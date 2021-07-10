@@ -207,11 +207,69 @@ void identificaFolha(INDEX *indice)
  */
 void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDEX *pagina, int *promoKey, int64 *enderecoBinPromoKey, int *rrnPromoRChild, INDEX *novaPagina, CABECALHOI *cabecalho)
 {
-    // Ordenando as chaves junto com a nova chave a ser inserida
+    // Vetor de chaves, enderecosBin e ponteiros para a realizão do split
     int chaves[5];
     int64 enderecosBin[5];
     int ponteiros[6];
-    
+
+    // Ordenando as chaves junto com a nova chave a ser inserida
+    ordenarChavesDivideNo(chaves, enderecosBin, ponteiros, chave, enderecoBinChave, rrnDirChave, pagina);
+
+    // Allocate and initialize a new page in the B-tree file to hold NEWPAGE
+    inicializarNovaPagina(novaPagina, cabecalho->RRNproxNo, FALSE);
+    cabecalho->RRNproxNo += 1;
+
+    // Set PROMO_KEY to the value of middle key, which will be promoted after the split
+    *promoKey = chaves[2];
+    *enderecoBinPromoKey = enderecosBin[2];
+
+    // set PROMO_R_CHILD to RRN of NEWPAGE
+    *rrnPromoRChild = novaPagina->RRNdoNo;
+
+    // Copy keys and child pointers preceding PROMO_KEY from working page to PAGE 
+    // Ou seja, tudo que está antes da posição 2
+    //[]A[]B[]X[]C[]D[]
+    int rrnAntigo = pagina->RRNdoNo;
+    inicializarNovaPagina(pagina, pagina->RRNdoNo, FALSE);
+    pagina->RRNdoNo = rrnAntigo;
+    pagina->P[0] = ponteiros[0];
+    pagina->P[1] = ponteiros[1];
+    pagina->P[2] = ponteiros[2];
+    pagina->C[0] = chaves[0];
+    pagina->Pr[0] = enderecosBin[0];
+    pagina->C[1] = chaves[1];
+    pagina->Pr[1] = enderecosBin[1];
+    pagina->nroChavesIndexadas = 2;
+
+    // Copy keys and child pointers following PROMO_KEY from working page to NEWPAGE
+    // Ou seja, tudo que está depois da posição 2
+    novaPagina->P[0] = ponteiros[3];
+    novaPagina->P[1] = ponteiros[4];
+    novaPagina->P[2] = ponteiros[5];
+    novaPagina->C[0] = chaves[3];
+    novaPagina->Pr[0] = enderecosBin[3];
+    novaPagina->C[1] = chaves[4];
+    novaPagina->Pr[1] = enderecosBin[4];
+    novaPagina->nroChavesIndexadas = 2;
+
+    return;
+}
+
+/**
+ * @brief esta função é responsável pela ordenação das chaves no nó
+ * em que será realizado o Split juntamente com a nova chav e a ser inserida. 
+ * 
+ * @param chaves 
+ * @param enderecosBin 
+ * @param ponteiros 
+ * @param chave 
+ * @param enderecoBinChave 
+ * @param rrnDirChave 
+ * @param pagina 
+ */
+void ordenarChavesDivideNo(int *chaves, int64 *enderecosBin, int *ponteiros, int chave, int enderecoBinChave, int rrnDirChave, INDEX *pagina)
+{
+    // Inicializar ponteiros com o valor -1
     for(int i=0; i<6; i++)
     {
         ponteiros[i] = -1;
@@ -254,45 +312,6 @@ void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDE
         chaves[4] = chave;
         ponteiros[5] = rrnDirChave;
     }
-
-    // Allocate and initializa a new page in the B-tree file to hold NEWPAGE
-    inicializarNovaPagina(novaPagina, cabecalho->RRNproxNo, FALSE);
-    cabecalho->RRNproxNo += 1;
-
-    // Set PROMO_KEY to the value of middle key, which will be promoted after the split
-    *promoKey = chaves[2];
-    *enderecoBinPromoKey = enderecosBin[2];
-
-    // set PROMO_R_CHILD to RRN of NEWPAGE
-    *rrnPromoRChild = novaPagina->RRNdoNo;
-
-    // Copy keys and child pointers preceding PROMO_KEY from working page to PAGE 
-    // Ou seja, tudo que está antes da posição 2
-    //[]A[]B[]X[]C[]D[]
-    int rrnAntigo = pagina->RRNdoNo;
-    inicializarNovaPagina(pagina, pagina->RRNdoNo, FALSE);
-    pagina->RRNdoNo = rrnAntigo;
-    pagina->P[0] = ponteiros[0];
-    pagina->P[1] = ponteiros[1];
-    pagina->P[2] = ponteiros[2];
-    pagina->C[0] = chaves[0];
-    pagina->Pr[0] = enderecosBin[0];
-    pagina->C[1] = chaves[1];
-    pagina->Pr[1] = enderecosBin[1];
-    pagina->nroChavesIndexadas = 2;
-
-    // Copy keys and child pointers following PROMO_KEY from working page to NEWPAGE
-    // Ou seja, tudo que está depois da posição 2
-    novaPagina->P[0] = ponteiros[3];
-    novaPagina->P[1] = ponteiros[4];
-    novaPagina->P[2] = ponteiros[5];
-    novaPagina->C[0] = chaves[3];
-    novaPagina->Pr[0] = enderecosBin[3];
-    novaPagina->C[1] = chaves[4];
-    novaPagina->Pr[1] = enderecosBin[4];
-    novaPagina->nroChavesIndexadas = 2;
-
-    return;
 }
 
 /**
@@ -369,7 +388,7 @@ boolean lerBinCabIndex(FILE *fp, CABECALHOI *cabecalho)
  */
 boolean escreverBinCabIndex(FILE *fp, CABECALHOI *cabecalho)
 {
-    if (cabecalho == NULL)
+    if (cabecalho == NULL || fp == NULL)
     {
         return FALSE;
     }

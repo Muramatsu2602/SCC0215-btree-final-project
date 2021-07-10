@@ -559,9 +559,9 @@ void exibirData(char *data)
     const char delim[2] = "-";
     char *token = NULL;
 
-    int ano;
-    int mes;
-    int dia;
+    int ano = 0;
+    int mes = 0;
+    int dia = 0;
 
     // Ano
     token = strtok(data, delim);
@@ -657,7 +657,14 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
 
     // quantidadeLugares
     scan_quote_string(temp);
-    veiculo->quantidadeLugares = (int)atoi(temp);
+    if(strcmp(temp, "") == 0)
+    {
+        veiculo->quantidadeLugares = INT_FIELD_NULL;
+    }
+    else
+    {
+        veiculo->quantidadeLugares = (int)atoi(temp);
+    }
 
     // codLinha
     scan_quote_string(temp);
@@ -675,6 +682,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     if (strcmp(temp, "") == 0)
     {
         veiculo->tamanhoModelo = 0;
+        veiculo->modelo = NULL;
     }
     else
     {
@@ -688,6 +696,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
     if (strcmp(temp, "") == 0)
     {
         veiculo->tamanhoCategoria = 0;
+        veiculo->categoria = NULL;
     }
     else
     {

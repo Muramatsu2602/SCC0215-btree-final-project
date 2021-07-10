@@ -61,6 +61,7 @@
     void inserirIndex(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int64 enderecoBin);
     int inserirChave(FILE *fp, CABECALHOI *cabecalho, INDEX *indice, int chave, int64 enderecoBin, int *rrnPromoRChild, int *promoKey, int64 *enderecoBinPromoKey);
     void divideNo(FILE *fp, int chave, int64 enderecoBinChave, int rrnDirChave, INDEX *pagina, int *promoKey, int64 *enderecoBinPromoKey, int *rrnPromoRChild, INDEX *novaPagina, CABECALHOI *cabecalho);
+    void ordenarChavesDivideNo(int *chaves, int64 *enderecosBin, int *ponteiros, int chave, int enderecoBinChave, int rrnDirChave, INDEX *pagina);
 
     boolean lerBINIndice(FILE *fp, INDEX *indice, int RRN);
     boolean escreverBINIndex(FILE *fp, int RRN, INDEX *indice);
