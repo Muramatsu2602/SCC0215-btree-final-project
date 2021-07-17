@@ -219,28 +219,29 @@ void juncoesLoop(FILE *binVeiculo, FILE *binLinha, FILE *binIndex, CABECALHOV *c
     for (int i = 0; i < totalRegistrosVeiculos; i++)
     {
         // Ver se a leitura funcionou e o registro não está logicamente removido
-        if(lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL) && veiculo.removido == '1')
+        if (lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL) && veiculo.removido == '1' && veiculo.codLinha != -1)
         {
             if (flag == 0)
             {
                 // Junção de loop aninhado
-                
+
                 // Voltar o arquivo de linhas para o primeiro registro após o cabecalho
                 rewind(binLinha);
                 lerCabecalhoBINLinha(binLinha, cabLinhas);
 
                 for (int j = 0; j < totalRegistrosLinhas; j++)
                 {
-                    lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
-
-                    // Se veiculo.codLinha = linha.codLinha então mostre os campos de veiculo e linha conforme solicitado
-                    if (veiculo.codLinha == linha.codLinha)
+                    if (lerBINLinha(binLinha, &linha, FALSE, NULL, NULL) && linha.removido == '1')
                     {
-                        encontrados++;
-                        // Mostrar os 2
-                        exibirRegistrosVeiculo(cabVeiculos, &veiculo);
-                        exibirRegistrosLinha(cabLinhas, &linha);
-                        printf("\n");
+                        // Se veiculo.codLinha = linha.codLinha então mostre os campos de veiculo e linha conforme solicitado
+                        if (veiculo.codLinha == linha.codLinha)
+                        {
+                            encontrados++;
+                            // Mostrar os 2
+                            exibirRegistrosVeiculo(cabVeiculos, &veiculo);
+                            exibirRegistrosLinha(cabLinhas, &linha);
+                            printf("\n");
+                        }
                     }
 
                     // liberando memoria os campos dinamicos
@@ -265,12 +266,13 @@ void juncoesLoop(FILE *binVeiculo, FILE *binLinha, FILE *binIndex, CABECALHOV *c
 
                     // Mover o ponteiro do arquivo de linhas para o byteOffSet
                     fseek(binLinha, byteOffSet, SEEK_SET);
-                    lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
-
-                    // Por fim, mostrar o veiculo e a linha atual
-                    exibirRegistrosVeiculo(cabVeiculos, &veiculo);
-                    exibirRegistrosLinha(cabLinhas, &linha);
-                    printf("\n");
+                    if (lerBINLinha(binLinha, &linha, FALSE, NULL, NULL) && linha.removido == '1')
+                    {
+                        // Por fim, mostrar o veiculo e a linha atual
+                        exibirRegistrosVeiculo(cabVeiculos, &veiculo);
+                        exibirRegistrosLinha(cabLinhas, &linha);
+                        printf("\n");
+                    }
 
                     // liberando memoria os campos dinamicos
                     freeCamposDinamicos(&linha.nomeLinha, &linha.corLinha);

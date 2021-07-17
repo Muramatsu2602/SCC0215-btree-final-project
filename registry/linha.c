@@ -463,8 +463,6 @@ boolean exibirRegistrosLinha(CABECALHOL *cabLinhas, LINHA *linha)
             break;
     }
 
-    printf("\n");
-
     return TRUE;
 }
 

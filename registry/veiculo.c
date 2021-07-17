@@ -545,7 +545,6 @@ boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
     }
 
     // Pular uma linha entre registros
-    printf("\n");
     return TRUE;
 }
 

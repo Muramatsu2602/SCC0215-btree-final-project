@@ -1058,6 +1058,8 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     FILE *binLinha = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
     if (binVeiculo == NULL || binLinha == NULL)
     {
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binLinha);
         printf("Falha no processamento do arquivo.\n");
         return;
     }
@@ -1161,6 +1163,9 @@ void funcionalidade16(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     FILE *binIndex = abrirArquivoBin(arqIndiceLinhas, FILE_MODE1);
     if (binVeiculo == NULL || binLinha == NULL || binIndex == NULL)
     {
+        fecharArquivoBin(&binVeiculo);
+        fecharArquivoBin(&binLinha);
+        fecharArquivoBin(&binIndex);
         printf("Falha no processamento do arquivo.\n");
         return;
     }
@@ -1279,6 +1284,8 @@ void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     FILE *binVeiculoOrdenado = abrirArquivoBin(arqOrdenadoBIN, FILE_MODE3);
     if (binVeiculoDesordenado == NULL || binVeiculoOrdenado == NULL)
     {
+        fecharArquivoBin(&binVeiculoDesordenado);
+        fecharArquivoBin(&binVeiculoOrdenado);
         printf("Falha no carregamento do arquivo.\n");
         return;
     }
@@ -1343,6 +1350,8 @@ void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     FILE *binLinhaOrdenado = abrirArquivoBin(arqOrdenadoBIN, FILE_MODE3);
     if (binLinhaDesordenado == NULL || binLinhaOrdenado == NULL)
     {
+        fecharArquivoBin(&binLinhaDesordenado);
+        fecharArquivoBin(&binLinhaOrdenado);
         printf("Falha no carregamento do arquivo.\n");
         return;
     }
@@ -1408,6 +1417,8 @@ void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     FILE *binLinhaDesordenado = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
     if (binVeiculoDesordenado == NULL || binLinhaDesordenado == NULL)
     {
+        fecharArquivoBin(&binVeiculoDesordenado);
+        fecharArquivoBin(&binLinhaDesordenado);
         printf("Falha no processamento do arquivo.\n");
         return;
     }
