@@ -15,8 +15,6 @@
     #include <stdio.h>
     #include <string.h>
 
-    #define TAM_CAB_LINHA 86
-
     #include "../utils/fileManager.h"
     struct _cabecalhoLinha
     {

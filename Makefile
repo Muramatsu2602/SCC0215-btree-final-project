@@ -10,6 +10,7 @@
 UTILS= utils/fileManager.c
 REGISTRY= registry/linha.c registry/veiculo.c
 INDEX = index/index.c
+MERGE = merge/merge.c
 MAIN= main.c
 BINARY= main
 
@@ -18,7 +19,7 @@ FLAGS2 = -Werror -Wall -Wextra -Wpedantic -Wpointer-arith -O3 -march=native
 VFLAGS= --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 all:
-	@gcc $(FLAGS) $(MAIN) $(UTILS) $(REGISTRY) $(INDEX) -o $(BINARY) -lm -I utils/ -I registry/ -I index/
+	@gcc $(FLAGS) $(MAIN) $(UTILS) $(REGISTRY) $(INDEX) $(MERGE) -o $(BINARY) -lm -I utils/ -I registry/ -I index/
 
 run:
 	./$(BINARY)
@@ -40,4 +41,4 @@ clean:
 
 zip:
 	@echo "Creating a zip folder with all the important files!"
-	@zip -r trabalho3-11796444_giovanni-11796451_pedro.zip utils/* registry/* index/* $(MAIN) Makefile README.md
+	@zip -r trabalho3-11796444_giovanni-11796451_pedro.zip utils/* registry/* index/* merge/* $(MAIN) Makefile README.md

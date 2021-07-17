@@ -523,7 +523,7 @@ boolean exibirRegistrosVeiculo(CABECALHOV *cabVeiculos, VEICULO *veiculo)
 
     // Data
     printf("%s: ", cabVeiculos->descreveData);
-    if (veiculo->data[0] == '\0')
+    if (strlen(veiculo->data) != 10 || veiculo->data[0] == '\0')
     {
         printf("campo com valor nulo\n");
     }
@@ -657,7 +657,7 @@ boolean lerEntradaVeiculo(VEICULO *veiculo)
 
     // quantidadeLugares
     scan_quote_string(temp);
-    if(strcmp(temp, "") == 0)
+    if (strcmp(temp, "") == 0)
     {
         veiculo->quantidadeLugares = INT_FIELD_NULL;
     }

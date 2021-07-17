@@ -18,7 +18,6 @@
     #include "../utils/fileManager.h"
 
     #define INT_FIELD_NULL -1
-    #define TAM_CAB_VEICULO 181
     
     // Todos as string possuem um byte a mais para ter o \0 ao final da string
     // Porém ao ser gravado no arquivo binário, esse \0 é desconsiderado

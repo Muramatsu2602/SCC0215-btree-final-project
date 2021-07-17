@@ -2,8 +2,9 @@
  * @file fileManager.h
  * @author 11796444 - Giovanni Shibaki Camargo 
  * @author 11796451 - Pedro Kenzo Muramatsu Caro
+ *
  * @version 0.1
- * @date 2021-05-07
+ * @date 2021-07-17
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -13,7 +14,9 @@
 
     #include <stdio.h>
     #include <ctype.h>
+    #include <stdlib.h>
     
+    #define NUM_ARGS 5
     #define BUFFER 100
 
     #define boolean int

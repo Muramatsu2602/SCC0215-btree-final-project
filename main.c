@@ -15,7 +15,8 @@
 #include "registry/linha.h"
 #include "registry/veiculo.h"
 #include "index/index.h"
-#include "utils/auxFunc/convertePrefixo.h"
+#include "merge/merge.h"
+#include "utils/convertePrefixo.h"
 
 /**
  * @brief Realiza a leitura do arquivo CSV e cria e insere um arquivo binário contendo o cabeçalho
@@ -685,10 +686,7 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
                 inserirIndex(binIndex, &cabIndex, &index, linha.codLinha, byteoffset);
 
                 // liberando memoria os campos dinamicos
-                free(linha.nomeLinha);
-                free(linha.corLinha);
-                linha.nomeLinha = NULL;
-                linha.corLinha = NULL;
+                freeCamposDinamicos(&linha.nomeLinha, &linha.corLinha);
             }
             byteoffset = ftell(binLinha);
         }
@@ -782,10 +780,7 @@ void funcionalidade11(char *arqVeiculoBIN, char *arqIndicePrefixo, int valor)
     }
 
     // liberando memoria dos campos dinamicos
-    free(veiculo.modelo);
-    free(veiculo.categoria);
-    veiculo.modelo = NULL;
-    veiculo.categoria = NULL;
+    freeCamposDinamicos(&veiculo.modelo, &veiculo.categoria);
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculo);
@@ -869,10 +864,7 @@ void funcionalidade12(char *arqLinhaBIN, char *arqIndicePrefixo, int valor)
     }
 
     // liberando memoria dos campos dinamicos
-    free(linha.nomeLinha);
-    free(linha.corLinha);
-    linha.nomeLinha = NULL;
-    linha.corLinha = NULL;
+    freeCamposDinamicos(&linha.nomeLinha, &linha.corLinha);
 
     // Fechando arquivos binários
     fecharArquivoBin(&binLinha);
@@ -949,16 +941,7 @@ void funcionalidade13(char *arqVeiculoBIN, char *arqIndicePrefixo, int n)
         // Escrever no arquivo de index o novo registro
         inserirIndex(binIndex, &cabIndex, &index, convertePrefixo(veiculo.prefixo), byteOffSet);
 
-        if (veiculo.modelo != NULL)
-        {
-            free(veiculo.modelo);
-            veiculo.modelo = NULL;
-        }
-        if (veiculo.categoria != NULL)
-        {
-            free(veiculo.categoria);
-            veiculo.categoria = NULL;
-        }
+        freeCamposDinamicos(&veiculo.modelo, &veiculo.categoria);
     }
 
     // Atualizar cabeçalho do arquivo binário com o novo número de registros, byteOffSet e fechar o arquivo, atualizando o status como 1
@@ -1043,16 +1026,7 @@ void funcionalidade14(char *arqLinhaBIN, char *arqIndicePrefixo, int n)
         // Escrever no arquivo de index o novo registro
         inserirIndex(binIndex, &cabIndex, &index, linha.codLinha, byteOffSet);
 
-        if (linha.nomeLinha != NULL)
-        {
-            free(linha.nomeLinha);
-            linha.nomeLinha = NULL;
-        }
-        if (linha.corLinha != NULL)
-        {
-            free(linha.corLinha);
-            linha.corLinha = NULL;
-        }
+        freeCamposDinamicos(&linha.nomeLinha, &linha.corLinha);
     }
 
     // Atualizar cabeçalho do arquivo binário com o novo número de registros, byteOffSet e fechar o arquivo, atualizando o status como 1
@@ -1096,7 +1070,7 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     {
         printf("Falha no processamento do arquivo.\n");
         fecharArquivoBin(&binVeiculo);
-        fecharArquivoBin(&binIndex);
+        fecharArquivoBin(&binLinha);
         return;
     }
 
@@ -1109,6 +1083,9 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
         return;
     }
 
+    juncoesLoop(binVeiculo, binLinha, NULL, &cabVeiculos, &cabLinhas, NULL, 0);
+    // Agora ler os registros e exibir na tela
+    /*
     // Receber o total de registros dos arquivos de veiculo e linha
     int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
     int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
@@ -1134,7 +1111,7 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
 
         for (int j = 0; j < totalRegistrosLinhas; j++)
         {
-            lerBINLinha(binLinha, &linha, FALSE, NULL, NULL)
+            lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
 
             // Se veiculo.codLinha = linha.codLinha então mostre os campos de veiculo e linha conforme solicitado
             if (veiculo.codLinha == linha.codLinha)
@@ -1147,23 +1124,17 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
             }
 
             // liberando memoria os campos dinamicos
-            free(linha.nomeLinha);
-            free(linha.corLinha);
-            linha.nomeLinha = NULL;
-            linha.corLinha = NULL;
+            freeCamposDinamicos(&linha.nomeLinha,&linha.corLinha);
         }
         // liberando memoria dos campos dinamicos
-        free(veiculo.modelo);
-        free(veiculo.categoria);
-        veiculo.modelo = NULL;
-        veiculo.categoria = NULL;
+        freeCamposDinamicos(&veiculo.modelo,&veiculo.categoria);
     }
 
     // Se não foi gerado nenhum registro na junção dos dois arquivos
     if (encontrados == 0)
     {
         printf("Registro inexistente.\n");
-    }
+    }*/
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculo);
@@ -1174,7 +1145,7 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
 
 /**
  * @brief  Permite a recuperação dos dados de todos os registros armazenados no arquivo de
-* dados veiculo.bin, juntando-os de forma apropriada com os dados de linha.bin.
+ * dados veiculo.bin, juntando-os de forma apropriada com os dados de linha.bin.
  * 
  * @param arqVeiculoBIN 
  * @param arqLinhaBIN 
@@ -1220,6 +1191,9 @@ void funcionalidade16(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
         return;
     }
 
+    juncoesLoop(binVeiculo, binLinha, binIndex, &cabVeiculos, &cabLinhas, &cabIndex, 1);
+
+    /*
     // Receber o total de registros dos arquivos de veiculo e linha
     int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
     int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
@@ -1247,31 +1221,33 @@ void funcionalidade16(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     {
         lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL);
 
-        // percorrendo os registros do arq de linhas
-        for(int j=0; j < totalRegistrosLinhas; j++)
+        // Procurar a linha que contém o codLinha do veiculo atual
+        if (procuraIndex(binIndex, cabIndex.noRaiz, veiculo.codLinha, &rrnEncontrado, &posEncontrado) == FOUND)
         {
-            // Procurar a linha que contém o codLinha do veiculo atual
-            if (procuraIndex(binIndex, cabIndex.noRaiz, veiculo.codLinha, &rrnEncontrado, &posEncontrado) == FOUND)
-            {
-                // Encontrou, então mostrar o veiculo e a linha atuais
-                encontrados++;
+            // Encontrou, então mostrar o veiculo e a linha atuais
+            encontrados++;
 
-                // Primeiro ler a Linha no arquivo de linhas de onibus
-                lerBINIndice(binIndex, &index, rrnEncontrado);
+            // Primeiro ler a Linha no arquivo de linhas de onibus
+            lerBINIndice(binIndex, &index, rrnEncontrado);
 
-                // pegando o byteoffset correspondente à chave na posição encontrada
-                int byteOffSet = index.Pr[posEncontrado];
+            // pegando o byteoffset correspondente à chave na posição encontrada
+            int byteOffSet = index.Pr[posEncontrado];
 
-                // Mover o ponteiro do arquivo de linhas para o byteOffSet
-                fseek(binLinha, byteOffSet, SEEK_SET);
-                lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
+            // Mover o ponteiro do arquivo de linhas para o byteOffSet
+            fseek(binLinha, byteOffSet, SEEK_SET);
+            lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
 
-                // Por fim, mostrar o veiculo e a linha atual
-                exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-                exibirRegistrosLinha(&cabLinhas, &linha);
-                printf("\n");
-            }
+            // Por fim, mostrar o veiculo e a linha atual
+            exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
+            exibirRegistrosLinha(&cabLinhas, &linha);
+            printf("\n");
+
+            // liberando memoria os campos dinamicos
+            freeCamposDinamicos(&linha.nomeLinha,&linha.corLinha);
         }
+
+        // liberando memoria dos campos dinamicos
+        freeCamposDinamicos(&veiculo.modelo, &veiculo.categoria);
     }
 
     // Se não foi gerado nenhum registro na junção dos dois arquivos
@@ -1279,6 +1255,7 @@ void funcionalidade16(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     {
         printf("Registro inexistente.\n");
     }
+    */
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculo);
@@ -1302,52 +1279,53 @@ void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     FILE *binVeiculoOrdenado = abrirArquivoBin(arqOrdenadoBIN, FILE_MODE3);
     if (binVeiculoDesordenado == NULL || binVeiculoOrdenado == NULL)
     {
-        printf("Falha no processamento do arquivo.\n");
+        printf("Falha no carregamento do arquivo.\n");
         return;
     }
 
     // Ler o cabeçalho do arquivo de veiculos desordenados
     CABECALHOV cabVeiculos;
-    
+
     if (!lerCabecalhoBINVeiculo(binVeiculoDesordenado, &cabVeiculos))
     {
-        printf("Falha no processamento do arquivo.\n");
-        fecharArquivoBin(&binVeiculo);
-        fecharArquivoBin(&binLinha);
-        fecharArquivoBin(&binIndex);
+        printf("Falha no carregamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculoDesordenado);
+        fecharArquivoBin(&binVeiculoOrdenado);
         return;
     }
-    
+
     int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
 
     // Criar um vetor de veiculos que serão alocados na RAM para que a ordenação possa ser executada
-    VEICULO *veiculos = (VEICULO *) malloc(sizeof(VEICULO)*(cabVeiculos.nroRegistros));
-    int tamVetorVeiculos = 0;
-    
-    // Struct veiculo auxiliar para inserção no vetor final
-    VEICULO veiculoAux;
-    veiculo.modelo = NULL;
-    veiculo.categoria = NULL;
+    VEICULO *veiculos = (VEICULO *)malloc(sizeof(VEICULO) * (cabVeiculos.nroRegistros));
 
-    // Leitura de todos os veículos NÃO REMOVIDOS do disco para o array em RAM
-    for(int i=0; i<totalRegistrosVeiculos; i++)
+    // Inserir os veiculos do arquivo desordenado e ordenar os registros
+    ordenarVeiculos(binVeiculoDesordenado, veiculos, totalRegistrosVeiculos);
+
+    // Depois de reordenar, escrever de volta no arquivo ordenado
+    cabVeiculos.nroRegRemovidos = 0;
+    escreverCabecalhoBINVeiculo(binVeiculoOrdenado, &cabVeiculos);
+
+    for (int i = 0; i < cabVeiculos.nroRegistros; i++)
     {
-        lerBINVeiculo(binVeiculo, &veiculoAux, FALSE, NULL, NULL);
-        
-        // Se não está removido, inserir os dados no vetor de veiculos
-        if(veiculoAux.removido == '1')
-        {
-            // Colocar os dados de veiculoAux no índice atual do vetor de veículos
-            // TODO: Copiar os dados de veiculoAux para veiculos[tamVetorVeiculos-1]
-        }
-            
-        // liberando memoria dos campos dinamicos
-        free(veiculo.modelo);
-        free(veiculo.categoria);
-        veiculo.modelo = NULL;
-        veiculo.categoria = NULL;
+        escreverBINVeiculo(binVeiculoOrdenado, &veiculos[i]);
     }
 
+    // Agora, atualizar o byteProxReg o cabecalho
+    cabVeiculos.byteProxReg = ftell(binVeiculoOrdenado);
+
+    atualizaCabecalhoVeiculo(binVeiculoOrdenado, &cabVeiculos);
+
+    // liberando a memoria alocada pelo vetor de VEICULO
+    for (int i = 0; i < cabVeiculos.nroRegistros; i++)
+    {
+        freeCamposDinamicos(&veiculos[i].modelo, &veiculos[i].categoria);
+    }
+    free(veiculos);
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binVeiculoDesordenado);
+    fecharArquivoBin(&binVeiculoOrdenado);
 }
 
 /**
@@ -1359,6 +1337,59 @@ void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
  */
 void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campoOrdenacao)
 {
+
+    // Abrir arquivos binários para leitura
+    FILE *binLinhaDesordenado = abrirArquivoBin(arqDesordenadoBIN, FILE_MODE1);
+    FILE *binLinhaOrdenado = abrirArquivoBin(arqOrdenadoBIN, FILE_MODE3);
+    if (binLinhaDesordenado == NULL || binLinhaOrdenado == NULL)
+    {
+        printf("Falha no carregamento do arquivo.\n");
+        return;
+    }
+
+    // Ler o cabeçalho do arquivo de veiculos desordenados
+    CABECALHOL cabLinhas;
+
+    if (!lerCabecalhoBINLinha(binLinhaDesordenado, &cabLinhas))
+    {
+        printf("Falha no carregamento do arquivo.\n");
+        fecharArquivoBin(&binLinhaDesordenado);
+        fecharArquivoBin(&binLinhaOrdenado);
+        return;
+    }
+
+    int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
+
+    // Criar um vetor de linhas que serão alocados na RAM para que a ordenação possa ser executada
+    LINHA *linhas = (LINHA *)malloc(sizeof(LINHA) * (cabLinhas.nroRegistros));
+
+    // Inserir os veiculos do arquivo desordenado e ordenar os registros
+    ordenarLinhas(binLinhaDesordenado, linhas, totalRegistrosLinhas);
+
+    // Depois de reordenar, escrever de volta no arquivo ordenado
+    cabLinhas.nroRegRemovidos = 0;
+    escreveCabecalhoBINLinhas(binLinhaOrdenado, &cabLinhas);
+
+    for (int i = 0; i < cabLinhas.nroRegistros; i++)
+    {
+        escreverBINLinha(binLinhaOrdenado, &linhas[i]);
+    }
+
+    // Agora, atualizar o byteProxReg o cabecalho
+    cabLinhas.byteProxReg = ftell(binLinhaOrdenado);
+
+    atualizaCabecalhoLinha(binLinhaOrdenado, &cabLinhas);
+
+    // liberando a memoria alocada pelo vetor de LINHA
+    for (int i = 0; i < cabLinhas.nroRegistros; i++)
+    {
+        freeCamposDinamicos(&linhas[i].corLinha, &linhas[i].corLinha);
+    }
+    free(linhas);
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binLinhaDesordenado);
+    fecharArquivoBin(&binLinhaOrdenado);
 }
 
 /**
@@ -1372,114 +1403,193 @@ void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
  */
 void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVeiculo, char *nomeCampoLinha)
 {
+    // arquivos ordenados de linhas e veiculos
+    FILE *binVeiculoDesordenado = abrirArquivoBin(arqVeiculoBIN, FILE_MODE1);
+    FILE *binLinhaDesordenado = abrirArquivoBin(arqLinhaBIN, FILE_MODE1);
+    if (binVeiculoDesordenado == NULL || binLinhaDesordenado == NULL)
+    {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Ler o cabeçalho dos arquivos de veiculo e linhas a serem ordenados
+    CABECALHOV cabVeiculos;
+    CABECALHOL cabLinhas;
+
+    if (!lerCabecalhoBINVeiculo(binVeiculoDesordenado, &cabVeiculos) || !lerCabecalhoBINLinha(binLinhaDesordenado, &cabLinhas))
+    {
+        printf("Falha no carregamento do arquivo.\n");
+        fecharArquivoBin(&binVeiculoDesordenado);
+        fecharArquivoBin(&binLinhaDesordenado);
+        return;
+    }
+
+    int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
+    int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
+
+    // Criar um vetor de veiculos e linhas que serão alocados na RAM para que a ordenação possa ser executada
+    VEICULO *veiculos = (VEICULO *)malloc(sizeof(VEICULO) * (cabVeiculos.nroRegistros));
+    LINHA *linhas = (LINHA *)malloc(sizeof(LINHA) * (cabLinhas.nroRegistros));
+
+    // Inserir os veiculos e linhas dos arquivos desordenados e ordenar os registros
+    ordenarVeiculos(binVeiculoDesordenado, veiculos, totalRegistrosVeiculos);
+    ordenarLinhas(binLinhaDesordenado, linhas, totalRegistrosLinhas);
+
+    // Realizar o merge dos arquivos de veiculo e linha ordenados
+    int codLinhaVeiculo = 0;
+    int linhaAtual = 0;
+    int encontrados = 0;
+    int codLinhaLinha = 0;
+
+    codLinhaLinha = linhas[linhaAtual++].codLinha;
+
+    for (int i = 0; i < totalRegistrosVeiculos; i++)
+    {
+        codLinhaVeiculo = veiculos[i].codLinha;
+        // enquanto podemos realizar a juncao de linhas de onibus aos onibus
+        while (codLinhaLinha < codLinhaVeiculo && linhaAtual < totalRegistrosLinhas)
+        {
+            codLinhaLinha = linhas[linhaAtual++].codLinha;
+        }
+
+        // se deu match, exibir ambos
+        if (codLinhaLinha = codLinhaVeiculo)
+        {
+            encontrados++;
+            exibirRegistrosVeiculo(&cabVeiculos, &veiculos[i]);
+            exibirRegistrosLinha(&cabLinhas, &linhas[linhaAtual]);
+            printf("/n");
+        }
+    }
+
+    // Se não foi gerado nenhum registro na junção dos dois arquivos
+    if (encontrados == 0)
+    {
+        printf("Registro inexistente.\n");
+    }
+
+    // liberando a memoria alocada pelo vetor de VEICULO
+    for (int i = 0; i < cabVeiculos.nroRegistros; i++)
+    {
+        freeCamposDinamicos(&veiculos[i].modelo, &veiculos[i].categoria);
+    }
+    free(veiculos);
+
+    // liberando a memoria alocada pelo vetor de LINHA
+    for (int i = 0; i < cabLinhas.nroRegistros; i++)
+    {
+        freeCamposDinamicos(&linhas[i].corLinha, &linhas[i].corLinha);
+    }
+    free(linhas);
+
+    // Fechando arquivos binários
+    fecharArquivoBin(&binVeiculoDesordenado);
+    fecharArquivoBin(&binVeiculoDesordenado);
 }
 
-int main(int agrc, char *argv[])
+int main()
 {
-    int funcionalidade = 0;
-    scanf("%d ", &funcionalidade);
+    int funcionalidade = 0; // codigo da funcionalidade executada
+    int N = 0;              // Utilizado nas funcionalidades 7 e 8, por exemplo, para inserção de novos dados nos arquivos binários de veiculos e linhas
+    char **args = NULL;     // os args são auxiliares que recebem os argumentos de cada funcionalidade do programa
 
-    // arg1, arg2 e arg3 são auxiliares que recebem os argumentos de cada funcionalidade do programa
-    char *arg1 = (char *)malloc(BUFFER);
-    char *arg2 = (char *)malloc(BUFFER);
-    char *arg3 = (char *)malloc(BUFFER);
-    char *arg4 = (char *)malloc(BUFFER);
-    char *arg5 = (char *)malloc(BUFFER);
-    int N = 0; // Utilizado nas funcionalidades 7 e 8 para inserção de novos dados nos arquivos binários de veiculos e linhas
+    // Leitura do input
+    scanf("%d ", &funcionalidade);
+    args = (char **)malloc(NUM_ARGS * sizeof(char *));
+    for (int i = 0; i < NUM_ARGS; i++)
+        args[i] = (char *)malloc(BUFFER);
 
     // todas as funcionalidades do programa
     switch (funcionalidade)
     {
-    // =============================== PRIMEIRO Trabalho Prático ===============================
-    case 1:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade1(arg1, arg2);
-        break;
-    case 2:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade2(arg1, arg2);
-        break;
-    case 3:
-        scanf("%s", arg1);
-        funcionalidade3(arg1);
-        break;
-    case 4:
-        scanf("%s", arg1);
-        funcionalidade4(arg1);
-        break;
-    case 5:
-        scanf("%s %s", arg1, arg2);
-        scan_quote_string(arg3);
-        funcionalidade5(arg1, arg2, arg3);
-        break;
-    case 6:
-        scanf("%s %s", arg1, arg2);
-        scan_quote_string(arg3);
-        funcionalidade6(arg1, arg2, arg3);
-        break;
-    case 7:
-        scanf("%s %d", arg1, &N);
-        funcionalidade7(arg1, N);
-        break;
-    case 8:
-        scanf("%s %d", arg1, &N);
-        funcionalidade8(arg1, N);
-        break;
-    // =============================== SEGUNDO Trabalho Prático ===============================
-    case 9:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade9(arg1, arg2);
-        break;
-    case 10:
-        scanf("%s %s", arg1, arg2);
-        funcionalidade10(arg1, arg2);
-        break;
-    case 11:
-        scanf("%s %s %s", arg1, arg2, arg3);
-        scan_quote_string(arg4);
-        funcionalidade11(arg1, arg2, convertePrefixo(arg4));
-        break;
-    case 12:
-        scanf("%s %s %s %d", arg1, arg2, arg3, &N);
-        funcionalidade12(arg1, arg2, N);
-        break;
-    case 13:
-        scanf("%s %s %d", arg1, arg2, &N);
-        funcionalidade13(arg1, arg2, N);
-        break;
-    case 14:
-        scanf("%s %s %d", arg1, arg2, &N);
-        funcionalidade14(arg1, arg2, N);
-        break;
-    // =============================== TERCEIRO Trabalho Prático ===============================
-    case 15:
-        scanf("%s %s %s %s", arg1, arg2, arg3, arg4);
-        funcionalidade15(arg1, arg2, arg3, arg4);
-        break;
-    case 16:
-        scanf("%s %s %s %s %s", arg1, arg2, arg3, arg4, arg5);
-        funcionalidade16(arg1, arg2, arg3, arg4, arg5);
-        break;
-    case 17:
-        scanf("%s %s %s", arg1, arg2, arg3);
-        funcionalidade17(arg1, arg2, arg3);
-        break;
-    case 18:
-        scanf("%s %s %s", arg1, arg2, arg3);
-        funcionalidade18(arg1, arg2, arg3);
-        break;
-    case 19:
-        scanf("%s %s %s %s", arg1, arg2, arg3, arg4);
-        funcionalidade19(arg1, arg2, arg3, arg4);
-        break;
+        // =============================== PRIMEIRO Trabalho Prático ===============================
+        case 1:
+            scanf("%s %s", args[0], args[1]);
+            funcionalidade1(args[0], args[1]);
+            break;
+        case 2:
+            scanf("%s %s", args[0], args[1]);
+            funcionalidade2(args[0], args[1]);
+            break;
+        case 3:
+            scanf("%s", args[0]);
+            funcionalidade3(args[0]);
+            break;
+        case 4:
+            scanf("%s", args[0]);
+            funcionalidade4(args[0]);
+            break;
+        case 5:
+            scanf("%s %s", args[0], args[1]);
+            scan_quote_string(args[2]);
+            funcionalidade5(args[0], args[1], args[2]);
+            break;
+        case 6:
+            scanf("%s %s", args[0], args[1]);
+            scan_quote_string(args[2]);
+            funcionalidade6(args[0], args[1], args[2]);
+            break;
+        case 7:
+            scanf("%s %d", args[0], &N);
+            funcionalidade7(args[0], N);
+            break;
+        case 8:
+            scanf("%s %d", args[0], &N);
+            funcionalidade8(args[0], N);
+            break;
+        // =============================== SEGUNDO Trabalho Prático ===============================
+        case 9:
+            scanf("%s %s", args[0], args[1]);
+            funcionalidade9(args[0], args[1]);
+            break;
+        case 10:
+            scanf("%s %s", args[0], args[1]);
+            funcionalidade10(args[0], args[1]);
+            break;
+        case 11:
+            scanf("%s %s %s", args[0], args[1], args[2]);
+            scan_quote_string(args[3]);
+            funcionalidade11(args[0], args[1], convertePrefixo(args[3]));
+            break;
+        case 12:
+            scanf("%s %s %s %d", args[0], args[1], args[2], &N);
+            funcionalidade12(args[0], args[1], N);
+            break;
+        case 13:
+            scanf("%s %s %d", args[0], args[1], &N);
+            funcionalidade13(args[0], args[1], N);
+            break;
+        case 14:
+            scanf("%s %s %d", args[0], args[1], &N);
+            funcionalidade14(args[0], args[1], N);
+            break;
+        // =============================== TERCEIRO Trabalho Prático ===============================
+        case 15:
+            scanf("%s %s %s %s", args[0], args[1], args[2], args[3]);
+            funcionalidade15(args[0], args[1], args[2], args[3]);
+            break;
+        case 16:
+            scanf("%s %s %s %s %s", args[0], args[1], args[2], args[3], args[4]);
+            funcionalidade16(args[0], args[1], args[2], args[3], args[4]);
+            break;
+        case 17:
+            scanf("%s %s %s", args[0], args[1], args[2]);
+            funcionalidade17(args[0], args[1], args[2]);
+            break;
+        case 18:
+            scanf("%s %s %s", args[0], args[1], args[2]);
+            funcionalidade18(args[0], args[1], args[2]);
+            break;
+        case 19:
+            scanf("%s %s %s %s", args[0], args[1], args[2], args[3]);
+            funcionalidade19(args[0], args[1], args[2], args[3]);
+            break;
     }
 
     // Liberando memoria heap dos argumentos de cada funcionalidade
-    free(arg1);
-    free(arg2);
-    free(arg3);
-    free(arg4);
-    free(arg5);
+    for (int i = 0; i < NUM_ARGS; i++)
+        free(args[i]);
+    free(args);
 
     return EXIT_SUCCESS;
 }
