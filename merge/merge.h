@@ -22,8 +22,8 @@
     int comparadorLinha(const void *p, const void *q);
     void copiarCamposVeiculo(VEICULO *veiculoOrigem, VEICULO *veiculoDestino);
     void copiarCamposLinha(LINHA *linhaOrigem, LINHA *linhaDestino);
-    void ordenarVeiculos(FILE *binVeiculoDesordenado, VEICULO *veiculos, int totalRegistroVeiculos);
-    void ordenarLinhas(FILE *binLinhaDesordenado, LINHA *linhas, int totalRegistrosLinhas);
+    void ordenarVeiculos(FILE *binVeiculoOrdenado, VEICULO *veiculos, int totalRegistroVeiculos);
+    void ordenarLinhas(FILE *binLinhaOrdenado, LINHA *linhas, int totalRegistrosLinhas);
     void juncoesLoop(FILE *binVeiculo, FILE *binLinha, FILE *binIndex, CABECALHOV *cabVeiculos, CABECALHOL *cabLinhas, CABECALHOI *cabIndex, int flag);
 
 #endif

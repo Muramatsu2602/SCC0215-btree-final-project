@@ -171,7 +171,7 @@ void binarioNaTela(char *nomeArquivoBinario)
  */
 boolean fecharArquivoBin(FILE **fp)
 {
-    if (!*fp)
+    if (*fp == NULL)
         return FALSE;
 
     const char status = '1';

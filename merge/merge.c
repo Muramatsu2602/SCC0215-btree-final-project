@@ -71,18 +71,38 @@ int comparadorLinha(const void *p, const void *q)
  */
 void copiarCamposVeiculo(VEICULO *veiculoOrigem, VEICULO *veiculoDestino)
 {
-    veiculoOrigem->removido = veiculoDestino->removido;
-    veiculoOrigem->tamanhoRegistro = veiculoDestino->tamanhoCategoria;
-    strcpy(veiculoOrigem->prefixo, veiculoDestino->prefixo);
-    strcpy(veiculoOrigem->data, veiculoDestino->data);
-    veiculoOrigem->quantidadeLugares = veiculoDestino->quantidadeLugares;
-    veiculoOrigem->codLinha = veiculoDestino->codLinha;
-    veiculoOrigem->tamanhoModelo = veiculoDestino->tamanhoModelo;
-    veiculoOrigem->tamanhoCategoria = veiculoDestino->tamanhoCategoria;
-    veiculoOrigem->modelo = (char *)malloc(veiculoOrigem->tamanhoCategoria * sizeof(char));
-    veiculoOrigem->categoria = (char *)malloc(veiculoOrigem->tamanhoModelo * sizeof(char));
-    strcpy(veiculoOrigem->modelo, veiculoDestino->modelo);
-    strcpy(veiculoOrigem->categoria, veiculoDestino->categoria);
+    veiculoDestino->removido = veiculoOrigem->removido;
+    veiculoDestino->tamanhoRegistro = veiculoOrigem->tamanhoRegistro;
+    strcpy(veiculoDestino->prefixo, veiculoOrigem->prefixo);
+
+    if (veiculoOrigem->data[0] == '\0')
+    {
+        veiculoDestino->data[0] = '\0';
+        preenchendoLixo(strlen(veiculoDestino->data) + 1, 10, veiculoDestino->data);
+    }
+    else
+    {
+        strcpy(veiculoDestino->data, veiculoOrigem->data);
+    }
+
+    veiculoDestino->quantidadeLugares = veiculoOrigem->quantidadeLugares;
+    veiculoDestino->codLinha = veiculoOrigem->codLinha;
+    veiculoDestino->tamanhoModelo = veiculoOrigem->tamanhoModelo;
+    veiculoDestino->tamanhoCategoria = veiculoOrigem->tamanhoCategoria;
+
+    veiculoDestino->modelo = NULL;
+    if (veiculoOrigem->tamanhoModelo > 0)
+    {
+        veiculoDestino->modelo = (char *)calloc((strlen(veiculoOrigem->modelo) + 1), sizeof(char));
+        strcpy(veiculoDestino->modelo, veiculoOrigem->modelo);
+    }
+
+    veiculoDestino->categoria = NULL;
+    if (veiculoOrigem->tamanhoCategoria > 0)
+    {
+        veiculoDestino->categoria = (char *)calloc((strlen(veiculoOrigem->categoria) + 1), sizeof(char));
+        strcpy(veiculoDestino->categoria, veiculoOrigem->categoria);
+    }
 }
 
 /**
@@ -94,15 +114,26 @@ void copiarCamposVeiculo(VEICULO *veiculoOrigem, VEICULO *veiculoDestino)
  */
 void copiarCamposLinha(LINHA *linhaOrigem, LINHA *linhaDestino)
 {
-    linhaOrigem->tamanhoRegistro = linhaDestino->tamanhoRegistro;
-    linhaOrigem->codLinha = linhaDestino->codLinha;
-    linhaOrigem->aceitaCartao = linhaDestino->aceitaCartao;
-    linhaOrigem->tamanhoNome = linhaDestino->tamanhoNome;
-    linhaOrigem->nomeLinha = (char *)malloc(linhaOrigem->tamanhoNome * sizeof(char));
-    linhaOrigem->tamanhoCor = linhaDestino->tamanhoCor;
-    linhaOrigem->corLinha = (char *)malloc(linhaOrigem->tamanhoCor * sizeof(char));
-    strcpy(linhaOrigem->nomeLinha, linhaDestino->nomeLinha);
-    strcpy(linhaOrigem->corLinha, linhaDestino->corLinha);
+    linhaDestino->removido = linhaOrigem->removido;
+    linhaDestino->tamanhoRegistro = linhaOrigem->tamanhoRegistro;
+    linhaDestino->codLinha = linhaOrigem->codLinha;
+    linhaDestino->aceitaCartao = linhaOrigem->aceitaCartao;
+
+    linhaDestino->tamanhoNome = linhaOrigem->tamanhoNome;
+    linhaDestino->nomeLinha = NULL;
+    if (linhaOrigem->tamanhoNome > 0 && linhaOrigem->nomeLinha != NULL)
+    {
+        linhaDestino->nomeLinha = (char *)malloc((linhaOrigem->tamanhoNome + 1) * sizeof(char));
+        strcpy(linhaDestino->nomeLinha, linhaOrigem->nomeLinha);
+    }
+
+    linhaDestino->tamanhoCor = linhaOrigem->tamanhoCor;
+    linhaDestino->corLinha = NULL;
+    if (linhaOrigem->tamanhoCor > 0)
+    {
+        linhaDestino->corLinha = (char *)malloc((linhaOrigem->tamanhoCor + 1) * sizeof(char));
+        strcpy(linhaDestino->corLinha, linhaOrigem->corLinha);
+    }
 }
 
 /**
@@ -129,13 +160,15 @@ void ordenarVeiculos(FILE *binVeiculoDesordenado, VEICULO *veiculos, int totalRe
         if (veiculoAux.removido == '1')
         {
             // Colocar os dados de veiculoAux no índice atual do vetor de veículos
-            copiarCamposVeiculo(&veiculos[tamVetorVeiculos], &veiculoAux);
+            copiarCamposVeiculo(&veiculoAux, &veiculos[tamVetorVeiculos]);
             tamVetorVeiculos++;
         }
 
         // liberando memoria dos campos dinamicos da variável auxiliar de veiculos
         freeCamposDinamicos(&veiculoAux.categoria, &veiculoAux.modelo);
     }
+
+    freeCamposDinamicos(&veiculoAux.categoria, &veiculoAux.modelo);
 
     // Agora, é póssível realizar a ordenação dos veiculos por meio do codLinha
     qsort(veiculos, tamVetorVeiculos, sizeof(VEICULO), comparadorVeiculo);
@@ -166,13 +199,15 @@ void ordenarLinhas(FILE *binLinhaDesordenado, LINHA *linhas, int totalRegistrosL
         if (linhaAux.removido == '1')
         {
             // Colocar os dados de linhaAux no índice atual do vetor de linhas de onibus
-            copiarCamposLinha(&linhas[tamVetorLinhas], &linhaAux);
+            copiarCamposLinha(&linhaAux, &linhas[tamVetorLinhas]);
             tamVetorLinhas++;
         }
 
         // liberando memoria dos campos dinamicos da variável auxiliar de veiculos
         freeCamposDinamicos(&linhaAux.corLinha, &linhaAux.nomeLinha);
     }
+
+    freeCamposDinamicos(&linhaAux.corLinha, &linhaAux.nomeLinha);
 
     // Agora, é póssível realizar a ordenação dos veiculos por meio do codLinha
     qsort(linhas, tamVetorLinhas, sizeof(LINHA), comparadorLinha);
@@ -278,9 +313,9 @@ void juncoesLoop(FILE *binVeiculo, FILE *binLinha, FILE *binIndex, CABECALHOV *c
                     freeCamposDinamicos(&linha.nomeLinha, &linha.corLinha);
                 }
             }
-            // liberando memoria dos campos dinamicos
-            freeCamposDinamicos(&veiculo.modelo, &veiculo.categoria);
         }
+        // liberando memoria dos campos dinamicos
+        freeCamposDinamicos(&veiculo.modelo, &veiculo.categoria);
     }
 
     freeCamposDinamicos(&linha.nomeLinha, &linha.corLinha);

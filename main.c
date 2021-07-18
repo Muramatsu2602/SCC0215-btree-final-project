@@ -1286,7 +1286,7 @@ void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     {
         fecharArquivoBin(&binVeiculoDesordenado);
         fecharArquivoBin(&binVeiculoOrdenado);
-        printf("Falha no carregamento do arquivo.\n");
+        printf("Falha no processamento do arquivo.\n");
         return;
     }
 
@@ -1295,7 +1295,7 @@ void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
 
     if (!lerCabecalhoBINVeiculo(binVeiculoDesordenado, &cabVeiculos))
     {
-        printf("Falha no carregamento do arquivo.\n");
+        printf("Falha no processamento do arquivo.\n");
         fecharArquivoBin(&binVeiculoDesordenado);
         fecharArquivoBin(&binVeiculoOrdenado);
         return;
@@ -1304,7 +1304,7 @@ void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
 
     // Criar um vetor de veiculos que serão alocados na RAM para que a ordenação possa ser executada
-    VEICULO *veiculos = (VEICULO *)malloc(sizeof(VEICULO) * (cabVeiculos.nroRegistros));
+    VEICULO *veiculos = (VEICULO *)calloc(sizeof(VEICULO), (cabVeiculos.nroRegistros));
 
     // Inserir os veiculos do arquivo desordenado e ordenar os registros
     ordenarVeiculos(binVeiculoDesordenado, veiculos, totalRegistrosVeiculos);
@@ -1318,9 +1318,6 @@ void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
         escreverBINVeiculo(binVeiculoOrdenado, &veiculos[i]);
     }
 
-    // Agora, atualizar o byteProxReg o cabecalho
-    cabVeiculos.byteProxReg = ftell(binVeiculoOrdenado);
-
     atualizaCabecalhoVeiculo(binVeiculoOrdenado, &cabVeiculos);
 
     // liberando a memoria alocada pelo vetor de VEICULO
@@ -1329,14 +1326,19 @@ void funcionalidade17(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
         freeCamposDinamicos(&veiculos[i].modelo, &veiculos[i].categoria);
     }
     free(veiculos);
+    veiculos = NULL;
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculoDesordenado);
     fecharArquivoBin(&binVeiculoOrdenado);
+
+    binarioNaTela(arqOrdenadoBIN);
+    return;
 }
 
 /**
- * @brief Ordena o arquivo de dados linha.bin de acordo com um campo de ordenação codLinha 
+ * @brief Ordene o arquivo de dados linha.bin de acordo com um campo de
+ * ordenação codLinha 
  *
  * @param arqDesordenadoBIN 
  * @param arqOrdenadoBIN 
@@ -1352,7 +1354,7 @@ void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     {
         fecharArquivoBin(&binLinhaDesordenado);
         fecharArquivoBin(&binLinhaOrdenado);
-        printf("Falha no carregamento do arquivo.\n");
+        printf("Falha no processamento do arquivo.\n");
         return;
     }
 
@@ -1361,7 +1363,7 @@ void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
 
     if (!lerCabecalhoBINLinha(binLinhaDesordenado, &cabLinhas))
     {
-        printf("Falha no carregamento do arquivo.\n");
+        printf("Falha no processamento do arquivo.\n");
         fecharArquivoBin(&binLinhaDesordenado);
         fecharArquivoBin(&binLinhaOrdenado);
         return;
@@ -1370,7 +1372,7 @@ void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
 
     // Criar um vetor de linhas que serão alocados na RAM para que a ordenação possa ser executada
-    LINHA *linhas = (LINHA *)malloc(sizeof(LINHA) * (cabLinhas.nroRegistros));
+    LINHA *linhas = (LINHA *)calloc(sizeof(LINHA), (cabLinhas.nroRegistros));
 
     // Inserir os veiculos do arquivo desordenado e ordenar os registros
     ordenarLinhas(binLinhaDesordenado, linhas, totalRegistrosLinhas);
@@ -1384,9 +1386,6 @@ void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
         escreverBINLinha(binLinhaOrdenado, &linhas[i]);
     }
 
-    // Agora, atualizar o byteProxReg o cabecalho
-    cabLinhas.byteProxReg = ftell(binLinhaOrdenado);
-
     atualizaCabecalhoLinha(binLinhaOrdenado, &cabLinhas);
 
     // liberando a memoria alocada pelo vetor de LINHA
@@ -1399,6 +1398,9 @@ void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     // Fechando arquivos binários
     fecharArquivoBin(&binLinhaDesordenado);
     fecharArquivoBin(&binLinhaOrdenado);
+
+    binarioNaTela(arqOrdenadoBIN);
+    return;
 }
 
 /**
@@ -1439,8 +1441,8 @@ void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
 
     // Criar um vetor de veiculos e linhas que serão alocados na RAM para que a ordenação possa ser executada
-    VEICULO *veiculos = (VEICULO *)malloc(sizeof(VEICULO) * (cabVeiculos.nroRegistros));
-    LINHA *linhas = (LINHA *)malloc(sizeof(LINHA) * (cabLinhas.nroRegistros));
+    VEICULO *veiculos = (VEICULO *)calloc(sizeof(VEICULO), (cabVeiculos.nroRegistros));
+    LINHA *linhas = (LINHA *)calloc(sizeof(LINHA), (cabLinhas.nroRegistros));
 
     // Inserir os veiculos e linhas dos arquivos desordenados e ordenar os registros
     ordenarVeiculos(binVeiculoDesordenado, veiculos, totalRegistrosVeiculos);
@@ -1454,22 +1456,22 @@ void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
 
     codLinhaLinha = linhas[linhaAtual++].codLinha;
 
-    for (int i = 0; i < totalRegistrosVeiculos; i++)
+    for (int i = 0; i < cabVeiculos.nroRegistros; i++)
     {
         codLinhaVeiculo = veiculos[i].codLinha;
         // enquanto podemos realizar a juncao de linhas de onibus aos onibus
-        while (codLinhaLinha < codLinhaVeiculo && linhaAtual < totalRegistrosLinhas)
+        while (codLinhaLinha < codLinhaVeiculo && linhaAtual < cabLinhas.nroRegistros)
         {
             codLinhaLinha = linhas[linhaAtual++].codLinha;
         }
 
         // se deu match, exibir ambos
-        if (codLinhaLinha = codLinhaVeiculo)
+        if (codLinhaLinha == codLinhaVeiculo)
         {
             encontrados++;
             exibirRegistrosVeiculo(&cabVeiculos, &veiculos[i]);
-            exibirRegistrosLinha(&cabLinhas, &linhas[linhaAtual]);
-            printf("/n");
+            exibirRegistrosLinha(&cabLinhas, &linhas[linhaAtual - 1]);
+            printf("\n");
         }
     }
 
@@ -1495,7 +1497,9 @@ void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculoDesordenado);
-    fecharArquivoBin(&binVeiculoDesordenado);
+    fecharArquivoBin(&binLinhaDesordenado);
+
+    return;
 }
 
 int main()

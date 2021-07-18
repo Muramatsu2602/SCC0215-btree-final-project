@@ -1,4 +1,4 @@
-Looking for leaks!
+./main
 Prefixo do veiculo: DN020
 Modelo do veiculo: MARCOPOLO SENIOR
 Categoria do veiculo: MICRO
@@ -450,7 +450,7 @@ Cor que descreve a linha: AMARELA
 Aceita cartao: PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR
 
 Prefixo do veiculo: BC940
-Modelo do veiculo: CAIO APACHE
+Modelo do veiculo: campo com valor nulo
 Categoria do veiculo: MICROESPECIAL
 Data de entrada do veiculo na frota: 21 de novembro de 2008
 Quantidade de lugares sentados disponiveis: 19
