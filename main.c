@@ -1085,58 +1085,8 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
         return;
     }
 
+    // Função para a realização da junção de loop aninhado
     juncoesLoop(binVeiculo, binLinha, NULL, &cabVeiculos, &cabLinhas, NULL, 0);
-    // Agora ler os registros e exibir na tela
-    /*
-    // Receber o total de registros dos arquivos de veiculo e linha
-    int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
-    int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
-
-    VEICULO veiculo;
-    veiculo.modelo = NULL;
-    veiculo.categoria = NULL;
-
-    LINHA linha;
-    linha.nomeLinha = NULL;
-    linha.corLinha = NULL;
-
-    // Variável para verificar se algum registro foi gerado na junção dos dois arquivos
-    int encontrados = 0;
-
-    // Junção de loop aninhado
-    for (int i = 0; i < totalRegistrosVeiculos; i++)
-    {
-        lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL);
-
-        // Voltar o arquivo de linhas para o primeiro registro após o cabecalho
-        fseek(binLinha, TAM_CAB_LINHA, SEEK_SET);
-
-        for (int j = 0; j < totalRegistrosLinhas; j++)
-        {
-            lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
-
-            // Se veiculo.codLinha = linha.codLinha então mostre os campos de veiculo e linha conforme solicitado
-            if (veiculo.codLinha == linha.codLinha)
-            {
-                encontrados++;
-                // Mostrar os 2
-                exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-                exibirRegistrosLinha(&cabLinhas, &linha);
-                printf("\n");
-            }
-
-            // liberando memoria os campos dinamicos
-            freeCamposDinamicos(&linha.nomeLinha,&linha.corLinha);
-        }
-        // liberando memoria dos campos dinamicos
-        freeCamposDinamicos(&veiculo.modelo,&veiculo.categoria);
-    }
-
-    // Se não foi gerado nenhum registro na junção dos dois arquivos
-    if (encontrados == 0)
-    {
-        printf("Registro inexistente.\n");
-    }*/
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculo);
@@ -1196,71 +1146,8 @@ void funcionalidade16(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
         return;
     }
 
+    // Função para a realização da junção de loop único por meio do arquivo de índice
     juncoesLoop(binVeiculo, binLinha, binIndex, &cabVeiculos, &cabLinhas, &cabIndex, 1);
-
-    /*
-    // Receber o total de registros dos arquivos de veiculo e linha
-    int totalRegistrosVeiculos = cabVeiculos.nroRegistros + cabVeiculos.nroRegRemovidos;
-    int totalRegistrosLinhas = cabLinhas.nroRegistros + cabLinhas.nroRegRemovidos;
-
-    VEICULO veiculo;
-    veiculo.modelo = NULL;
-    veiculo.categoria = NULL;
-
-    LINHA linha;
-    linha.nomeLinha = NULL;
-    linha.corLinha = NULL;
-
-    INDEX index;
-    inicializarIndex(&index);
-
-    // Variável para verificar se algum registro foi gerado na junção dos dois arquivos
-    int encontrados = 0;
-
-    // Fazer a busca do registro com a chave buscada
-    int rrnEncontrado = 0;
-    int posEncontrado = 0;
-
-    // Junção de loop único
-    for (int i = 0; i < totalRegistrosVeiculos; i++)
-    {
-        lerBINVeiculo(binVeiculo, &veiculo, FALSE, NULL, NULL);
-
-        // Procurar a linha que contém o codLinha do veiculo atual
-        if (procuraIndex(binIndex, cabIndex.noRaiz, veiculo.codLinha, &rrnEncontrado, &posEncontrado) == FOUND)
-        {
-            // Encontrou, então mostrar o veiculo e a linha atuais
-            encontrados++;
-
-            // Primeiro ler a Linha no arquivo de linhas de onibus
-            lerBINIndice(binIndex, &index, rrnEncontrado);
-
-            // pegando o byteoffset correspondente à chave na posição encontrada
-            int byteOffSet = index.Pr[posEncontrado];
-
-            // Mover o ponteiro do arquivo de linhas para o byteOffSet
-            fseek(binLinha, byteOffSet, SEEK_SET);
-            lerBINLinha(binLinha, &linha, FALSE, NULL, NULL);
-
-            // Por fim, mostrar o veiculo e a linha atual
-            exibirRegistrosVeiculo(&cabVeiculos, &veiculo);
-            exibirRegistrosLinha(&cabLinhas, &linha);
-            printf("\n");
-
-            // liberando memoria os campos dinamicos
-            freeCamposDinamicos(&linha.nomeLinha,&linha.corLinha);
-        }
-
-        // liberando memoria dos campos dinamicos
-        freeCamposDinamicos(&veiculo.modelo, &veiculo.categoria);
-    }
-
-    // Se não foi gerado nenhum registro na junção dos dois arquivos
-    if (encontrados == 0)
-    {
-        printf("Registro inexistente.\n");
-    }
-    */
 
     // Fechando arquivos binários
     fecharArquivoBin(&binVeiculo);
@@ -1391,9 +1278,10 @@ void funcionalidade18(char *arqDesordenadoBIN, char *arqOrdenadoBIN, char *campo
     // liberando a memoria alocada pelo vetor de LINHA
     for (int i = 0; i < cabLinhas.nroRegistros; i++)
     {
-        freeCamposDinamicos(&linhas[i].corLinha, &linhas[i].corLinha);
+        freeCamposDinamicos(&linhas[i].nomeLinha, &linhas[i].corLinha);
     }
     free(linhas);
+    linhas = NULL;
 
     // Fechando arquivos binários
     fecharArquivoBin(&binLinhaDesordenado);

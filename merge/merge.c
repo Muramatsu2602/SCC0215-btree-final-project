@@ -24,7 +24,8 @@ void freeCamposDinamicos(char **campo1, char **campo2)
         free(*campo1);
         *campo1 = NULL;
     }
-    else if (*campo2 != NULL)
+    
+    if (*campo2 != NULL)
     {
         free(*campo2);
         *campo2 = NULL;
@@ -114,25 +115,25 @@ void copiarCamposVeiculo(VEICULO *veiculoOrigem, VEICULO *veiculoDestino)
  */
 void copiarCamposLinha(LINHA *linhaOrigem, LINHA *linhaDestino)
 {
-    linhaDestino->removido = linhaOrigem->removido;
-    linhaDestino->tamanhoRegistro = linhaOrigem->tamanhoRegistro;
-    linhaDestino->codLinha = linhaOrigem->codLinha;
-    linhaDestino->aceitaCartao = linhaOrigem->aceitaCartao;
+    linhaDestino->removido = (linhaOrigem)->removido;
+    linhaDestino->tamanhoRegistro = (linhaOrigem)->tamanhoRegistro;
+    linhaDestino->codLinha = (linhaOrigem)->codLinha;
+    linhaDestino->aceitaCartao = (linhaOrigem)->aceitaCartao;
 
-    linhaDestino->tamanhoNome = linhaOrigem->tamanhoNome;
+    linhaDestino->tamanhoNome = (linhaOrigem)->tamanhoNome;
     linhaDestino->nomeLinha = NULL;
-    if (linhaOrigem->tamanhoNome > 0 && linhaOrigem->nomeLinha != NULL)
+    if ((linhaOrigem)->tamanhoNome > 0)
     {
-        linhaDestino->nomeLinha = (char *)malloc((linhaOrigem->tamanhoNome + 1) * sizeof(char));
-        strcpy(linhaDestino->nomeLinha, linhaOrigem->nomeLinha);
+        linhaDestino->nomeLinha = (char *)malloc(((linhaOrigem)->tamanhoNome + 1) * sizeof(char));
+        strcpy(linhaDestino->nomeLinha, (linhaOrigem)->nomeLinha);
     }
 
-    linhaDestino->tamanhoCor = linhaOrigem->tamanhoCor;
+    linhaDestino->tamanhoCor = (linhaOrigem)->tamanhoCor;
     linhaDestino->corLinha = NULL;
-    if (linhaOrigem->tamanhoCor > 0)
+    if ((linhaOrigem)->tamanhoCor > 0)
     {
-        linhaDestino->corLinha = (char *)malloc((linhaOrigem->tamanhoCor + 1) * sizeof(char));
-        strcpy(linhaDestino->corLinha, linhaOrigem->corLinha);
+        linhaDestino->corLinha = (char *)malloc(((linhaOrigem)->tamanhoCor + 1) * sizeof(char));
+        strcpy(linhaDestino->corLinha, (linhaOrigem)->corLinha);
     }
 }
 
