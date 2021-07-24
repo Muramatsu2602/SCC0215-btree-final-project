@@ -547,15 +547,6 @@ void funcionalidade9(char *arqVeiculoBIN, char *arqIndicePrefixo)
     CABECALHOV cabVeiculos;
     lerCabecalhoBINVeiculo(binVeiculo, &cabVeiculos);
 
-    // Chegar se não há registros no arquivo
-    if (feof(binVeiculo) || cabVeiculos.nroRegistros == 0)
-    {
-        printf("Falha no processamento do arquivo.\n");
-        fecharArquivoBin(&binVeiculo);
-        fecharArquivoBin(&binIndex);
-        return;
-    }
-
     // Agora ler os registros e exibir na tela
     VEICULO veiculo;
     veiculo.modelo = NULL;
@@ -639,14 +630,6 @@ void funcionalidade10(char *arqLinhaBIN, char *arqIndicePrefixo)
     // Ler o cabeçalho de linhas do arquivo binário
     CABECALHOL cabLinhas;
     lerCabecalhoBINLinha(binLinha, &cabLinhas);
-
-    // Chegar se não há registros no arquivo
-    if (feof(binLinha) || cabLinhas.nroRegistros == 0)
-    {
-        printf("Falha no processamento do arquivo.\n");
-        fecharArquivoBin(&binLinha);
-        fecharArquivoBin(&binIndex);
-    }
 
     // Agora ler os registros e exibir na tela
     LINHA linha;
@@ -1079,7 +1062,7 @@ void funcionalidade15(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     // Checar se não há registros no arquivo
     if (feof(binVeiculo) || feof(binLinha) || cabVeiculos.nroRegistros == 0 || cabLinhas.nroRegistros == 0)
     {
-        printf("Falha no processamento do arquivo.\n");
+        printf("Registro inexistente.\n");
         fecharArquivoBin(&binVeiculo);
         fecharArquivoBin(&binLinha);
         return;
@@ -1139,7 +1122,7 @@ void funcionalidade16(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     // Checar se não há registros nos arquivos
     if (feof(binVeiculo) || feof(binLinha) || feof(binIndex) || cabVeiculos.nroRegistros == 0 || cabLinhas.nroRegistros == 0)
     {
-        printf("Falha no processamento do arquivo.\n");
+        printf("Registro inexistente.\n");
         fecharArquivoBin(&binVeiculo);
         fecharArquivoBin(&binLinha);
         fecharArquivoBin(&binIndex);
@@ -1319,7 +1302,7 @@ void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
 
     if (!lerCabecalhoBINVeiculo(binVeiculoDesordenado, &cabVeiculos) || !lerCabecalhoBINLinha(binLinhaDesordenado, &cabLinhas))
     {
-        printf("Falha no carregamento do arquivo.\n");
+        printf("Falha no processamento do arquivo.\n");
         fecharArquivoBin(&binVeiculoDesordenado);
         fecharArquivoBin(&binLinhaDesordenado);
         return;
@@ -1337,10 +1320,10 @@ void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     ordenarLinhas(binLinhaDesordenado, linhas, totalRegistrosLinhas);
 
     // Realizar o merge dos arquivos de veiculo e linha ordenados
-    int codLinhaVeiculo = 0;
+    int codLinhaVeiculo = -1;
+    int codLinhaLinha = -1;
     int linhaAtual = 0;
     int encontrados = 0;
-    int codLinhaLinha = 0;
 
     codLinhaLinha = linhas[linhaAtual++].codLinha;
 
@@ -1379,7 +1362,7 @@ void funcionalidade19(char *arqVeiculoBIN, char *arqLinhaBIN, char *nomeCampoVei
     // liberando a memoria alocada pelo vetor de LINHA
     for (int i = 0; i < cabLinhas.nroRegistros; i++)
     {
-        freeCamposDinamicos(&linhas[i].corLinha, &linhas[i].corLinha);
+        freeCamposDinamicos(&linhas[i].corLinha, &linhas[i].nomeLinha);
     }
     free(linhas);
 
